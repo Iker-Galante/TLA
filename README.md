@@ -1,6 +1,6 @@
 # TLA
 Trabajo practico TLA
-Integrantes: 
+# Integrantes: 
   . Iker Galante
   . Nicolas Kim
   . Juan Bautista Albertoni Salini
