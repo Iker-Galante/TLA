@@ -1,3 +1,0 @@
-[submodule "flex-bison"]
-	path = flex-bison
-	url = https://github.com/agustin-golmar/Flex-Bison-Compiler.git
