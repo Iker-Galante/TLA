@@ -1,0 +1,112 @@
+PROGRAM →
+    principio HEADER BODY FOOTER final
+  | principio BODY FOOTER final
+  | principio HEADER FOOTER final
+  | principio HEADER BODY final
+  | principio FOOTER final
+  | principio BODY final
+  | principio HEADER final
+  | principio final
+
+HEADER →
+    encabezado:\n BODY fin-encabezado\n
+  | encabezado:\n fin-encabezado\n
+
+FOOTER →
+    pie:\n BODY fin-pie\n
+  | pie:\n fin-pie\n
+
+BODY →
+    EXPRESSION BODY
+  | EXPRESSION
+
+EXPRESSION →
+  | (id) SIMPLE_EXPRESSION
+  | (id) COMPLEX_EXPRESSION
+  | string
+  | SIMPLE_EXPRESSION
+  | {id}
+  | COMPONENTE
+  | COMPLEX_EXPRESSION
+
+SIMPLE_EXPRESSION →
+    TEXT
+  | IMG
+  | TITLE
+  | SUBTITLE
+  | LINK
+
+TEXT →
+    texto MODIFIERS : string \n
+  | texto : string \n
+
+MODIFIERS →
+    MODIFIERS color
+  | MODIFIERS subrayado
+  | MODIFIERS italica
+  | MODIFIERS negrita
+  | MODIFIERS tamañio
+  | color
+  | subrayado
+  | italica
+  | negrita
+  | tamañio
+
+IMG →
+    imagen: (string) string \n
+
+TITLE →
+    titulo: string \n
+
+SUBTITLE →
+    subtitulo: string \n
+
+LINK →
+    enlace: (HREF) SIMPLE_EXPRESSION
+
+HREF →
+    string
+  | #id
+
+COMPLEX_EXPRESSION →
+    PUNTO_POR_PUNTO
+  | SECCION
+  | TABLA
+  | NAVEGADOR
+
+PUNTO_POR_PUNTO →
+    punto-por-punto: \n FILA_PPP fin-ppp \n
+    punto-por-punto: \n fin-ppp \n
+
+FILA_PPP →
+    -EXPRESSION FILA_PPP
+  | -EXPRESSION
+
+TABLA →
+    inicio-tabla: \n FILA_TABLA fin-tabla \n
+    inicio-tabla: \n fin-tabla \n
+
+FILA_TABLA →
+    COLUMNA_TABLA FILA_TABLA
+  | COLUMNA_TABLA
+
+COLUMNA_TABLA →
+    SIMPLE_EXPRESSION COLUMNA_TABLA
+  | fin-fila
+
+NAVEGADOR →
+    navegador: \n FILA_NAV fin-navegador \n
+    navegador: \n fin-navegador \n
+
+FILA_NAV →
+    -(id) string \n FILA_NAV
+  | -(id) string \n
+
+COMPONENTE →
+    componente (id) \n BODY fin-componente \n
+    componente (id) \n fin-componente \n
+
+
+SECCION →
+    inicio-seccion: \n BODY fin-seccion \n
+    inicio-seccion: \n fin-seccion \n

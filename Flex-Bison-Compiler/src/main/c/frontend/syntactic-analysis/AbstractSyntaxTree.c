@@ -22,31 +22,36 @@ void releaseProgram(Program * program) {
 	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
 	if (program != NULL) {
 		switch (program->type) {
-			case HEADER_FOOTER_BODY:
+			case PROGRAM_HEADER_FOOTER_BODY:
 				releaseHeader(program->header);
 				releaseBody(program->body);
 				releaseFooter(program->footer);
 				break;
-			case FOOTER_BODY:
+			case PROGRAM_FOOTER_BODY:
 				releaseBody(program->body);
 				releaseFooter(program->footer);
 				break;
-			case HEADER_BODY:
+			case PROGRAM_HEADER_BODY:
 				releaseHeader(program->header);
 				releaseBody(program->body);
 				break;
-			case HEADER_FOOTER:
+			case PROGRAM_HEADER_FOOTER:
 				releaseHeader(program->header);
 				releaseFooter(program->footer);
 				break;
-			case BODY:
+			case PROGRAM_BODY:
 				releaseBody(program->body);
 				break;
-			case FOOTER:
+			case PROGRAM_FOOTER:
 				releaseFooter(program->footer);
 				break;
-			case HEADER:
+			case PROGRAM_HEADER:
 				releaseHeader(program->header);
+				break;
+			case PROGRAM_EMPTY:
+				break;
+			default:
+				logError(_logger, "Unknown program type: %d", program->type);
 				break;
 		}
 		free(program);
@@ -58,14 +63,31 @@ void releaseExpression(Expression * expression){
 	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
 	if (expression != NULL) {
 		switch (expression->type) {
-			case SIMPLE_EXPRESSION:
+			case EXPRESSION_STRING:
+				releaseText(expression->string);
+				break;
+			case EXPRESSION_ID:
+				free(expression->id);
+				break;
+			case EXPRESSION_ID_SIMPLEEXPRESSION:
+				free(expression->id);
 				releaseSimpleExpression(expression->simpleExpression);
 				break;
-			case COMPLEX_EXPRESSION:
+			case EXPRESSION_ID_COMPLEXEXPRESSION:
+				free(expression->id);
 				releaseComplexExpression(expression->complexExpression);
 				break;
-			case COMPONENTE:
+			case EXPRESSION_SIMPLE_EXPRESSION:
+				releaseSimpleExpression(expression->simpleExpression);
+				break;
+			case EXPRESSION_COMPLEX_EXPRESSION:
+				releaseComplexExpression(expression->complexExpression);
+				break;
+			case EXPRESSION_COMPONENTE:
 				releaseComponent(expression->component);
+				break;
+			default:
+				logError(_logger, "Unknown expression type: %d", expression->type);
 				break;
 		}
 		free(expression); //Asumo que esto libera todo el resto que queda...
@@ -75,7 +97,7 @@ void releaseExpression(Expression * expression){
 void releaseHeader(Header * header) {
     logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
     if (header != NULL) {
-        if (header->type == BODY) {
+        if (header->type == HEADER_BODY) {
             releaseBody(header->body);
         }
         free(header);
@@ -85,7 +107,7 @@ void releaseHeader(Header * header) {
 void releaseFooter(Footer * footer) {
     logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
     if (footer != NULL) {
-        if (footer->type == BODY) {
+        if (footer->type == HEADER_BODY) {
             releaseBody(footer->body);
         }
         free(footer);
@@ -95,10 +117,10 @@ void releaseFooter(Footer * footer) {
 void releaseBody(Body * body) {
     logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
     if (body != NULL) {
-        if (body->type == EXPRESSION_BODY) {
+        if (body->type == BODY_EXPRESSION_BODY) {
             releaseExpression(body->expression);
             releaseBody(body->body);
-        } else if (body->type == EXPRESSION) {
+        } else if (body->type == BODY_EXPRESSION) {
             releaseExpression(body->expression);
         }
         free(body);
@@ -109,21 +131,24 @@ void releaseSimpleExpression(SimpleExpression * simpleExpression) {
     logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
     if (simpleExpression != NULL) {
         switch (simpleExpression->type) {
-            case TEXT:
+            case SEXPRESSION_TEXT:
                 releaseText(simpleExpression->text);
                 break;
-            case IMG:
+            case SEXPRESSION_IMG:
                 releaseImg(simpleExpression->img);
                 break;
-            case TITLE:
+            case SEXPRESSION_TITLE:
                 releaseTitle(simpleExpression->title);
                 break;
-            case SUBTITLE:
+            case SEXPRESSION_SUBTITLE:
                 releaseSubtitle(simpleExpression->subtitle);
                 break;
-            case LINK:
+            case SEXPRESSION_LINK:
                 releaseLink(simpleExpression->link);
                 break;
+			default:
+				logError(_logger, "Unknown simple expression type: %d", simpleExpression->type);
+				break;
         }
         free(simpleExpression);
     }
@@ -133,12 +158,17 @@ void releaseModifiers(Modifier * modifiers) {
     logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
     if (modifiers != NULL) {
 		switch (modifiers->type) {
-		case COLOR_MOD:
+		case MODIFIER_COLOR_MOD:
 			free(modifiers->color);
-			free(modifiers->modifier);
+			releaseModifiers(modifiers->modifier);
 			break;
-		case MODIFIER:
-			free(modifiers->modifier);
+		case MODIFIER_MODIFIER:
+			releaseModifiers(modifiers->modifier);
+			break;
+		case MODIFIER_EMPTY:
+			break;
+		default:
+			logError(_logger, "Unknown modifier type: %d", modifiers->type);
 			break;
 		}
 		free(modifiers);
@@ -149,28 +179,29 @@ void releaseModifiers(Modifier * modifiers) {
 void releaseComponent(Component * component) {
     logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
     if (component != NULL) {
-        if(component->type == COMPONENT) {
+        if(component->type == COMPONENT_COMPONENT) {
 			releaseComponent(component->body);
     }
+	free(component->id);
+	free(component);
 }
-		free(component->id);
-		free(component);
+
 }
 
 void releaseComplexExpression(ComplexExpression * complexExpression) {
     logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
     if (complexExpression != NULL) {
         switch (complexExpression->type) {
-            case PUNTO_POR_PUNTO:
-                releaseRowPPP(complexExpression->puntoPorPunto);
+            case CEXPRESSION_PUNTO_POR_PUNTO:
+                releasePuntoPorPunto(complexExpression->puntoPorPunto);
                 break;
-            case SECCION:
+            case CEXPRESSION_SECCION:
                 releaseSeccion(complexExpression->seccion);
                 break;
-            case TABLA:
+            case CEXPRESSION_TABLA:
                 releaseTabla(complexExpression->tabla);
                 break;
-            case NAVEGADOR:
+            case CEXPRESSION_NAVEGADOR:
                 releaseNavegador(complexExpression->navegador);
                 break;
         }
@@ -178,10 +209,20 @@ void releaseComplexExpression(ComplexExpression * complexExpression) {
     }
 }
 
+void releasePuntoPorPunto(PuntoPorPunto * puntoPorPunto) {
+	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
+	if (puntoPorPunto != NULL) {
+		if(puntoPorPunto->type == PPP_FILA_PUNTO_POR_PUNTO){
+			releaseFilaPPP(puntoPorPunto->filaPPP);
+		}
+		free(puntoPorPunto);
+	}
+}
+
 void releaseNavegador(Navegador * navegador) {
 	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
 	if (navegador != NULL) {
-		if(navegador->type == FILA_NAVEGADOR){
+		if(navegador->type == NAVEGADOR_FILA_NAVEGADOR){
 			releaseRowNav(navegador->filaNav);
 		}
 		free(navegador);
@@ -191,7 +232,7 @@ void releaseNavegador(Navegador * navegador) {
 void releaseFilaPPP(FilaPPP * rowPPP) {
     logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
     if (rowPPP != NULL) {
-       if(rowPPP->type == FILA_PUNTO_POR_PUNTO){
+       if(rowPPP->type == FILAPPP_EXPRESSION_FILAPPP){
 			releaseFilaPPP(rowPPP->filaPPP);
     }
 		releaseExpression(rowPPP->expression);
@@ -202,31 +243,28 @@ void releaseFilaPPP(FilaPPP * rowPPP) {
 void releaseFilaTabla(FilaTabla * rowTable) {
     logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
     if (rowTable != NULL) {
-        if(rowTable->type == FILA_TABLA) {
+        if(rowTable->type == TABLA_FILA_TABLA) {
 			releaseFilaTabla(rowTable->filaTabla);
-			releaseColumnaTabla(rowTable->columnaTabla);
-		} else if (rowTable->type == COL) {
-			releaseColumnaTabla(rowTable->columnaTabla);
-		}
     }
 	free(rowTable);
+	}
 }
 
 void releaseColumnaTabla(ColumnaTabla * columnTable) {
     logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
     if (columnTable != NULL) {
-			if(columnTable->type == COL) {
+			if(columnTable->type == COLUMNA_COL) {
 				releaseColumnaTabla(columnTable->columnaTabla);
 				releaseSimpleExpression(columnTable->expression);
 			}
+			free(columnTable);
 	}
-	free(columnTable);
 }
 
 void releaseRowNav(FilaNav * rowNav) {
     logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
     if (rowNav != NULL) {
-		if(rowNav->type == FILA_NAVEGADOR){
+		if(rowNav->type == NAVEGADOR_FILA_NAVEGADOR){
 			releaseRowNav(rowNav->filaNav);
     }
 		free(rowNav->id);
@@ -238,7 +276,7 @@ void releaseRowNav(FilaNav * rowNav) {
 void releaseSeccion(Seccion * seccion) {
 	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
 	if (seccion != NULL) {
-		if(seccion->type == BODY){
+		if(seccion->type == SECCION_BODY){
 			releaseBody(seccion->body);
 		}
 		free(seccion);
@@ -248,15 +286,15 @@ void releaseSeccion(Seccion * seccion) {
 void releaseText(Text * text){
 	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
 	if(text != NULL) {
-		if(text->type == SIMPLE_TEXT){
-			free(text->string);
+		if(text->type == TEXT_SIMPLE_TEXT){
 		}
-		else if(text->type == MODIFIED_TEXT){
+		else if(text->type == TEXT_MODIFIED_TEXT){
 			releaseModifiers(text->modifier);
-			free(text->string);
 		}
+		free(text->string);
+		free(text);
 	}
-	free(text);
+	
 }
 
 void releaseImg(Img * img) {
