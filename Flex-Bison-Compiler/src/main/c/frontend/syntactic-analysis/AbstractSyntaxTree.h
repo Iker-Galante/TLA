@@ -10,62 +10,6 @@ void initializeAbstractSyntaxTreeModule();
 /** Shutdown module's internal state. */
 void shutdownAbstractSyntaxTreeModule();
 
-/**
- * This typedefs allows self-referencing types.
- */
-
-typedef enum ExpressionType ExpressionType;
-typedef enum FactorType FactorType;
-
-typedef struct Constant Constant;
-/*typedef struct Expression Expression;*/
-typedef struct Factor Factor;
-typedef struct Program Program;
-
-/**
- * Node types for the Abstract Syntax Tree (AST).
- */
-
-enum ExpressionType {
-	ADDITION,
-	DIVISION,
-	FACTOR,
-	MULTIPLICATION,
-	SUBTRACTION
-};
-
-enum FactorType {
-	CONSTANT,
-	EXPRESSION
-};
-
-struct Constant {
-	int value;
-};
-
-struct Factor {
-	union {
-		Constant * constant;
-		Expression * expression;
-	};
-	FactorType type;
-};
-
-/*
-struct Expression {
-	union {
-		Factor * factor;
-		struct {
-			Expression * leftExpression;
-			Expression * rightExpression;
-		};
-	};
-	ExpressionType type;
-};
-*/
-
-
-
 typedef enum ProgramType ProgramType;
 typedef enum HeaderFooterType HeaderFooterType;
 typedef enum BodyType BodyType;
@@ -138,7 +82,7 @@ enum ProgramType {
 	HEADER_FOOTER,
 	HEADER_BODY,
 	FOOTER_BODY,
-	HEADER_FOOTER_BODY,
+	HEADER_FOOTER_BODY
 };
 
 enum PuntoPorPuntoType {
@@ -173,10 +117,9 @@ enum ComplexExpressionType {
 };
 
 enum ModifierType {
-	UNDERLINE,
-	BOLD,
-	ITALIC,
-	COLOR
+	COLOR_MOD,
+	EMPTY,
+	MODIFIER
 };
 
 enum SeccionType {
@@ -200,7 +143,7 @@ enum NavegadorType {
 
 enum FilaNavType {
 	FILA_NAVEGADOR,
-	EMPTY,
+	EMPTY
 };
 
 enum ColumnaTablaType {
@@ -277,6 +220,7 @@ struct SimpleExpression{
 		Subtitle * subtitle;
 		Link * link;
 	};
+	SimpleExpressionType type;
 };
 
 struct ComplexExpression{
@@ -297,13 +241,6 @@ struct Seccion{
 	SeccionType type;
 };
 
-struct Tabla{
-	union {
-		Body * body;
-		struct{};
-	};
-	TablaType type;
-};
 struct Navegador{
 	union {
 		FilaNav * filaNav;
@@ -361,14 +298,6 @@ struct ColumnaTabla{
 	ColumnaTablaType type;
 };
 
-struct Navegador{
-	union{
-		FilaNav * filaNav;
-		struct{};
-	};
-	NavegadorType type;
-};
-
 struct FilaNav{
 	union{
 		struct{
@@ -418,10 +347,8 @@ struct Link {
 };
 
 struct Href{
-	union {
 		char * url;//variable*/
 		char * id;//variable*/
-	};
 	HrefType type;
 };
 
@@ -475,7 +402,7 @@ struct Modifier {
 		};
 		struct{};
 	};
-	ModifierType * modifier;
+	ModifierType type;
 };
 
 
@@ -523,18 +450,29 @@ struct Program {
 /**
  * Node recursive destructors.
  */
-void releaseConstant(Constant * constant);
 void releaseExpression(Expression * expression);
-void releaseFactor(Factor * factor);
-void releaseProgram(Program * program);
 void releaseSimpleExpression(SimpleExpression * simpleExpression);
 void releaseComplexExpression(ComplexExpression * complexExpression);
-void releaseText(Text * text);
+void releaseSeccion(Seccion * seccion);
+void releaseTabla(Tabla * tabla);
+void releaseNavegador(Navegador * navegador);
+void releasePuntoPorPunto(PuntoPorPunto * puntoPorPunto);
+void releaseFilaPPP(FilaPPP * filaPPP);
+void releaseFilaTabla(FilaTabla * filaTabla);
+void releaseColumnaTabla(ColumnaTabla * columnaTabla);
+void releaseFilaNav(FilaNav * filaNav);
+void releaseComponent(Component * component);
 void releaseImg(Img * img);
 void releaseTitle(Title * title);
 void releaseSubtitle(Subtitle * subtitle);
 void releaseLink(Link * link);
-void releaseComponent(Component * component);
-void releaseModifier(Modifier * modifier);
+void releaseHref(Href * href);
+void releaseText(Text * text);
+void releaseModifiers(Modifier * modifiers);
+void releaseHeader(Header * header);
+void releaseFooter(Footer * footer);
+void releaseBody(Body * body);
+void releaseProgram(Program * program);
+
 
 #endif
