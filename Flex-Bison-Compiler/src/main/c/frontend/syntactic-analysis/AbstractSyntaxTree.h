@@ -195,8 +195,8 @@ struct Expression {
 	union {
 		char * string;
 		// Previously declared component
-		/*Body * componentId;*/
-		char * id; //Esto sería variable.
+		Body * componentId;
+		/*char * id; //Esto sería variable.*/
 		struct {
 			SimpleExpression * simpleExpression;
 			char * id; //Esto sería variable. 

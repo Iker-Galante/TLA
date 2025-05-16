@@ -19,21 +19,26 @@
 	Program * program;
 	Header * header;
 	Body * body;
-	Footer * footer;
+	Header * footer;
 	SimpleExpression * simple_expression;
-	Modifiers * modifiers;
+       ComplexExpression * complex_expression;
+       Expression * expression;
+	Modifier * modifiers;
 	Component * component;
-	ComplexExpression * complex_expression;
-	RowPPP * row_ppp;
-	RowTable * row_table;
-	ColumnTable * column_table;
-	RowNav * row_nav;
-	Section * section;
-	Expression * expression;
+	FilaPPP * row_ppp;
+	FilaTabla * row_table;
+	ColumnaTabla * column_table;
+	FilaNav * row_nav;
+	Seccion * section;
 	Text * text;
 	Image * image;
 	Title * title;
 	Subtitle * subtitle;
+       Link * link;
+       Navegador * navigator;
+       Table * table;
+       Href * href;
+       PuntoPorPunto * puntoPorPunto;
 }
 
 /**
@@ -44,15 +49,34 @@
  *
  * @see https://www.gnu.org/software/bison/manual/html_node/Destructor-Decl.html
  */
-%destructor { releaseConstant($$); } <constant>
-%destructor { releaseExpression($$); } <expression>
-%destructor { releaseFactor($$); } <factor>
+
+%destructor { releaseProgram($$); } <program>
+%destructor { releaseHeader($$); } <header>
+%destructor { releaseFooter($$); } <footer>
+%destructor { releaseBody($$); } <body>
+%destructor { releaseSimpleExpression($$); } <simple_expression>
+%destructor { releaseComplexExpression($$); } <complex_expression>
+%destructor { releaseComponent($$); } <component>
+%destructor { releaseFilaPPP($$); } <row_ppp>
+%destructor { releaseFilaTabla($$); } <row_table>
+%destructor { releaseColumnaTabla($$); } <column_table>
+%destructor { releaseFilaNav($$); } <row_nav>
+%destructor { releaseSeccion($$); } <section>
+%destructor { releaseText($$); } <text>
+%destructor { releaseImg($$); } <image>
+%destructor { releaseTitle($$); } <title>
+%destructor { releaseSubtitle($$); } <subtitle>
+%destructor { releaseLink($$); } <link>
+%destructor { releaseNavegador($$); } <navigator>
+%destructor { releaseTabla($$); } <table>
+%destructor { releaseHref($$); } <href>
+%destructor { releasePuntoPorPunto($$); } <puntoPorPunto>
 
 /** Terminals. */
 %token <string> STRING
 %token <id> ID
 %token <token> PRINCIPIO FIN ENCABEZADO PIE TEXTO IMAGEN TITULO SUBTITULO ENLACE COLOR SUBRAYADO ITALICA NEGRITA TAMANIO
-%token <token> PUNTO_POR_PUNTO SECCION TABLA NAVEGADOR COMPONENTE
+%token <token> PUNTO_POR_PUNTO SECCION TABLA NAVEGADOR COMPONENTE FIN_NAVEGADOR
 %token <token> INICIO_TABLA FIN_TABLA INICIO_SECCION FIN_SECCION FIN_ENCABEZADO FIN_PIE FIN_COMPONENTE FIN_FILA FIN_PPP FIN_NAV
 %token <token> UNKNOWN
 
@@ -75,6 +99,11 @@
 %type <image> image
 %type <title> title
 %type <subtitle> subtitle
+%type <link> link
+%type <navigator> navigator
+%type <table> table
+%type <href> href
+%type <puntoPorPunto> puntoPorPunto
 
 /**
  * Precedence and associativity.
@@ -85,87 +114,135 @@
 %%
 
 // IMPORTANT: To use λ in the following grammar, use the %empty symbol.
+// TODO CHECK IF THIS IS OK!
 
+program:
+    PRINCIPIO header body footer FIN { $$ = ProgramSemanticAction($2, $3, $4, PROGRAM_HEADER_FOOTER_BODY); }
+  | PRINCIPIO body footer FIN { $$ = ProgramSemanticAction(NULL, $2, $3, PROGRAM_FOOTER_BODY); }
+  | PRINCIPIO header footer FIN { $$ = ProgramSemanticAction($2, NULL, $3, PROGRAM_HEADER_FOOTER); }
+  | PRINCIPIO header body FIN { $$ = ProgramSemanticAction($2, $3, NULL, PROGRAM_HEADER_BODY); }
+  | PRINCIPIO footer FIN { $$ = ProgramSemanticAction(NULL, NULL, $2, PROGRAM_FOOTER); }
+  | PRINCIPIO body FIN { $$ = ProgramSemanticAction(NULL, $2, NULL, PROGRAM_BODY); }
+  | PRINCIPIO header FIN { $$ = ProgramSemanticAction($2, NULL, NULL, PROGRAM_HEADER); }
+  | PRINCIPIO FIN { $$ = ProgramSemanticAction(NULL, NULL, NULL, PROGRAM_EMPTY); }
+  ;
 
-program: PRINCIPIO header body footer FIN { $$ = ProgramSemanticAction($2, $3, $4); }
-       | PRINCIPIO body footer FIN { $$ = ProgramSemanticAction(NULL, $2, $3); }
-       | PRINCIPIO header footer FIN { $$ = ProgramSemanticAction($2, NULL, $3); }
-       | PRINCIPIO header body FIN { $$ = ProgramSemanticAction($2, $3, NULL); }
-       | PRINCIPIO footer FIN { $$ = ProgramSemanticAction(NULL, NULL, $2); }
-       | PRINCIPIO body FIN { $$ = ProgramSemanticAction(NULL, $2, NULL); }
-       | PRINCIPIO header FIN { $$ = ProgramSemanticAction($2, NULL, NULL); }
-       | PRINCIPIO FIN { $$ = ProgramSemanticAction(NULL, NULL, NULL); }
-       ;
+header:
+    ENCABEZADO ':' '\n' body FIN_ENCABEZADO '\n' { $$ = HeaderSemanticAction($4, HEADER_BODY); }
+  | ENCABEZADO ':' '\n' FIN_ENCABEZADO '\n' { $$ = HeaderSemanticAction(NULL, HEADER_EMPTY); }
+  ;
 
-header: ENCABEZADO ':' '\n' body FIN_ENCABEZADO '\n' { $$ = HeaderSemanticAction($4); }
-      | ENCABEZADO ':' '\n' FIN_ENCABEZADO '\n' { $$ = HeaderSemanticAction(NULL); }
-      ;
+footer:
+    PIE ':' '\n' body FIN_PIE '\n' { $$ = HeaderSemanticAction($4, HEADER_BODY); }
+  | PIE ':' '\n' FIN_PIE '\n' { $$ = HeaderSemanticAction(NULL, HEADER_EMPTY); }
+  ;
 
-footer: PIE ':' '\n' body FIN_PIE '\n' { $$ = FooterSemanticAction($4); }
-      | PIE ':' '\n' FIN_PIE '\n' { $$ = FooterSemanticAction(NULL); }
-      ;
+body:
+    expression body { $$ = BodySemanticAction($1, $2, BODY_EXPRESSION_BODY); }
+  | expression { $$ = BodySemanticAction($1, NULL, BODY_EXPRESSION); }
+  ;
 
-body: expression body { $$ = BodySemanticAction($1, $2); }
-    | expression { $$ = BodySemanticAction($1, NULL); }
-    ;
+expression:
+    '(' ID ')' simple_expression { $$ = ExpressionSemanticAction($2, NULL, NULL, $4, NULL, EXPRESSION_ID_SIMPLEEXPRESSION); }
+  | '(' ID ')' complex_expression { $$ = ExpressionSemanticAction($2, NULL, $4, NULL, NULL, EXPRESSION_ID_COMPLEXEXPRESSION); }
+  | STRING { $$ = ExpressionSemanticAction(NULL, $1, NULL, NULL, NULL, EXPRESSION_STRING); }
+  | simple_expression { $$ = ExpressionSemanticAction(NULL, NULL, NULL, $1, NULL, EXPRESSION_SIMPLE_EXPRESSION); }
+  | '{' ID '}' { $$ = ExpressionSemanticAction($2, NULL, NULL, NULL, NULL, EXPRESSION_ID); }
+  | component { $$ = ExpressionSemanticAction(NULL, NULL, NULL, NULL, $1, EXPRESSION_COMPONENTE); }
+  | complex_expression { $$ = ExpressionSemanticAction(NULL, NULL, $1, NULL, NULL, EXPRESSION_COMPLEX_EXPRESSION); }
+  ;
 
-expression: '(' ID ')' simple_expression { $$ = IdSimpleExpressionSemanticAction($2, $4); }
-          | '(' ID ')' complex_expression { $$ = IdComplexExpressionSemanticAction($2, $4); }
-          | STRING { $$ = StringExpressionSemanticAction($1); }
-          | simple_expression { $$ = SimpleExpressionSemanticAction($1); }
-          | '{' ID '}' { $$ = IdExpressionSemanticAction($2); }
-          | component { $$ = ComponentExpressionSemanticAction($1); }
-          | complex_expression { $$ = ComplexExpressionSemanticAction($1); }
-          ;
+simple_expression:
+    text { $$ = SimpleExpressionSemanticAction($1, NULL, NULL, NULL, NULL, SEXPRESSION_TEXT); }
+  | image { $$ = SimpleExpressionSemanticAction(NULL, $1, NULL, NULL, NULL, SEXPRESSION_IMG); }
+  | title { $$ = SimpleExpressionSemanticAction(NULL, NULL, $1, NULL, NULL, SEXPRESSION_TITLE); }
+  | subtitle { $$ = SimpleExpressionSemanticAction(NULL, NULL, NULL, $1, NULL, SEXPRESSION_SUBTITLE); }
+  | link { $$ = SimpleExpressionSemanticAction(NULL, NULL, NULL, NULL, $1, SEXPRESSION_LINK); }
+  ;
 
-simple_expression: TEXTO { $$ = TextSemanticAction($1); }
-                 | IMAGEN { $$ = ImageSemanticAction($1); }
-                 | TITULO { $$ = TitleSemanticAction($1); }
-                 | SUBTITULO { $$ = SubtitleSemanticAction($1); }
-                 | ENLACE { $$ = LinkSemanticAction($1); }
-                 ;
+modifiers:
+    modifiers COLOR { $$ = ModifierSemanticAction($1, COLOR_RED, MODIFIER_COLOR_MOD); }
+  | modifiers SUBRAYADO { $$ = ModifierSemanticAction($1, COLOR_GREEN, MODIFIER_COLOR_MOD); }
+  | modifiers ITALICA { $$ = ModifierSemanticAction($1, COLOR_BLUE, MODIFIER_COLOR_MOD); }
+  | modifiers NEGRITA { $$ = ModifierSemanticAction($1, COLOR_YELLOW, MODIFIER_COLOR_MOD); }
+  | modifiers TAMANIO { $$ = ModifierSemanticAction($1, COLOR_ORANGE, MODIFIER_COLOR_MOD); }
+  | COLOR { $$ = ModifierSemanticAction(NULL, COLOR_RED, MODIFIER_COLOR_MOD); }
+  | SUBRAYADO { $$ = ModifierSemanticAction(NULL, COLOR_GREEN, MODIFIER_COLOR_MOD); }
+  | ITALICA { $$ = ModifierSemanticAction(NULL, COLOR_BLUE, MODIFIER_COLOR_MOD); }
+  | NEGRITA { $$ = ModifierSemanticAction(NULL, COLOR_YELLOW, MODIFIER_COLOR_MOD); }
+  | TAMANIO { $$ = ModifierSemanticAction(NULL, COLOR_ORANGE, MODIFIER_COLOR_MOD); }
+  ;
 
-modifiers: modifiers COLOR { $$ = AddModifierSemanticAction($1, COLOR); }
-         | modifiers SUBRAYADO { $$ = AddModifierSemanticAction($1, SUBRAYADO); }
-         | modifiers ITALICA { $$ = AddModifierSemanticAction($1, ITALICA); }
-         | modifiers NEGRITA { $$ = AddModifierSemanticAction($1, NEGRITA); }
-         | modifiers TAMANIO { $$ = AddModifierSemanticAction($1, TAMANIO); }
-         | COLOR { $$ = SingleModifierSemanticAction(COLOR); }
-         | SUBRAYADO { $$ = SingleModifierSemanticAction(SUBRAYADO); }
-         | ITALICA { $$ = SingleModifierSemanticAction(ITALICA); }
-         | NEGRITA { $$ = SingleModifierSemanticAction(NEGRITA); }
-         | TAMANIO { $$ = SingleModifierSemanticAction(TAMANIO); }
-         ;
+component:
+    COMPONENTE '(' ID ')' '\n' body FIN_COMPONENTE '\n' { $$ = ComponentSemanticAction($3, $6, COMPONENT_COMPONENT); }
+  | COMPONENTE '(' ID ')' '\n' FIN_COMPONENTE '\n' { $$ = ComponentSemanticAction($3, NULL, COMPONENT_EMPTY); }
+  ;
 
-component: COMPONENTE '(' ID ')' '\n' body FIN_COMPONENTE '\n' { $$ = ComponentSemanticAction($3, $6); }
-         | COMPONENTE '(' ID ')' '\n' FIN_COMPONENTE '\n' { $$ = ComponentSemanticAction($3, NULL); }
-         ;
+complex_expression:
+    puntoPorPunto { $$ = ComplexExpressionSemanticAction($1, NULL, NULL, NULL, CEXPRESSION_PUNTO_POR_PUNTO); }
+  | section { $$ = ComplexExpressionSemanticAction(NULL, $1, NULL, NULL, CEXPRESSION_SECCION); }
+  | table { $$ = ComplexExpressionSemanticAction(NULL, NULL, $1, NULL, CEXPRESSION_TABLA); }
+  | navigator { $$ = ComplexExpressionSemanticAction(NULL, NULL, NULL, $1, CEXPRESSION_NAVEGADOR); }
+  ;
 
-complex_expression: PUNTO_POR_PUNTO { $$ = PuntoPorPuntoSemanticAction(); }
-                  | SECCION { $$ = SectionSemanticAction(); }
-                  | TABLA { $$ = TableSemanticAction(); }
-                  | NAVEGADOR { $$ = NavigatorSemanticAction(); }
-                  ;
+row_ppp:
+    '-' expression row_ppp { $$ = FilaPPPSemanticAction($2, $3, FILAPPP_EXPRESSION_FILAPPP); }
+  | '-' expression { $$ = FilaPPPSemanticAction($2, NULL, FILAPPP_EXPRESSION); }
+  ;
 
-row_ppp: '-' expression row_ppp                  { $$ = RowPPPSemanticAction($2, $3); }
-       | '-' expression                          { $$ = RowPPPSemanticAction($2, NULL); }
-       | '-' row_ppp                                    { $$ = RowPPPSemanticAction(NULL, $2); }
-       ;
+row_table:
+    column_table row_table { $$ = FilaTablaSemanticAction($1, $2, FILA_FILA_TABLA); }
+  | column_table { $$ = FilaTablaSemanticAction($1, NULL, FILA_COL); }
+  ;
 
-row_table: column_table row_table                       { $$ = RowTableSemanticAction($1, $2); }
-         | column_table                                 { $$ = RowTableSemanticAction($1, NULL); }
-         ;
+column_table:
+    simple_expression column_table { $$ = ColumnaTablaSemanticAction($1, $2, COLUMNA_COL); }
+  | FIN_FILA { $$ = ColumnaTablaSemanticAction(NULL, NULL, COLUMNA_FIN_FILA); }
+  ;
 
-column_table: simple_expression column_table { $$ = ColumnTableSemanticAction($1, $2); }
-            | FIN_FILA { $$ = ColumnTableSemanticAction(NULL, NULL); }
-            ;
+row_nav:
+    '-' '(' ID ')' STRING '\n' row_nav { $$ = FilaNavSemanticAction($3, $5, $7, FILANAV_FILA_NAVEGADOR); }
+  | '-' '(' ID ')' STRING '\n' { $$ = FilaNavSemanticAction($3, $5, NULL, FILANAV_SIMPLE); }
+  ;
 
-row_nav: '-' '(' ID ')' STRING '\n' row_nav { $$ = RowNavSemanticAction($3, $5, $7); }
-       | '-' '(' ID ')' STRING '\n' { $$ = RowNavSemanticAction($3, $5, NULL); }
-       ;
+section:
+    INICIO_SECCION ':' '\n' body FIN_SECCION '\n' { $$ = SeccionSemanticAction($4, SECCION_BODY); }
+  | INICIO_SECCION ':' '\n' FIN_SECCION '\n' { $$ = SeccionSemanticAction(NULL, SECCION_EMPTY); }
+  ;
 
-section: INICIO_SECCION ':' '\n' body FIN_SECCION '\n' { $$ = SectionSemanticAction($4); }
-       | INICIO_SECCION ':' '\n' FIN_SECCION '\n' { $$ = SectionSemanticAction(NULL); }
-       ;
+text:
+       TEXTO ':' '\n' STRING '\n' { $$ = TextSemanticAction($4, TEXT_SIMPLE_TEXT); }
+       | TEXTO ':' '\n' STRING modifiers '\n' { $$ = TextSemanticAction($4, $5, TEXT_MODIFIED_TEXT); }
+
+image:
+       IMAGEN ':' '\n' STRING '\n' { $$ = ImgSemanticAction($4); };
+
+title:
+       TITULO ':' '\n' STRING '\n' { $$ = TitleSemanticAction($4); }
+
+subtitle:
+       SUBTITULO ':' '\n' STRING '\n' { $$ = SubtitleSemanticAction($4); }
+link:
+       ENLACE ':' '('href')' simple_expression '\n' { $$ = LinkSemanticAction($4, $5); }
+navigator:
+    NAVEGADOR ':' '\n' row_nav FIN_NAVEGADOR '\n' { $$ = NavegadorSemanticAction($4, NAVEGADOR_FILA_NAVEGADOR); }
+  | NAVEGADOR ':' '\n' FIN_NAVEGADOR '\n' { $$ = NavegadorSemanticAction(NULL, NAVEGADOR_EMPTY); }
+  ;
+
+table:
+    INICIO_TABLA ':' '\n' row_table FIN_TABLA '\n' { $$ = TablaSemanticAction($4, TABLA_FILA_TABLA); }
+  | INICIO_TABLA ':' '\n' FIN_TABLA '\n' { $$ = TablaSemanticAction(NULL, TABLA_EMPTY); }
+  ;
+
+href:
+    STRING { $$ = HrefSemanticAction($1, NULL, HREF_URL); }
+  | '#' ID { $$ = HrefSemanticAction(NULL, $2, HREF_ID); }
+  ;
+
+puntoPorPunto:
+    PUNTO_POR_PUNTO ':' '\n' row_ppp FIN_PPP '\n' { $$ = PuntoPorPuntoSemanticAction($4, PPP_FILA_PUNTO_POR_PUNTO); }
+  | PUNTO_POR_PUNTO ':' '\n' FIN_PPP '\n' { $$ = PuntoPorPuntoSemanticAction(NULL, PPP_EMPTY); }
+  ;
+
 
 %%
