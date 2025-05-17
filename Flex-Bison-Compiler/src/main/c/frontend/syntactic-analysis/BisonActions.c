@@ -49,21 +49,21 @@ Program * ProgramSemanticAction(Body * body, Header * header, Footer * footer, P
         program->body = body;
         break;
     case PROGRAM_HEADER_FOOTER:
-        program->header = header;
-        program->footer = footer;
+        program->headerHF = header;
+        program->footerHF = footer;
         break;
     case PROGRAM_HEADER_BODY:
-        program->header = header;
-        program->body = body;
+        program->headerHB = header;
+        program->bodyHB = body;
         break;
     case PROGRAM_FOOTER_BODY:
-        program->footer = footer;
-        program->body = body;
+        program->footerFB = footer;
+        program->bodyFB = body;
         break;
     case PROGRAM_HEADER_FOOTER_BODY:
-        program->header = header;
-        program->footer = footer;
-        program->body = body;
+        program->headerFull = header;
+        program->footerFull = footer;
+        program->bodyFull = body;
         break;
     }
     program->type = type;
@@ -108,11 +108,11 @@ Expression * ExpressionSemanticAction(char * id, char * string, ComplexExpressio
         break;
         case EXPRESSION_ID_SIMPLEEXPRESSION:
         expression->simpleExpression = simpleExpression;
-        expression->id = id;
+        expression->simpleId = id;
         break;
     case EXPRESSION_ID_COMPLEXEXPRESSION:
         expression->complexExpression = complexExpression;
-        expression->id = id;
+        expression->complexId = id;
         break;
     case EXPRESSION_ID:
         expression->componentId = component;

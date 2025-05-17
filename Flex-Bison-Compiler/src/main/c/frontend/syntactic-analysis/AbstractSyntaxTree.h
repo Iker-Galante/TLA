@@ -147,10 +147,6 @@ enum NavegadorType {
 	NAVEGADOR_FILA_NAVEGADOR
 };
 
-enum FilaNavType {
-	FILA_FILA_NAVEGADOR,
-	FILA_EMPTY
-};
 
 enum ColumnaTablaType {
 	COLUMNA_COL,
@@ -198,12 +194,12 @@ struct Expression {
 		Body * componentId;
 		/*char * id; //Esto sería variable.*/
 		struct {
-			SimpleExpression * simpleExpression;
-			char * id; //Esto sería variable. 
+			SimpleExpression * simpleExpressionId;
+			char * simpleId; //Esto sería variable. 
 		};
 		struct{
-			ComplexExpression * complexExpression;
-			char * id;
+			ComplexExpression * complexExpressionId;
+			char * complexId;
 		};
 		SimpleExpression * simpleExpression;
 		ComplexExpression * complexExpression;
@@ -263,7 +259,7 @@ struct FilaPPP{
 	union{
 		struct {
 			FilaPPP * filaPPP;
-			Expression * expression;
+			Expression * expressionFila;
 		};
 		Expression * expression;
 	};
@@ -282,7 +278,7 @@ struct FilaTabla{
 	union{
 		struct {
 			FilaTabla * filaTabla;
-			ColumnaTabla * columnaTabla;
+			ColumnaTabla * columnaTablaConFila;
 		};
 		ColumnaTabla * columnaTabla;
 	};
@@ -301,15 +297,13 @@ struct ColumnaTabla{
 };
 
 struct FilaNav{
+	char * string;
+	char * id;		
 	union{
-		struct{
-			char * string;
-			char * id;		
+		struct{	
 			FilaNav * filaNav;
 		};
 		struct{
-			char * string;
-			char * id;
 		};
 	};
 	FilaNavType type;
@@ -388,7 +382,7 @@ struct Modifier {
 	union {
 		struct {
 			ColorType * color;
-			Modifier * modifier;
+			Modifier * modifierWithColor;
 		};
 		struct {
 			Modifier * modifier;
@@ -403,24 +397,24 @@ struct Program {
 	union{
 		// Header, Body and Footer
 		struct {
-			Header * header;
-			Body * body;
-			Footer * footer;	
+			Header * headerFull;
+			Body * bodyFull;
+			Footer * footerFull;	
 		};
-		//Footer and Body
+		//Footer and Body (FAB)
 		struct{
-			Body * body;
-			Footer * footer;
+			Body * bodyFB;
+			Footer * footerFB;
 		};
-		// Header and Body
+		// Header and Body (HAB)
 		struct{
-			Header * header;
-			Body * body;
+			Header * headerHB;
+			Body * bodyHB;
 		};
-		// Header and Footer
+		// Header and Footer (HF)
 		struct{
-			Header * header;
-			Footer * footer;
+			Header * headerHF;
+			Footer * footerHF;
 		};
 		// Header
 		struct{
