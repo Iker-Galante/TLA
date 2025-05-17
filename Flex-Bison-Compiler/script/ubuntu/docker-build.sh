@@ -9,6 +9,7 @@ cd "$BASE_PATH"
 docker build \
 	--progress=plain \
 	--tag=flex-bison-compiler \
-	$BASE_PATH
+	.
+	# agreguen $BASE_PATH si con el punto no les anda
 
 echo "All done."
