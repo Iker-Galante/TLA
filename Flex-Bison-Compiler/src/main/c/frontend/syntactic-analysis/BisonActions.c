@@ -35,9 +35,37 @@ static void _logSyntacticAnalyzerAction(const char * functionName) {
 Program * ProgramSemanticAction(Body * body, Header * header, Footer * footer, ProgramType type) {
     _logSyntacticAnalyzerAction(__FUNCTION__);
     Program * program = calloc(1, sizeof(Program));
-    program->body = body;
-    program->header = header;
-    program->footer = footer;
+    switch (type)
+    {
+    case PROGRAM_EMPTY:
+    break;
+    case PROGRAM_HEADER:
+        program->header = header;
+        break;
+    case PROGRAM_FOOTER:
+        program->footer = footer;
+        break;
+    case PROGRAM_BODY:
+        program->body = body;
+        break;
+    case PROGRAM_HEADER_FOOTER:
+        program->header = header;
+        program->footer = footer;
+        break;
+    case PROGRAM_HEADER_BODY:
+        program->header = header;
+        program->body = body;
+        break;
+    case PROGRAM_FOOTER_BODY:
+        program->footer = footer;
+        program->body = body;
+        break;
+    case PROGRAM_HEADER_FOOTER_BODY:
+        program->header = header;
+        program->footer = footer;
+        program->body = body;
+        break;
+    }
     program->type = type;
     return program;
 }
@@ -70,11 +98,35 @@ Body * BodySemanticAction(Expression * expression, Body * body, BodyType type) {
 Expression * ExpressionSemanticAction(char * id, char * string, ComplexExpression * complexExpression, SimpleExpression * simpleExpression, Component * component, ExpressionType type) {
     _logSyntacticAnalyzerAction(__FUNCTION__);
     Expression * expression = calloc(1, sizeof(Expression));
-    expression->id = id;
-    expression->string = string;
-    expression->complexExpression = complexExpression;
-    expression->simpleExpression = simpleExpression;
-    expression->component = component;
+    switch (type)
+    {
+    case EXPRESSION_SIMPLE_EXPRESSION:
+        expression->simpleExpression = simpleExpression;
+        break;
+    case EXPRESSION_COMPLEX_EXPRESSION:
+        expression->complexExpression = complexExpression;
+        break;
+        case EXPRESSION_ID_SIMPLEEXPRESSION:
+        expression->simpleExpression = simpleExpression;
+        expression->id = id;
+        break;
+    case EXPRESSION_ID_COMPLEXEXPRESSION:
+        expression->complexExpression = complexExpression;
+        expression->id = id;
+        break;
+    case EXPRESSION_ID:
+        expression->componentId = component;
+        break;
+        case EXPRESSION_STRING:
+        expression->string = string;
+        break;
+    case EXPRESSION_COMPONENTE:
+        expression->component = component;
+        break;
+    
+    default:
+        break;
+    }
     expression->type = type;
     return expression;
 }
@@ -82,11 +134,24 @@ Expression * ExpressionSemanticAction(char * id, char * string, ComplexExpressio
 SimpleExpression * SimpleExpressionSemanticAction(Text * text, Img * img, Title * title, Subtitle * subtitle, Link * link, SimpleExpressionType type) {
     _logSyntacticAnalyzerAction(__FUNCTION__);
     SimpleExpression * simpleExpression = calloc(1, sizeof(SimpleExpression));
-    simpleExpression->text = text;
-    simpleExpression->img = img;
-    simpleExpression->title = title;
-    simpleExpression->subtitle = subtitle;
-    simpleExpression->link = link;
+    switch (type)
+    {
+    case SEXPRESSION_TEXT:
+        simpleExpression->text = text;
+        break;
+    case SEXPRESSION_IMG:
+        simpleExpression->img = img;
+        break;
+        case SEXPRESSION_TITLE:
+        simpleExpression->title = title;
+        break;
+        case SEXPRESSION_SUBTITLE:
+        simpleExpression->subtitle = subtitle;
+        break;
+        case SEXPRESSION_LINK:
+        simpleExpression->link = link;
+        break;
+    }
     simpleExpression->type = type;
     return simpleExpression;
 }
@@ -103,8 +168,18 @@ Text * TextSemanticAction(char * string, Modifier * modifier, TextType type) {
 Modifier * ModifierSemanticAction(Modifier * modifier, ColorType color, ModifierType type) {
     _logSyntacticAnalyzerAction(__FUNCTION__);
     Modifier * newModifier = calloc(1, sizeof(Modifier));
-    newModifier->modifier = modifier;
-    newModifier->color = color;
+    switch (type)
+    {
+    case MODIFIER_COLOR_MOD:
+        newModifier->color = color;
+        newModifier->modifier = modifier;
+        break;
+    case MODIFIER_EMPTY:
+    break;
+    case MODIFIER_MODIFIER:
+        newModifier->modifier = modifier;
+        break;
+    }
     newModifier->type = type;
     return newModifier;
 }
@@ -131,7 +206,7 @@ Subtitle * SubtitleSemanticAction(char * string) {
     return subtitle;
 }
 
-Link * LinkSemanticAction(char * href, SimpleExpression * simpleExpression) {
+Link * LinkSemanticAction(Href * href, SimpleExpression * simpleExpression) {
     _logSyntacticAnalyzerAction(__FUNCTION__);
     Link * link = calloc(1, sizeof(Link));
     link->href = href;
@@ -183,8 +258,16 @@ PuntoPorPunto * PuntoPorPuntoSemanticAction(FilaPPP * filaPPP, PuntoPorPuntoType
 FilaPPP * FilaPPPSemanticAction(Expression * expression, FilaPPP * filaPPP, FilaPPPType type) {
     _logSyntacticAnalyzerAction(__FUNCTION__);
     FilaPPP * newFilaPPP = calloc(1, sizeof(FilaPPP));
-    newFilaPPP->expression = expression;
-    newFilaPPP->filaPPP = filaPPP;
+    switch (type)
+    {
+    case FILAPPP_EXPRESSION:
+        newFilaPPP->expression = expression;
+        break;
+        case FILAPPP_EXPRESSION_FILAPPP:
+        newFilaPPP->expression = expression;
+        newFilaPPP->filaPPP = filaPPP;
+    break;
+    }
     newFilaPPP->type = type;
     return newFilaPPP;
 }
@@ -192,9 +275,18 @@ FilaPPP * FilaPPPSemanticAction(Expression * expression, FilaPPP * filaPPP, Fila
 FilaNav * FilaNavSemanticAction(char * id, char * navName, FilaNav * filaNav, FilaNavType type) {
     _logSyntacticAnalyzerAction(__FUNCTION__);
     FilaNav * newFilaNav = calloc(1, sizeof(FilaNav));
-    newFilaNav->id = id;
-    newFilaNav->string = navName;
-    newFilaNav->filaNav = filaNav;
+    switch (type)
+    {
+    case FILANAV_FILA_NAVEGADOR:
+        newFilaNav->filaNav = filaNav;
+        newFilaNav->id = id;
+        newFilaNav->string = navName;
+        break;
+        case FILANAV_SIMPLE:
+        newFilaNav->id = id;
+        newFilaNav->string = navName;
+        break;
+    }
     newFilaNav->type = type;
     return newFilaNav;
 }
@@ -202,8 +294,20 @@ FilaNav * FilaNavSemanticAction(char * id, char * navName, FilaNav * filaNav, Fi
 FilaTabla * FilaTablaSemanticAction(ColumnaTabla * columnaTabla, FilaTabla * filaTabla, FilaTablaType type) {
     _logSyntacticAnalyzerAction(__FUNCTION__);
     FilaTabla * newFilaTabla = calloc(1, sizeof(FilaTabla));
-    newFilaTabla->columnaTabla = columnaTabla;
-    newFilaTabla->filaTabla = filaTabla;
+    switch (type)
+    {
+    case FILA_COL:
+        newFilaTabla->columnaTabla = columnaTabla;
+
+        break;
+        case FILA_FILA_TABLA:
+        newFilaTabla->columnaTabla = columnaTabla;
+        newFilaTabla->filaTabla = filaTabla;
+        break;
+    
+    default:
+        break;
+    }
     newFilaTabla->type = type;
     return newFilaTabla;
 }
@@ -211,8 +315,16 @@ FilaTabla * FilaTablaSemanticAction(ColumnaTabla * columnaTabla, FilaTabla * fil
 ColumnaTabla * ColumnaTablaSemanticAction(SimpleExpression * simpleExpression, ColumnaTabla * columnaTabla, ColumnaTablaType type) {
     _logSyntacticAnalyzerAction(__FUNCTION__);
     ColumnaTabla * newColumnaTabla = calloc(1, sizeof(ColumnaTabla));
-    newColumnaTabla->expression = simpleExpression;
-    newColumnaTabla->columnaTabla = columnaTabla;
+    switch (type)
+    {
+    case COLUMNA_COL:
+        newColumnaTabla->expression = simpleExpression;
+        newColumnaTabla->columnaTabla = columnaTabla;
+        break;
+    case COLUMNA_FIN_FILA:
+        break;
+    
+    }
     newColumnaTabla->type = type;
     return newColumnaTabla;
 }
@@ -220,8 +332,16 @@ ColumnaTabla * ColumnaTablaSemanticAction(SimpleExpression * simpleExpression, C
 Component * ComponentSemanticAction(char * id, Body * body, ComponentType type) {
     _logSyntacticAnalyzerAction(__FUNCTION__);
     Component * component = calloc(1, sizeof(Component));
-    component->id = id;
-    component->body = body;
+    switch (type)
+    {
+    case COMPONENT_COMPONENT:
+        component->body = body;
+        component->id = id;
+        break;
+    case COMPONENT_EMPTY:
+        component->id = id;
+        break;
+    }
     component->type = type;
     return component;
 }
@@ -229,10 +349,20 @@ Component * ComponentSemanticAction(char * id, Body * body, ComponentType type) 
 ComplexExpression * ComplexExpressionSemanticAction(Seccion * seccion, Tabla * tabla, Navegador * navegador, PuntoPorPunto * puntoPorPunto, ComplexExpressionType type) {
     _logSyntacticAnalyzerAction(__FUNCTION__);
     ComplexExpression * complexExpression = calloc(1, sizeof(ComplexExpression));
-    complexExpression->seccion = seccion;
-    complexExpression->tabla = tabla;
-    complexExpression->navegador = navegador;
-    complexExpression->puntoPorPunto = puntoPorPunto;
+    switch (type)
+    {
+    case CEXPRESSION_PUNTO_POR_PUNTO:
+        complexExpression->puntoPorPunto = puntoPorPunto;
+        break;
+    case CEXPRESSION_SECCION:
+        complexExpression->seccion = seccion;
+        break;
+    case CEXPRESSION_TABLA:
+        complexExpression->tabla = tabla;
+        break;
+    case CEXPRESSION_NAVEGADOR:
+        complexExpression->navegador = navegador;
+        break;
     complexExpression->type = type;
     return complexExpression;
 }

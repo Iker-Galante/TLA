@@ -344,7 +344,7 @@ struct Subtitle {
 
 
 struct Link {
-		char * href; //Variable
+		Href * href; //Variable
 		SimpleExpression * simpleExpression;
 };
 
@@ -355,13 +355,8 @@ struct Href{
 };
 
 struct Text {
-	union {
-		struct {
 			char * string;
 			Modifier * modifier;
-		};
-		char * string;
-	};
 	TextType type;
 };
 
@@ -383,13 +378,9 @@ struct Footer {
 };
 
 struct Body {
-	union {
-		Expression * expression;
-		struct {
-			Expression * expression;
+	Expression * expression;
 			Body * body;
-		};
-	};
+
 	BodyType type;
 };
 
