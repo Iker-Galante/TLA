@@ -223,7 +223,7 @@ title:
 subtitle:
        SUBTITULO ':' '\n' STRING '\n' { $$ = SubtitleSemanticAction($4); }
 link:
-       ENLACE ':' '('href')' simple_expression '\n' { $$ = LinkSemanticAction($4, $5); }
+       ENLACE ':' '('href')' simple_expression '\n' { $$ = LinkSemanticAction($4, $6); }
 navigator:
     NAVEGADOR ':' '\n' row_nav FIN_NAVEGADOR '\n' { $$ = NavegadorSemanticAction($4, NAVEGADOR_FILA_NAVEGADOR); }
   | NAVEGADOR ':' '\n' FIN_NAVEGADOR '\n' { $$ = NavegadorSemanticAction(NULL, NAVEGADOR_EMPTY); }
