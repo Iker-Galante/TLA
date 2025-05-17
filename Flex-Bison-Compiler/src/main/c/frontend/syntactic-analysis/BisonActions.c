@@ -139,7 +139,7 @@ Expression * ExpressionSemanticAction(char * id, char * string, ComplexExpressio
     return expression;
 }
 
-SimpleExpression * SimpleExpressionSemanticAction(Text * text, Img * img, Title * title, Subtitle * subtitle, Link * link, SimpleExpressionType type) {
+SimpleExpression * SimpleExpressionSemanticAction(Text * text, Image * img, Title * title, Subtitle * subtitle, Link * link, SimpleExpressionType type) {
     _logSyntacticAnalyzerAction(__FUNCTION__);
     SimpleExpression * simpleExpression = calloc(1, sizeof(SimpleExpression));
     switch (type)
@@ -192,9 +192,9 @@ Modifier * ModifierSemanticAction(Modifier * modifier, ColorType color, Modifier
     return newModifier;
 }
 
-Img * ImgSemanticAction(char * url, char * alternative) {
+Image * ImgSemanticAction(char * url, char * alternative) {
     _logSyntacticAnalyzerAction(__FUNCTION__);
-    Img * img = calloc(1, sizeof(Img));
+    Image * img = calloc(1, sizeof(Image));
     img->url = url;
     img->alternative = alternative;
     return img;
