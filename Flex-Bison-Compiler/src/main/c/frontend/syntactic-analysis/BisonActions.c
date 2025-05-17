@@ -32,9 +32,10 @@ static void _logSyntacticAnalyzerAction(const char * functionName) {
 /* PUBLIC FUNCTIONS */
 
 
-Program * ProgramSemanticAction(Body * body, Header * header, Footer * footer, ProgramType type) {
+Program * ProgramSemanticAction(Body * body, Header * header, Footer * footer, ProgramType type,CompilerState * compilerState) {
     _logSyntacticAnalyzerAction(__FUNCTION__);
     Program * program = calloc(1, sizeof(Program));
+    compilerState->abstractSyntaxtTree = program;
     switch (type)
     {
     case PROGRAM_EMPTY:
@@ -67,6 +68,13 @@ Program * ProgramSemanticAction(Body * body, Header * header, Footer * footer, P
         break;
     }
     program->type = type;
+    if (0 < flexCurrentContext()) {
+		logError(_logger, "The final context is not the default (0): %d", flexCurrentContext());
+		compilerState->succeed = false;
+	}
+	else {
+		compilerState->succeed = true;
+	}
     return program;
 }
 

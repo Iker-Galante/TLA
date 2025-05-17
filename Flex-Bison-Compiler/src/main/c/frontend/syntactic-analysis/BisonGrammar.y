@@ -117,14 +117,14 @@
 // TODO CHECK IF THIS IS OK!
 
 program:
-    PRINCIPIO header body footer FIN { $$ = ProgramSemanticAction($2, $3, $4, PROGRAM_HEADER_FOOTER_BODY); }
-  | PRINCIPIO body footer FIN { $$ = ProgramSemanticAction(NULL, $2, $3, PROGRAM_FOOTER_BODY); }
-  | PRINCIPIO header footer FIN { $$ = ProgramSemanticAction($2, NULL, $3, PROGRAM_HEADER_FOOTER); }
-  | PRINCIPIO header body FIN { $$ = ProgramSemanticAction($2, $3, NULL, PROGRAM_HEADER_BODY); }
-  | PRINCIPIO footer FIN { $$ = ProgramSemanticAction(NULL, NULL, $2, PROGRAM_FOOTER); }
-  | PRINCIPIO body FIN { $$ = ProgramSemanticAction(NULL, $2, NULL, PROGRAM_BODY); }
-  | PRINCIPIO header FIN { $$ = ProgramSemanticAction($2, NULL, NULL, PROGRAM_HEADER); }
-  | PRINCIPIO FIN { $$ = ProgramSemanticAction(NULL, NULL, NULL, PROGRAM_EMPTY); }
+    PRINCIPIO header body footer FIN { $$ = ProgramSemanticAction($2, $3, $4, PROGRAM_HEADER_FOOTER_BODY,currentCompilerState()); }
+  | PRINCIPIO body footer FIN { $$ = ProgramSemanticAction(NULL, $2, $3, PROGRAM_FOOTER_BODY,currentCompilerState()); }
+  | PRINCIPIO header footer FIN { $$ = ProgramSemanticAction($2, NULL, $3, PROGRAM_HEADER_FOOTER,currentCompilerState()); }
+  | PRINCIPIO header body FIN { $$ = ProgramSemanticAction($2, $3, NULL, PROGRAM_HEADER_BODY,currentCompilerState()); }
+  | PRINCIPIO footer FIN { $$ = ProgramSemanticAction(NULL, NULL, $2, PROGRAM_FOOTER,currentCompilerState()); }
+  | PRINCIPIO body FIN { $$ = ProgramSemanticAction(NULL, $2, NULL, PROGRAM_BODY,currentCompilerState()); }
+  | PRINCIPIO header FIN { $$ = ProgramSemanticAction($2, NULL, NULL, PROGRAM_HEADER,currentCompilerState()); }
+  | PRINCIPIO FIN { $$ = ProgramSemanticAction(NULL, NULL, NULL, PROGRAM_EMPTY,currentCompilerState()); }
   ;
 
 header:
