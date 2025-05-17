@@ -22,10 +22,10 @@ typedef enum ModifierType ModifierType;
 typedef enum HrefType HrefType;
 typedef enum PuntoPorPuntoType PuntoPorPuntoType;
 typedef enum SeccionType SeccionType;
-typedef enum TablaType TablaType;
+typedef enum TableType TableType;
 typedef enum NavegadorType NavegadorType;
 typedef enum FilaPPPType FilaPPPType;
-typedef enum ImgType ImgType;
+typedef enum ImageType ImageType;
 typedef enum TitleType TitleType;
 typedef enum SubtitleType SubtitleType;
 typedef enum LinkType LinkType;
@@ -42,7 +42,7 @@ typedef struct Program Program;
 typedef struct Expression Expression;
 typedef struct SimpleExpression SimpleExpression;
 typedef struct Text Text;
-typedef struct Img Img;
+typedef struct Image Image;
 typedef struct Title Title;
 typedef struct Subtitle Subtitle;
 typedef struct Link Link;
@@ -51,7 +51,7 @@ typedef struct Modifier Modifier;
 typedef struct ComplexExpression ComplexExpression;
 typedef struct Href Href;
 typedef struct Seccion Seccion;
-typedef struct Tabla Tabla;
+typedef struct Table Table;
 typedef struct Navegador Navegador;
 typedef struct PuntoPorPunto PuntoPorPunto;
 typedef struct FilaPPP FilaPPP;
@@ -133,7 +133,7 @@ enum SeccionType {
 	SECCION_BODY
 };
 
-enum TablaType {
+enum TableType {
 	TABLA_EMPTY,
 	TABLA_FILA_TABLA
 };
@@ -213,7 +213,7 @@ struct Expression {
 struct SimpleExpression{
 	union{
 		Text * text;
-		Img * img;
+		Image * img;
 		Title * title;
 		Subtitle * subtitle;
 		Link * link;
@@ -225,7 +225,7 @@ struct ComplexExpression{
 	union{
 		PuntoPorPunto * puntoPorPunto;
 		Seccion * seccion;
-		Tabla * tabla;
+		Table * tabla;
 		Navegador * navegador;
 	};
 	ComplexExpressionType type;
@@ -266,12 +266,12 @@ struct FilaPPP{
 	FilaPPPType type;
 };
 
-struct Tabla{
+struct Table{
 	union{
 		struct{};
 		FilaTabla * filaTabla;
 	};
-	TablaType type;
+	TableType type;
 };
 
 struct FilaTabla{
@@ -321,7 +321,7 @@ struct Component{
 };
 
 
-struct Img {
+struct Image {
 	
 		char * url; //Variable
 		char * alternative;
@@ -441,7 +441,7 @@ void releaseExpression(Expression * expression);
 void releaseSimpleExpression(SimpleExpression * simpleExpression);
 void releaseComplexExpression(ComplexExpression * complexExpression);
 void releaseSeccion(Seccion * seccion);
-void releaseTabla(Tabla * tabla);
+void releaseTabla(Table * tabla);
 void releaseNavegador(Navegador * navegador);
 void releasePuntoPorPunto(PuntoPorPunto * puntoPorPunto);
 void releaseFilaPPP(FilaPPP * filaPPP);
@@ -449,7 +449,7 @@ void releaseFilaTabla(FilaTabla * filaTabla);
 void releaseColumnaTabla(ColumnaTabla * columnaTabla);
 void releaseFilaNav(FilaNav * filaNav);
 void releaseComponent(Component * component);
-void releaseImg(Img * img);
+void releaseImg(Image * img);
 void releaseTitle(Title * title);
 void releaseSubtitle(Subtitle * subtitle);
 void releaseLink(Link * link);
