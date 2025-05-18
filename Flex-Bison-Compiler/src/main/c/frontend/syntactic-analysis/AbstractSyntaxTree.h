@@ -381,7 +381,7 @@ struct Body {
 struct Modifier {
 	union {
 		struct {
-			ColorType * color;
+			ColorType  color;
 			Modifier * modifierWithColor;
 		};
 		struct {

@@ -22,7 +22,7 @@ void shutdownBisonActionsModule();
 
 //TODO please check, not sure if this is correct.
 
-Program * ProgramSemanticAction(Body * body, Header * header, Footer * footer, ProgramType type);
+Program * ProgramSemanticAction(Body * body, Header * header, Footer * footer, ProgramType type, CompilerState * compilerState);
 Header * HeaderSemanticAction(Body * body, HeaderFooterType type);
 Body * BodySemanticAction(Expression * expression, Body * body, BodyType type);
 Expression * ExpressionSemanticAction(char * id, char * string, ComplexExpression * complexExpression, SimpleExpression * simpleExpression, Component * component,ExpressionType type);

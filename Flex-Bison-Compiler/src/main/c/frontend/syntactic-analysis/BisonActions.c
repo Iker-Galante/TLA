@@ -239,9 +239,9 @@ Seccion * SeccionSemanticAction(Body * body, SeccionType type) {
     return seccion;
 }
 
-Tabla * TablaSemanticAction(FilaTabla * filaTabla, TablaType type) {
+Table * TablaSemanticAction(FilaTabla * filaTabla, TableType type) {
     _logSyntacticAnalyzerAction(__FUNCTION__);
-    Tabla * tabla = calloc(1, sizeof(Tabla));
+    Table * tabla = calloc(1, sizeof(Table));
     tabla->filaTabla = filaTabla;
     tabla->type = type;
     return tabla;
@@ -354,7 +354,7 @@ Component * ComponentSemanticAction(char * id, Body * body, ComponentType type) 
     return component;
 }
 
-ComplexExpression * ComplexExpressionSemanticAction(Seccion * seccion, Tabla * tabla, Navegador * navegador, PuntoPorPunto * puntoPorPunto, ComplexExpressionType type) {
+ComplexExpression * ComplexExpressionSemanticAction(Seccion * seccion, Table * tabla, Navegador * navegador, PuntoPorPunto * puntoPorPunto, ComplexExpressionType type) {
     _logSyntacticAnalyzerAction(__FUNCTION__);
     ComplexExpression * complexExpression = calloc(1, sizeof(ComplexExpression));
     switch (type)
@@ -373,4 +373,5 @@ ComplexExpression * ComplexExpressionSemanticAction(Seccion * seccion, Tabla * t
         break;
     complexExpression->type = type;
     return complexExpression;
+}
 }

@@ -72,11 +72,11 @@ void releaseExpression(Expression * expression){
 			/*	free(expression->id);*/
 				break;
 			case EXPRESSION_ID_SIMPLEEXPRESSION:
-				free(expression->id);
+				free(expression->simpleId);
 				releaseSimpleExpression(expression->simpleExpression);
 				break;
 			case EXPRESSION_ID_COMPLEXEXPRESSION:
-				free(expression->id);
+				free(expression->complexId);
 				releaseComplexExpression(expression->complexExpression);
 				break;
 			case EXPRESSION_SIMPLE_EXPRESSION:
@@ -161,7 +161,7 @@ void releaseModifiers(Modifier * modifiers) {
     if (modifiers != NULL) {
 		switch (modifiers->type) {
 		case MODIFIER_COLOR_MOD:
-			free(modifiers->color);
+			/*free(modifiers->color);*/
 			releaseModifiers(modifiers->modifier);
 			break;
 		case MODIFIER_MODIFIER:
@@ -299,7 +299,7 @@ void releaseText(Text * text){
 	
 }
 
-void releaseImg(Img * img) {
+void releaseImg(Image * img) {
     logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
     if (img != NULL) {
         free(img->url);
@@ -340,4 +340,26 @@ void releaseHref(Href * href) {
 		free(href->id);
 		free(href);
 	}
+}
+
+void releaseTabla(Table * tabla) {
+    logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
+    if (tabla != NULL) {
+        if (tabla->type == TABLA_FILA_TABLA) {
+            releaseFilaTabla(tabla->filaTabla);
+        }
+        free(tabla);
+    }
+}
+
+void releaseFilaNav(FilaNav * filaNav) {
+    logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
+    if (filaNav != NULL) {
+        if (filaNav->type == NAVEGADOR_FILA_NAVEGADOR) {
+            releaseFilaNav(filaNav->filaNav);
+        }
+        free(filaNav->id);
+        free(filaNav->string);
+        free(filaNav);
+    }
 }

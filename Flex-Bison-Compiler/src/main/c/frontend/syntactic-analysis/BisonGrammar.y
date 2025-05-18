@@ -11,7 +11,7 @@
 	/** Terminals. */
 
 	char * string;
-       char * id;
+  char * id;
 	Token token;
 
 	/** Non-terminals. */
@@ -211,11 +211,11 @@ section:
   ;
 
 text:
-       TEXTO ':' '\n' STRING '\n' { $$ = TextSemanticAction($4, TEXT_SIMPLE_TEXT); }
-       | TEXTO ':' '\n' STRING modifiers '\n' { $$ = TextSemanticAction($4, $5, TEXT_MODIFIED_TEXT); }
+       TEXTO STRING '\n' { $$ = TextSemanticAction($2,NULL, TEXT_SIMPLE_TEXT); }
+       | TEXTO STRING modifiers '\n' { $$ = TextSemanticAction($2, $3, TEXT_MODIFIED_TEXT); }
 
 image:
-       IMAGEN ':' '\n' STRING '\n' { $$ = ImgSemanticAction($4); };
+       IMAGEN ':' '\n' STRING '\n' { $$ = ImgSemanticAction($1,$4); };
 
 title:
        TITULO ':' '\n' STRING '\n' { $$ = TitleSemanticAction($4); }
