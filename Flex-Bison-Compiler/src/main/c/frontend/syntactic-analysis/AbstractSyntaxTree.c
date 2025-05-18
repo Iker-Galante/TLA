@@ -293,6 +293,7 @@ void releaseText(Text * text){
 		else if(text->type == TEXT_MODIFIED_TEXT){
 			releaseModifiers(text->modifier);
 		}
+		printf("RELEASING TEXT STRING");
 		free(text->string);
 		free(text);
 	}
@@ -318,6 +319,7 @@ void releaseTitle(Title * title) {
 
 void releaseSubtitle(Subtitle * subtitle) {
     logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
+	printf("RELEASING SUBTITLE STRING");
     if (subtitle != NULL) {
         free(subtitle->string);
         free(subtitle);

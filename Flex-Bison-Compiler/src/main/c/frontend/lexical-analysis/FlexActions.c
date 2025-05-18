@@ -85,9 +85,12 @@ Token KeywordLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token
 }
 
 
+//aca tuve que hacerle un calloc al semanticValue->string xq sino explotaba
 Token StringLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext) {
 	_logLexicalAnalyzerContext(__FUNCTION__, lexicalAnalyzerContext);
-	lexicalAnalyzerContext->semanticValue->string = lexicalAnalyzerContext->lexeme;
+	lexicalAnalyzerContext->semanticValue->string = calloc(1 + lexicalAnalyzerContext->length, sizeof(char));
+	char * semanticValueString = lexicalAnalyzerContext->semanticValue->string;
+	semanticValueString = strncpy(semanticValueString,lexicalAnalyzerContext->lexeme,lexicalAnalyzerContext->length);
 	destroyLexicalAnalyzerContext(lexicalAnalyzerContext);
 	return STRING;
 }
