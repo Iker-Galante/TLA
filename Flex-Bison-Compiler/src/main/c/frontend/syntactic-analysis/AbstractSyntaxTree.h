@@ -373,7 +373,7 @@ struct Footer {
 
 struct Body {
 	Expression * expression;
-			Body * body;
+	Body * body;
 
 	BodyType type;
 };

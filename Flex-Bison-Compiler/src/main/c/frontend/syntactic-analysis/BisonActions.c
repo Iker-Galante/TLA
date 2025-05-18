@@ -123,7 +123,7 @@ Expression * ExpressionSemanticAction(char * id, char * string, ComplexExpressio
         expression->complexId = id;
         break;
     case EXPRESSION_ID:
-        expression->componentId = component;
+        expression->componentId = component->body;
         break;
         case EXPRESSION_STRING:
         expression->string = string;

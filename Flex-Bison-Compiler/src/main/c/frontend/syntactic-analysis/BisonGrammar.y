@@ -19,7 +19,7 @@
 	Program * program;
 	Header * header;
 	Body * body;
-	Header * footer;
+	Footer * footer;
 	SimpleExpression * simple_expression;
        ComplexExpression * complex_expression;
        Expression * expression;
@@ -117,13 +117,13 @@
 // TODO CHECK IF THIS IS OK!
 
 program:
-    PRINCIPIO header body footer FIN        { $$ = ProgramSemanticAction($2, $3, $4, PROGRAM_HEADER_FOOTER_BODY,currentCompilerState()); }
-  | PRINCIPIO body footer FIN               { $$ = ProgramSemanticAction(NULL, $2, $3, PROGRAM_FOOTER_BODY,currentCompilerState()); }
-  | PRINCIPIO header footer FIN             { $$ = ProgramSemanticAction($2, NULL, $3, PROGRAM_HEADER_FOOTER,currentCompilerState()); }
-  | PRINCIPIO header body FIN               { $$ = ProgramSemanticAction($2, $3, NULL, PROGRAM_HEADER_BODY,currentCompilerState()); }
+    PRINCIPIO header body footer FIN        { $$ = ProgramSemanticAction($3, $2, $4, PROGRAM_HEADER_FOOTER_BODY,currentCompilerState()); }
+  | PRINCIPIO body footer FIN               { $$ = ProgramSemanticAction($2, NULL, $3, PROGRAM_FOOTER_BODY,currentCompilerState()); }
+  | PRINCIPIO header footer FIN             { $$ = ProgramSemanticAction(NULL, $2, $3, PROGRAM_HEADER_FOOTER,currentCompilerState()); }
+  | PRINCIPIO header body FIN               { $$ = ProgramSemanticAction($3, $2, NULL, PROGRAM_HEADER_BODY,currentCompilerState()); }
   | PRINCIPIO footer FIN                    { $$ = ProgramSemanticAction(NULL, NULL, $2, PROGRAM_FOOTER,currentCompilerState()); }
-  | PRINCIPIO body FIN                      { $$ = ProgramSemanticAction(NULL, $2, NULL, PROGRAM_BODY,currentCompilerState()); }
-  | PRINCIPIO header FIN                    { $$ = ProgramSemanticAction($2, NULL, NULL, PROGRAM_HEADER,currentCompilerState()); }
+  | PRINCIPIO body FIN                      { $$ = ProgramSemanticAction($2, NULL, NULL, PROGRAM_BODY,currentCompilerState()); }
+  | PRINCIPIO header FIN                    { $$ = ProgramSemanticAction(NULL,$2, NULL, PROGRAM_HEADER,currentCompilerState()); }
   | PRINCIPIO FIN                           { $$ = ProgramSemanticAction(NULL, NULL, NULL, PROGRAM_EMPTY,currentCompilerState()); }
   ;
 
@@ -133,8 +133,8 @@ header:
   ;
 
 footer:
-    PIE ':' '\n' body FIN_PIE '\n'                    { $$ = HeaderSemanticAction($4, HEADER_BODY); }
-  | PIE ':' '\n' FIN_PIE '\n'                         { $$ = HeaderSemanticAction(NULL, HEADER_EMPTY); }
+    PIE ':' '\n' body FIN_PIE '\n'                    { $$ = FooterSemanticAction($4, HEADER_BODY); }
+  | PIE ':' '\n' FIN_PIE '\n'                         { $$ = FooterSemanticAction(NULL, HEADER_EMPTY); }
   ;
 
 body:
@@ -179,10 +179,10 @@ component:
   ;
 
 complex_expression:
-    puntoPorPunto                           { $$ = ComplexExpressionSemanticAction($1, NULL, NULL, NULL, CEXPRESSION_PUNTO_POR_PUNTO); }
-  | section                                 { $$ = ComplexExpressionSemanticAction(NULL, $1, NULL, NULL, CEXPRESSION_SECCION); }
-  | table                                   { $$ = ComplexExpressionSemanticAction(NULL, NULL, $1, NULL, CEXPRESSION_TABLA); }
-  | navigator                               { $$ = ComplexExpressionSemanticAction(NULL, NULL, NULL, $1, CEXPRESSION_NAVEGADOR); }
+    section                                     { $$ = ComplexExpressionSemanticAction($1, NULL, NULL, NULL, CEXPRESSION_SECCION); }
+  | table                                       { $$ = ComplexExpressionSemanticAction(NULL, $1, NULL, NULL, CEXPRESSION_TABLA); }
+  | navigator                                   { $$ = ComplexExpressionSemanticAction(NULL, NULL, $1, NULL, CEXPRESSION_NAVEGADOR); }
+  | puntoPorPunto                               { $$ = ComplexExpressionSemanticAction(NULL, NULL, NULL, $1, CEXPRESSION_PUNTO_POR_PUNTO); }
   ;
 
 row_ppp:
@@ -215,7 +215,7 @@ text:
        | TEXTO STRING modifiers '\n' { $$ = TextSemanticAction($2, $3, TEXT_MODIFIED_TEXT); }
 
 image:
-       IMAGEN ':' '\n' STRING '\n' { $$ = ImgSemanticAction($1,$4); };
+       IMAGEN ':' '\n' STRING '\n' { $$ = ImgSemanticAction($4,NULL); };
 
 title:
        TITULO ':' '\n' STRING '\n' { $$ = TitleSemanticAction($4); }

@@ -24,6 +24,7 @@ void shutdownBisonActionsModule();
 
 Program * ProgramSemanticAction(Body * body, Header * header, Footer * footer, ProgramType type, CompilerState * compilerState);
 Header * HeaderSemanticAction(Body * body, HeaderFooterType type);
+Footer * FooterSemanticAction(Body * body, HeaderFooterType type);
 Body * BodySemanticAction(Expression * expression, Body * body, BodyType type);
 Expression * ExpressionSemanticAction(char * id, char * string, ComplexExpression * complexExpression, SimpleExpression * simpleExpression, Component * component,ExpressionType type);
 SimpleExpression * SimpleExpressionSemanticAction(Text * text, Image * img, Title * title, Subtitle * subtitle, Link * link, SimpleExpressionType type);

@@ -64,7 +64,7 @@ void releaseExpression(Expression * expression){
 	if (expression != NULL) {
 		switch (expression->type) {
 			case EXPRESSION_STRING:
-				releaseText(expression->string);
+				free(expression->string);
 				break;
 			case EXPRESSION_ID:
 
@@ -182,7 +182,7 @@ void releaseComponent(Component * component) {
     logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
     if (component != NULL) {
         if(component->type == COMPONENT_COMPONENT) {
-			releaseComponent(component->body);
+			releaseBody(component->body);
     }
 	free(component->id);
 	free(component);
@@ -225,7 +225,7 @@ void releaseNavegador(Navegador * navegador) {
 	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
 	if (navegador != NULL) {
 		if(navegador->type == NAVEGADOR_FILA_NAVEGADOR){
-			releaseRowNav(navegador->filaNav);
+			releaseFilaNav(navegador->filaNav);
 		}
 		free(navegador);
 	}
