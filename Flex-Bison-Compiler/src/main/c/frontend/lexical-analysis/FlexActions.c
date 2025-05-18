@@ -84,6 +84,7 @@ Token KeywordLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token
 	return token;
 }
 
+
 Token StringLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext) {
 	_logLexicalAnalyzerContext(__FUNCTION__, lexicalAnalyzerContext);
 	lexicalAnalyzerContext->semanticValue->string = lexicalAnalyzerContext->lexeme;

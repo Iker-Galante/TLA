@@ -32,6 +32,7 @@ Token KeywordLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token
 Token StringLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
 
 
+
 Token UnknownLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
 
 #endif

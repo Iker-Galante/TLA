@@ -4,6 +4,7 @@ set -u
 
 BASE_PATH="$(dirname "$0")/../.."
 cd "$BASE_PATH"
+echo "$BASE_PATH"
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'

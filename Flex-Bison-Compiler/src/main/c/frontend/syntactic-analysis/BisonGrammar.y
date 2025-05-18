@@ -78,7 +78,7 @@
 %token <token> PRINCIPIO FIN ENCABEZADO PIE TEXTO IMAGEN TITULO SUBTITULO ENLACE COLOR SUBRAYADO ITALICA NEGRITA TAMANIO
 %token <token> PUNTO_POR_PUNTO SECCION TABLA NAVEGADOR COMPONENTE FIN_NAVEGADOR
 %token <token> INICIO_TABLA FIN_TABLA INICIO_SECCION FIN_SECCION FIN_ENCABEZADO FIN_PIE FIN_COMPONENTE FIN_FILA FIN_PPP FIN_NAV
-%token <token> UNKNOWN
+%token <token> UNKNOWN NEW_LINE
 
 /** Non-terminals. */
 %type <program> program
@@ -211,7 +211,7 @@ section:
   ;
 
 text:
-       TEXTO STRING '\n' { $$ = TextSemanticAction($2,NULL, TEXT_SIMPLE_TEXT); }
+       TEXTO STRING NEW_LINE { $$ = TextSemanticAction($2,NULL, TEXT_SIMPLE_TEXT); }
        | TEXTO STRING modifiers '\n' { $$ = TextSemanticAction($2, $3, TEXT_MODIFIED_TEXT); }
 
 image:
