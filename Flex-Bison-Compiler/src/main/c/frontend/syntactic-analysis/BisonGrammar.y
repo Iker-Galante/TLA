@@ -78,7 +78,7 @@
 %token <id> ID
 %token <token> PRINCIPIO FIN ENCABEZADO PIE TEXTO IMAGEN TITULO SUBTITULO ENLACE COLOR SUBRAYADO ITALICA NEGRITA TAMANIO
 %token <token> PUNTO_POR_PUNTO SECCION TABLA NAVEGADOR COMPONENTE FIN_NAVEGADOR
-%token <token> INICIO_TABLA FIN_TABLA INICIO_SECCION FIN_SECCION FIN_ENCABEZADO FIN_PIE FIN_COMPONENTE FIN_FILA FIN_PPP FIN_NAV
+%token <token> INICIO_TABLA FIN_TABLA INICIO_SECCION FIN_SECCION FIN_ENCABEZADO FIN_PIE FIN_COMPONENTE FIN_FILA FIN_PPP
 %token <token> UNKNOWN NEW_LINE DOS_PUNTOS GUION PARENTESIS_IZQUIERDO PARENTESIS_DERECHO LLAVE_IZQUIERDA LLAVE_DERECHA NUMERAL
 
 /** Non-terminals. */
@@ -144,13 +144,13 @@ body:
   ;
 
 expression:
-    PARENTESIS_IZQUIERDO ID PARENTESIS_DERECHO simple_expression                      { $$ = ExpressionSemanticAction($2, NULL, NULL, $4, NULL, EXPRESSION_ID_SIMPLEEXPRESSION); }
-  | PARENTESIS_IZQUIERDO ID PARENTESIS_DERECHO complex_expression                     { $$ = ExpressionSemanticAction($2, NULL, $4, NULL, NULL, EXPRESSION_ID_COMPLEXEXPRESSION); }
-  | STRING                                            { $$ = ExpressionSemanticAction(NULL, $1, NULL, NULL, NULL, EXPRESSION_STRING); }
-  | simple_expression                                 { $$ = ExpressionSemanticAction(NULL, NULL, NULL, $1, NULL, EXPRESSION_SIMPLE_EXPRESSION); }
-  | LLAVE_IZQUIERDA ID LLAVE_DERECHA                                        { $$ = ExpressionSemanticAction($2, NULL, NULL, NULL, NULL, EXPRESSION_ID); }
-  | component                                         { $$ = ExpressionSemanticAction(NULL, NULL, NULL, NULL, $1, EXPRESSION_COMPONENTE); }
-  | complex_expression                                { $$ = ExpressionSemanticAction(NULL, NULL, $1, NULL, NULL, EXPRESSION_COMPLEX_EXPRESSION); }
+    PARENTESIS_IZQUIERDO ID PARENTESIS_DERECHO simple_expression           { $$ = ExpressionSemanticAction($2, NULL, NULL, $4, NULL, EXPRESSION_ID_SIMPLEEXPRESSION); }
+  | PARENTESIS_IZQUIERDO ID PARENTESIS_DERECHO complex_expression          { $$ = ExpressionSemanticAction($2, NULL, $4, NULL, NULL, EXPRESSION_ID_COMPLEXEXPRESSION); }
+  | STRING                                       { $$ = ExpressionSemanticAction(NULL, $1, NULL, NULL, NULL, EXPRESSION_STRING); }
+  | simple_expression                            { $$ = ExpressionSemanticAction(NULL, NULL, NULL, $1, NULL, EXPRESSION_SIMPLE_EXPRESSION); }
+  | LLAVE_IZQUIERDA ID LLAVE_DERECHA             { $$ = ExpressionSemanticAction($2, NULL, NULL, NULL, NULL, EXPRESSION_ID); }
+  | component                                    { $$ = ExpressionSemanticAction(NULL, NULL, NULL, NULL, $1, EXPRESSION_COMPONENTE); }
+  | complex_expression                           { $$ = ExpressionSemanticAction(NULL, NULL, $1, NULL, NULL, EXPRESSION_COMPLEX_EXPRESSION); }
   ;
 
 simple_expression:

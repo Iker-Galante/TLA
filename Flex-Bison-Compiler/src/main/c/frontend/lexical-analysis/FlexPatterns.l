@@ -42,7 +42,7 @@
 "imagen"							{ return KeywordLexemeAction(createLexicalAnalyzerContext(), IMAGEN); }
 "titulo"							{ printf("TOKEN: Titulo\n");return KeywordLexemeAction(createLexicalAnalyzerContext(), TITULO); }
 "subtitulo"						    { return KeywordLexemeAction(createLexicalAnalyzerContext(), SUBTITULO); }
-"enlace"                            { return KeywordLexemeAction(createLexicalAnalyzerContext(), ENLACE); }
+"enlace"                            { printf("TOKEN: ENLACE\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), ENLACE); }
 "color"                             { return KeywordLexemeAction(createLexicalAnalyzerContext(), COLOR); }
 "subrayado"                         { return KeywordLexemeAction(createLexicalAnalyzerContext(), SUBRAYADO); }
 "italica"                           { return KeywordLexemeAction(createLexicalAnalyzerContext(), ITALICA); }
