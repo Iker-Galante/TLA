@@ -71,6 +71,7 @@
 %destructor { releaseTabla($$); } <table>
 %destructor { releaseHref($$); } <href>
 %destructor { releasePuntoPorPunto($$); } <puntoPorPunto>
+%destructor { free($$); } STRING
 
 /** Terminals. */
 %token <string> STRING
@@ -212,16 +213,16 @@ section:
 
 text:
        TEXTO DOS_PUNTOS STRING NEW_LINE { $$ = TextSemanticAction($3,NULL, TEXT_SIMPLE_TEXT); }
-       | TEXTO DOS_PUNTOS STRING modifiers NEW_LINE { $$ = TextSemanticAction($3, $4, TEXT_MODIFIED_TEXT); }
+       | TEXTO DOS_PUNTOS STRING modifiers NEW_LINE { $$ = TextSemanticAction($3, $4, TEXT_MODIFIED_TEXT); };
 
 image:
-       IMAGEN DOS_PUNTOS STRING NEW_LINE { $$ = ImgSemanticAction($4,NULL); };
+       IMAGEN DOS_PUNTOS STRING NEW_LINE { $$ = ImgSemanticAction($3,NULL); };
 
 title:
-       TITULO DOS_PUNTOS STRING NEW_LINE { $$ = TitleSemanticAction($3); }
+       TITULO DOS_PUNTOS STRING NEW_LINE { $$ = TitleSemanticAction($3); };
 
 subtitle:
-       SUBTITULO DOS_PUNTOS STRING NEW_LINE { $$ = SubtitleSemanticAction($4); }
+       SUBTITULO DOS_PUNTOS STRING NEW_LINE { $$ = SubtitleSemanticAction($3); };
 link:
        ENLACE DOS_PUNTOS PARENTESIS_IZQUIERDO href PARENTESIS_DERECHO simple_expression NEW_LINE { $$ = LinkSemanticAction($4, $6); }
 navigator:

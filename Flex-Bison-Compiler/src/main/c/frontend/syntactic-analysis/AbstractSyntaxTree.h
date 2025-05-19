@@ -68,7 +68,8 @@ typedef struct ColumnaTabla ColumnaTabla;
 
 enum BodyType {
 	BODY_EXPRESSION,
-	BODY_EXPRESSION_BODY
+	BODY_EXPRESSION_BODY,
+	BODY_EMPTY
 };
 
 enum HeaderFooterType {
