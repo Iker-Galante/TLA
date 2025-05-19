@@ -17,6 +17,7 @@
 %x MULTILINE_COMMENT
 %x STRING_PROCESSING
 %x IDENTIDICADOR
+%x PPP
 /**
  * Reusable patterns.
  *
@@ -48,7 +49,7 @@
 "italica"                           { return KeywordLexemeAction(createLexicalAnalyzerContext(), ITALICA); }
 "negrita"                           { return KeywordLexemeAction(createLexicalAnalyzerContext(), NEGRITA); }
 "tamanio"                           { return KeywordLexemeAction(createLexicalAnalyzerContext(), TAMANIO); }
-"punto-por-punto"                   { return KeywordLexemeAction(createLexicalAnalyzerContext(), PUNTO_POR_PUNTO); }
+"punto-por-punto"                   {  yy_push_state(PPP);printf("PPP\n");return KeywordLexemeAction(createLexicalAnalyzerContext(), PUNTO_POR_PUNTO); }
 "seccion"                           { return KeywordLexemeAction(createLexicalAnalyzerContext(), SECCION); }
 "tabla"                             { return KeywordLexemeAction(createLexicalAnalyzerContext(), TABLA); }
 "navegador"                         { return KeywordLexemeAction(createLexicalAnalyzerContext(), NAVEGADOR); }
@@ -60,9 +61,9 @@
 "fin-seccion"                       { return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_SECCION); }
 "fin-componente"                    { return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_COMPONENTE); }
 "fin-fila"                          { return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_FILA); }
-"fin-ppp"                           { return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_PPP); }
-":"                                { BEGIN(STRING_PROCESSING);printf("TOKEN: DOS PUNTOS\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(),DOS_PUNTOS); }
-"-"                             { BEGIN(STRING_PROCESSING); printf("TOKEN: MENOS\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), GUION); }
+<PPP>"fin-ppp"                           {yy_pop_state(); return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_PPP); }
+":"                                { yy_push_state(STRING_PROCESSING);printf("TOKEN: DOS PUNTOS\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(),DOS_PUNTOS); }
+<PPP>"-"[[:space:]]*                             { yy_push_state(STRING_PROCESSING); printf("TOKEN: MENOS\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), GUION); }
 "("                               { BEGIN(IDENTIDICADOR);printf("TOKEN: PARENTESIS_IZQUIERDO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), PARENTESIS_IZQUIERDO); }
 <IDENTIDICADOR>")"                               { BEGIN(INITIAL);printf("TOKEN: PARENTESIS_DERECHO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), PARENTESIS_DERECHO); }
 "{"                               { BEGIN(IDENTIDICADOR);printf("TOKEN: LLAVE_IZQUIERDA\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), LLAVE_IZQUIERDA); }
@@ -73,8 +74,9 @@
 [a-zA-Z0-9_]+                       { printf("TOKEN: ESTRIN \n");return StringLexemeAction(createLexicalAnalyzerContext()); }
 [[:space:]]+						{ ; IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 <STRING_PROCESSING>[^\n\r]+        { printf("TOKEN: ESTRIN RARO \n"); return StringLexemeAction(createLexicalAnalyzerContext()); }
-<STRING_PROCESSING>[\r]?\n         { printf("TOKEN: NEWLINE WINDOWS (STR)\n"); BEGIN(INITIAL); return KeywordLexemeAction(createLexicalAnalyzerContext(), NEW_LINE); }
-
+<STRING_PROCESSING>[\r]?\n         { printf("TOKEN: NEWLINE WINDOWS (STR)\n"); yy_pop_state(); return KeywordLexemeAction(createLexicalAnalyzerContext(), NEW_LINE); }
+<PPP>":"                               { printf("TOKEN: DOS PUNTOS PPP\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(),DOS_PUNTOS); }
+<PPP>[\r]?\n         { printf("TOKEN: NEWLINE PPP \n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), NEW_LINE); }
 
 %%
 
