@@ -78,7 +78,7 @@
 %token <token> PRINCIPIO FIN ENCABEZADO PIE TEXTO IMAGEN TITULO SUBTITULO ENLACE COLOR SUBRAYADO ITALICA NEGRITA TAMANIO
 %token <token> PUNTO_POR_PUNTO SECCION TABLA NAVEGADOR COMPONENTE FIN_NAVEGADOR
 %token <token> INICIO_TABLA FIN_TABLA INICIO_SECCION FIN_SECCION FIN_ENCABEZADO FIN_PIE FIN_COMPONENTE FIN_FILA FIN_PPP FIN_NAV
-%token <token> UNKNOWN NEW_LINE
+%token <token> UNKNOWN NEW_LINE DOS_PUNTOS GUION PARENTESIS_IZQUIERDO PARENTESIS_DERECHO LLAVE_IZQUIERDA LLAVE_DERECHA NUMERAL
 
 /** Non-terminals. */
 %type <program> program
@@ -117,24 +117,24 @@
 // TODO CHECK IF THIS IS OK!
 
 program:
-    PRINCIPIO header body footer FIN        { $$ = ProgramSemanticAction($3, $2, $4, PROGRAM_HEADER_FOOTER_BODY,currentCompilerState()); }
-  | PRINCIPIO body footer FIN               { $$ = ProgramSemanticAction($2, NULL, $3, PROGRAM_FOOTER_BODY,currentCompilerState()); }
-  | PRINCIPIO header footer FIN             { $$ = ProgramSemanticAction(NULL, $2, $3, PROGRAM_HEADER_FOOTER,currentCompilerState()); }
-  | PRINCIPIO header body FIN               { $$ = ProgramSemanticAction($3, $2, NULL, PROGRAM_HEADER_BODY,currentCompilerState()); }
-  | PRINCIPIO footer FIN                    { $$ = ProgramSemanticAction(NULL, NULL, $2, PROGRAM_FOOTER,currentCompilerState()); }
-  | PRINCIPIO body FIN                      { $$ = ProgramSemanticAction($2, NULL, NULL, PROGRAM_BODY,currentCompilerState()); }
-  | PRINCIPIO header FIN                    { $$ = ProgramSemanticAction(NULL,$2, NULL, PROGRAM_HEADER,currentCompilerState()); }
-  | PRINCIPIO FIN                           { $$ = ProgramSemanticAction(NULL, NULL, NULL, PROGRAM_EMPTY,currentCompilerState()); }
+    PRINCIPIO NEW_LINE header body footer FIN        { $$ = ProgramSemanticAction($4, $3, $5, PROGRAM_HEADER_FOOTER_BODY,currentCompilerState()); }
+  | PRINCIPIO NEW_LINE body footer FIN               { $$ = ProgramSemanticAction($3, NULL, $4, PROGRAM_FOOTER_BODY,currentCompilerState()); }
+  | PRINCIPIO NEW_LINE header footer FIN             { $$ = ProgramSemanticAction(NULL, $3, $4, PROGRAM_HEADER_FOOTER,currentCompilerState()); }
+  | PRINCIPIO NEW_LINE header body FIN               { $$ = ProgramSemanticAction($4, $3, NULL, PROGRAM_HEADER_BODY,currentCompilerState()); }
+  | PRINCIPIO NEW_LINE footer FIN                    { $$ = ProgramSemanticAction(NULL, NULL, $3, PROGRAM_FOOTER,currentCompilerState()); }
+  | PRINCIPIO NEW_LINE body FIN                      { $$ = ProgramSemanticAction($3, NULL, NULL, PROGRAM_BODY,currentCompilerState()); }
+  | PRINCIPIO NEW_LINE header FIN                    { $$ = ProgramSemanticAction(NULL,$3, NULL, PROGRAM_HEADER,currentCompilerState()); }
+  | PRINCIPIO NEW_LINE FIN                           { $$ = ProgramSemanticAction(NULL, NULL, NULL, PROGRAM_EMPTY,currentCompilerState()); }
   ;
 
 header:
-    ENCABEZADO ':' '\n' body FIN_ENCABEZADO '\n'      { $$ = HeaderSemanticAction($4, HEADER_BODY); }
-  | ENCABEZADO ':' '\n' FIN_ENCABEZADO '\n'           { $$ = HeaderSemanticAction(NULL, HEADER_EMPTY); }
+    ENCABEZADO DOS_PUNTOS NEW_LINE body FIN_ENCABEZADO NEW_LINE     { $$ = HeaderSemanticAction($4, HEADER_BODY); }
+  | ENCABEZADO DOS_PUNTOS NEW_LINE FIN_ENCABEZADO NEW_LINE           { $$ = HeaderSemanticAction(NULL, HEADER_EMPTY); }
   ;
 
 footer:
-    PIE ':' '\n' body FIN_PIE '\n'                    { $$ = FooterSemanticAction($4, HEADER_BODY); }
-  | PIE ':' '\n' FIN_PIE '\n'                         { $$ = FooterSemanticAction(NULL, HEADER_EMPTY); }
+    PIE DOS_PUNTOS NEW_LINE body FIN_PIE NEW_LINE                    { $$ = FooterSemanticAction($4, HEADER_BODY); }
+  | PIE DOS_PUNTOS NEW_LINE FIN_PIE NEW_LINE                         { $$ = FooterSemanticAction(NULL, HEADER_EMPTY); }
   ;
 
 body:
@@ -143,11 +143,11 @@ body:
   ;
 
 expression:
-    '(' ID ')' simple_expression                      { $$ = ExpressionSemanticAction($2, NULL, NULL, $4, NULL, EXPRESSION_ID_SIMPLEEXPRESSION); }
-  | '(' ID ')' complex_expression                     { $$ = ExpressionSemanticAction($2, NULL, $4, NULL, NULL, EXPRESSION_ID_COMPLEXEXPRESSION); }
+    PARENTESIS_IZQUIERDO ID PARENTESIS_DERECHO simple_expression                      { $$ = ExpressionSemanticAction($2, NULL, NULL, $4, NULL, EXPRESSION_ID_SIMPLEEXPRESSION); }
+  | PARENTESIS_IZQUIERDO ID PARENTESIS_DERECHO complex_expression                     { $$ = ExpressionSemanticAction($2, NULL, $4, NULL, NULL, EXPRESSION_ID_COMPLEXEXPRESSION); }
   | STRING                                            { $$ = ExpressionSemanticAction(NULL, $1, NULL, NULL, NULL, EXPRESSION_STRING); }
   | simple_expression                                 { $$ = ExpressionSemanticAction(NULL, NULL, NULL, $1, NULL, EXPRESSION_SIMPLE_EXPRESSION); }
-  | '{' ID '}'                                        { $$ = ExpressionSemanticAction($2, NULL, NULL, NULL, NULL, EXPRESSION_ID); }
+  | LLAVE_IZQUIERDA ID LLAVE_DERECHA                                        { $$ = ExpressionSemanticAction($2, NULL, NULL, NULL, NULL, EXPRESSION_ID); }
   | component                                         { $$ = ExpressionSemanticAction(NULL, NULL, NULL, NULL, $1, EXPRESSION_COMPONENTE); }
   | complex_expression                                { $$ = ExpressionSemanticAction(NULL, NULL, $1, NULL, NULL, EXPRESSION_COMPLEX_EXPRESSION); }
   ;
@@ -174,8 +174,8 @@ modifiers:
   ;
 
 component:
-    COMPONENTE '(' ID ')' '\n' body FIN_COMPONENTE '\n'     { $$ = ComponentSemanticAction($3, $6, COMPONENT_COMPONENT); }
-  | COMPONENTE '(' ID ')' '\n' FIN_COMPONENTE '\n'          { $$ = ComponentSemanticAction($3, NULL, COMPONENT_EMPTY); }
+    COMPONENTE PARENTESIS_IZQUIERDO ID PARENTESIS_DERECHO NEW_LINE body FIN_COMPONENTE NEW_LINE     { $$ = ComponentSemanticAction($3, $6, COMPONENT_COMPONENT); }
+  | COMPONENTE PARENTESIS_IZQUIERDO ID PARENTESIS_DERECHO NEW_LINE FIN_COMPONENTE NEW_LINE          { $$ = ComponentSemanticAction($3, NULL, COMPONENT_EMPTY); }
   ;
 
 complex_expression:
@@ -186,8 +186,8 @@ complex_expression:
   ;
 
 row_ppp:
-    '-' expression row_ppp                  { $$ = FilaPPPSemanticAction($2, $3, FILAPPP_EXPRESSION_FILAPPP); }
-  | '-' expression                          { $$ = FilaPPPSemanticAction($2, NULL, FILAPPP_EXPRESSION); }
+    GUION expression NEW_LINE row_ppp                  { $$ = FilaPPPSemanticAction($2, $4, FILAPPP_EXPRESSION_FILAPPP); }
+  | GUION expression NEW_LINE                         { $$ = FilaPPPSemanticAction($2, NULL, FILAPPP_EXPRESSION); }
   ;
 
 row_table:
@@ -201,47 +201,47 @@ column_table:
   ;
 
 row_nav:
-    '-' '(' ID ')' STRING '\n' row_nav { $$ = FilaNavSemanticAction($3, $5, $7, FILANAV_FILA_NAVEGADOR); }
-  | '-' '(' ID ')' STRING '\n' { $$ = FilaNavSemanticAction($3, $5, NULL, FILANAV_SIMPLE); }
+    GUION PARENTESIS_IZQUIERDO ID PARENTESIS_DERECHO STRING NEW_LINE row_nav { $$ = FilaNavSemanticAction($3, $5, $7, FILANAV_FILA_NAVEGADOR); }
+  | GUION PARENTESIS_IZQUIERDO ID PARENTESIS_DERECHO STRING NEW_LINE { $$ = FilaNavSemanticAction($3, $5, NULL, FILANAV_SIMPLE); }
   ;
 
 section:
-    INICIO_SECCION ':' '\n' body FIN_SECCION '\n' { $$ = SeccionSemanticAction($4, SECCION_BODY); }
-  | INICIO_SECCION ':' '\n' FIN_SECCION '\n' { $$ = SeccionSemanticAction(NULL, SECCION_EMPTY); }
+    INICIO_SECCION DOS_PUNTOS NEW_LINE body FIN_SECCION NEW_LINE { $$ = SeccionSemanticAction($4, SECCION_BODY); }
+  | INICIO_SECCION DOS_PUNTOS NEW_LINE FIN_SECCION NEW_LINE { $$ = SeccionSemanticAction(NULL, SECCION_EMPTY); }
   ;
 
 text:
-       TEXTO STRING NEW_LINE { $$ = TextSemanticAction($2,NULL, TEXT_SIMPLE_TEXT); }
-       | TEXTO STRING modifiers '\n' { $$ = TextSemanticAction($2, $3, TEXT_MODIFIED_TEXT); }
+       TEXTO DOS_PUNTOS STRING NEW_LINE { $$ = TextSemanticAction($3,NULL, TEXT_SIMPLE_TEXT); }
+       | TEXTO DOS_PUNTOS STRING modifiers NEW_LINE { $$ = TextSemanticAction($3, $4, TEXT_MODIFIED_TEXT); }
 
 image:
-       IMAGEN ':' '\n' STRING '\n' { $$ = ImgSemanticAction($4,NULL); };
+       IMAGEN DOS_PUNTOS STRING NEW_LINE { $$ = ImgSemanticAction($4,NULL); };
 
 title:
-       TITULO ':' '\n' STRING '\n' { $$ = TitleSemanticAction($4); }
+       TITULO DOS_PUNTOS STRING NEW_LINE { $$ = TitleSemanticAction($3); }
 
 subtitle:
-       SUBTITULO ':' '\n' STRING '\n' { $$ = SubtitleSemanticAction($4); }
+       SUBTITULO DOS_PUNTOS STRING NEW_LINE { $$ = SubtitleSemanticAction($4); }
 link:
-       ENLACE ':' '('href')' simple_expression '\n' { $$ = LinkSemanticAction($4, $6); }
+       ENLACE DOS_PUNTOS PARENTESIS_IZQUIERDO href PARENTESIS_DERECHO simple_expression NEW_LINE { $$ = LinkSemanticAction($4, $6); }
 navigator:
-    NAVEGADOR ':' '\n' row_nav FIN_NAVEGADOR '\n' { $$ = NavegadorSemanticAction($4, NAVEGADOR_FILA_NAVEGADOR); }
-  | NAVEGADOR ':' '\n' FIN_NAVEGADOR '\n' { $$ = NavegadorSemanticAction(NULL, NAVEGADOR_EMPTY); }
+    NAVEGADOR DOS_PUNTOS NEW_LINE row_nav FIN_NAVEGADOR NEW_LINE { $$ = NavegadorSemanticAction($4, NAVEGADOR_FILA_NAVEGADOR); }
+  | NAVEGADOR DOS_PUNTOS NEW_LINE FIN_NAVEGADOR NEW_LINE { $$ = NavegadorSemanticAction(NULL, NAVEGADOR_EMPTY); }
   ;
 
 table:
-    INICIO_TABLA ':' '\n' row_table FIN_TABLA '\n' { $$ = TablaSemanticAction($4, TABLA_FILA_TABLA); }
-  | INICIO_TABLA ':' '\n' FIN_TABLA '\n' { $$ = TablaSemanticAction(NULL, TABLA_EMPTY); }
+    INICIO_TABLA DOS_PUNTOS NEW_LINE row_table FIN_TABLA NEW_LINE { $$ = TablaSemanticAction($4, TABLA_FILA_TABLA); }
+  | INICIO_TABLA DOS_PUNTOS NEW_LINE FIN_TABLA NEW_LINE { $$ = TablaSemanticAction(NULL, TABLA_EMPTY); }
   ;
 
 href:
     STRING { $$ = HrefSemanticAction($1, NULL, HREF_URL); }
-  | '#' ID { $$ = HrefSemanticAction(NULL, $2, HREF_ID); }
+  | NUMERAL ID { $$ = HrefSemanticAction(NULL, $2, HREF_ID); }
   ;
 
 puntoPorPunto:
-    PUNTO_POR_PUNTO ':' '\n' row_ppp FIN_PPP '\n' { $$ = PuntoPorPuntoSemanticAction($4, PPP_FILA_PUNTO_POR_PUNTO); }
-  | PUNTO_POR_PUNTO ':' '\n' FIN_PPP '\n' { $$ = PuntoPorPuntoSemanticAction(NULL, PPP_EMPTY); }
+    PUNTO_POR_PUNTO DOS_PUNTOS NEW_LINE row_ppp FIN_PPP NEW_LINE { $$ = PuntoPorPuntoSemanticAction($4, PPP_FILA_PUNTO_POR_PUNTO); }
+  | PUNTO_POR_PUNTO DOS_PUNTOS NEW_LINE FIN_PPP NEW_LINE { $$ = PuntoPorPuntoSemanticAction(NULL, PPP_EMPTY); }
   ;
 
 

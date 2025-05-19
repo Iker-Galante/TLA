@@ -320,10 +320,11 @@ void releaseTitle(Title * title) {
 void releaseSubtitle(Subtitle * subtitle) {
     logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
 	printf("RELEASING SUBTITLE STRING");
-    if (subtitle != NULL) {
-        free(subtitle->string);
-        free(subtitle);
-    }
+	if (subtitle != NULL) {
+		free(subtitle->string);
+		subtitle->string = NULL;
+		free(subtitle);
+	}
 }
 
 void releaseLink(Link * link) {

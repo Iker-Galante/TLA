@@ -166,7 +166,6 @@ SimpleExpression * SimpleExpressionSemanticAction(Text * text, Image * img, Titl
 
 Text * TextSemanticAction(char * string, Modifier * modifier, TextType type) {
     _logSyntacticAnalyzerAction(__FUNCTION__);
-    string[0] = 'G';
     Text * text = calloc(1, sizeof(Text));
     ///capaz sirve que me pases tmb la longitud del string para ahorrar un strlen
     // text->string = calloc(1, sizeof(char) * (strlen(string) + 1));
