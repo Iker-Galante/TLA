@@ -75,7 +75,6 @@
 [[:space:]]+						{ ; IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 <STRING_PROCESSING>[^\n\r]+        { printf("TOKEN: ESTRIN RARO \n"); return StringLexemeAction(createLexicalAnalyzerContext()); }
 <STRING_PROCESSING>[\r]?\n         { printf("TOKEN: NEWLINE WINDOWS (STR)\n"); BEGIN(INITIAL); return KeywordLexemeAction(createLexicalAnalyzerContext(), NEW_LINE); }
-.									{ printf("IGNORADO");return UnknownLexemeAction(createLexicalAnalyzerContext()); }
 
 
 %%

@@ -98,18 +98,33 @@ Token KeywordLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext, Token 
 	return token;
 }
 
-// aca tuve que hacerle un calloc al semanticValue->string xq sino explotaba
 Token StringLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext)
 {
 	_logLexicalAnalyzerContext(__FUNCTION__, lexicalAnalyzerContext);
-	lexicalAnalyzerContext->semanticValue->string = calloc(1 + lexicalAnalyzerContext->length, sizeof(char));
-	char *semanticValueString = lexicalAnalyzerContext->semanticValue->string;
-	semanticValueString = strncpy(semanticValueString, lexicalAnalyzerContext->lexeme, lexicalAnalyzerContext->length);
+
+	if (lexicalAnalyzerContext == NULL || lexicalAnalyzerContext->semanticValue == NULL)
+	{
+		fprintf(stderr, "Error: LexicalAnalyzerContext o semanticValue es NULL.\n");
+		exit(EXIT_FAILURE);
+	}
+
+	// Reservar memoria para el string
+	lexicalAnalyzerContext->semanticValue->string = malloc(lexicalAnalyzerContext->length + 1);
+	if (lexicalAnalyzerContext->semanticValue->string == NULL)
+	{
+		fprintf(stderr, "Error: no se pudo asignar memoria para string.\n");
+		exit(EXIT_FAILURE);
+	}
+
+	strncpy(lexicalAnalyzerContext->semanticValue->string, lexicalAnalyzerContext->lexeme, lexicalAnalyzerContext->length);
+	lexicalAnalyzerContext->semanticValue->string[lexicalAnalyzerContext->length] = '\0';
+
 	destroyLexicalAnalyzerContext(lexicalAnalyzerContext);
 	return STRING;
 }
 
-Token IdentifierLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext){
+Token IdentifierLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext)
+{
 	_logLexicalAnalyzerContext(__FUNCTION__, lexicalAnalyzerContext);
 	lexicalAnalyzerContext->semanticValue->string = calloc(1 + lexicalAnalyzerContext->length, sizeof(char));
 	char *semanticValueString = lexicalAnalyzerContext->semanticValue->string;
