@@ -202,47 +202,49 @@ column_table:
   ;
 
 row_nav:
-    GUION PARENTESIS_IZQUIERDO ID PARENTESIS_DERECHO STRING NEW_LINE row_nav { $$ = FilaNavSemanticAction($3, $5, $7, FILANAV_FILA_NAVEGADOR); }
-  | GUION PARENTESIS_IZQUIERDO ID PARENTESIS_DERECHO STRING NEW_LINE { $$ = FilaNavSemanticAction($3, $5, NULL, FILANAV_SIMPLE); }
+    GUION PARENTESIS_IZQUIERDO ID PARENTESIS_DERECHO STRING NEW_LINE row_nav  { $$ = FilaNavSemanticAction($3, $5, $7, FILANAV_FILA_NAVEGADOR); }
+  | GUION PARENTESIS_IZQUIERDO ID PARENTESIS_DERECHO STRING NEW_LINE          { $$ = FilaNavSemanticAction($3, $5, NULL, FILANAV_SIMPLE); }
   ;
 
 section:
-    INICIO_SECCION DOS_PUNTOS NEW_LINE body FIN_SECCION NEW_LINE { $$ = SeccionSemanticAction($4, SECCION_BODY); }
-  | INICIO_SECCION DOS_PUNTOS NEW_LINE FIN_SECCION NEW_LINE { $$ = SeccionSemanticAction(NULL, SECCION_EMPTY); }
+    INICIO_SECCION DOS_PUNTOS NEW_LINE body FIN_SECCION NEW_LINE      { $$ = SeccionSemanticAction($4, SECCION_BODY); }
+  | INICIO_SECCION DOS_PUNTOS NEW_LINE FIN_SECCION NEW_LINE           { $$ = SeccionSemanticAction(NULL, SECCION_EMPTY); }
   ;
 
 text:
-       TEXTO DOS_PUNTOS STRING NEW_LINE { $$ = TextSemanticAction($3,NULL, TEXT_SIMPLE_TEXT); }
-       | TEXTO DOS_PUNTOS STRING modifiers NEW_LINE { $$ = TextSemanticAction($3, $4, TEXT_MODIFIED_TEXT); };
+       TEXTO DOS_PUNTOS STRING NEW_LINE                               { $$ = TextSemanticAction($3,NULL, TEXT_SIMPLE_TEXT); }
+       | TEXTO DOS_PUNTOS STRING modifiers NEW_LINE                   { $$ = TextSemanticAction($3, $4, TEXT_MODIFIED_TEXT); }
 
 image:
-       IMAGEN DOS_PUNTOS STRING NEW_LINE { $$ = ImgSemanticAction($3,NULL); };
+       IMAGEN DOS_PUNTOS STRING NEW_LINE                              { $$ = ImgSemanticAction($4,NULL); };
 
 title:
-       TITULO DOS_PUNTOS STRING NEW_LINE { $$ = TitleSemanticAction($3); };
+       TITULO DOS_PUNTOS STRING NEW_LINE                              { $$ = TitleSemanticAction($3); }
 
 subtitle:
-       SUBTITULO DOS_PUNTOS STRING NEW_LINE { $$ = SubtitleSemanticAction($3); };
+       SUBTITULO DOS_PUNTOS STRING NEW_LINE                           { $$ = SubtitleSemanticAction($4); }
+
 link:
-       ENLACE DOS_PUNTOS PARENTESIS_IZQUIERDO href PARENTESIS_DERECHO simple_expression NEW_LINE { $$ = LinkSemanticAction($4, $6); }
+       ENLACE DOS_PUNTOS PARENTESIS_IZQUIERDO href PARENTESIS_DERECHO simple_expression NEW_LINE  { $$ = LinkSemanticAction($4, $6); }
+
 navigator:
-    NAVEGADOR DOS_PUNTOS NEW_LINE row_nav FIN_NAVEGADOR NEW_LINE { $$ = NavegadorSemanticAction($4, NAVEGADOR_FILA_NAVEGADOR); }
-  | NAVEGADOR DOS_PUNTOS NEW_LINE FIN_NAVEGADOR NEW_LINE { $$ = NavegadorSemanticAction(NULL, NAVEGADOR_EMPTY); }
+    NAVEGADOR DOS_PUNTOS NEW_LINE row_nav FIN_NAVEGADOR NEW_LINE      { $$ = NavegadorSemanticAction($4, NAVEGADOR_FILA_NAVEGADOR); }
+  | NAVEGADOR DOS_PUNTOS NEW_LINE FIN_NAVEGADOR NEW_LINE              { $$ = NavegadorSemanticAction(NULL, NAVEGADOR_EMPTY); }
   ;
 
 table:
-    INICIO_TABLA DOS_PUNTOS NEW_LINE row_table FIN_TABLA NEW_LINE { $$ = TablaSemanticAction($4, TABLA_FILA_TABLA); }
-  | INICIO_TABLA DOS_PUNTOS NEW_LINE FIN_TABLA NEW_LINE { $$ = TablaSemanticAction(NULL, TABLA_EMPTY); }
+    INICIO_TABLA DOS_PUNTOS NEW_LINE row_table FIN_TABLA NEW_LINE     { $$ = TablaSemanticAction($4, TABLA_FILA_TABLA); }
+  | INICIO_TABLA DOS_PUNTOS NEW_LINE FIN_TABLA NEW_LINE               { $$ = TablaSemanticAction(NULL, TABLA_EMPTY); }
   ;
 
 href:
-    STRING { $$ = HrefSemanticAction($1, NULL, HREF_URL); }
-  | NUMERAL ID { $$ = HrefSemanticAction(NULL, $2, HREF_ID); }
+    STRING                    { $$ = HrefSemanticAction($1, NULL, HREF_URL); }
+  | NUMERAL ID                { $$ = HrefSemanticAction(NULL, $2, HREF_ID); }
   ;
 
 puntoPorPunto:
-    PUNTO_POR_PUNTO DOS_PUNTOS NEW_LINE row_ppp FIN_PPP NEW_LINE { $$ = PuntoPorPuntoSemanticAction($4, PPP_FILA_PUNTO_POR_PUNTO); }
-  | PUNTO_POR_PUNTO DOS_PUNTOS NEW_LINE FIN_PPP NEW_LINE { $$ = PuntoPorPuntoSemanticAction(NULL, PPP_EMPTY); }
+    PUNTO_POR_PUNTO DOS_PUNTOS NEW_LINE row_ppp FIN_PPP NEW_LINE      { $$ = PuntoPorPuntoSemanticAction($4, PPP_FILA_PUNTO_POR_PUNTO); }
+  | PUNTO_POR_PUNTO DOS_PUNTOS NEW_LINE FIN_PPP NEW_LINE              { $$ = PuntoPorPuntoSemanticAction(NULL, PPP_EMPTY); }
   ;
 
 
