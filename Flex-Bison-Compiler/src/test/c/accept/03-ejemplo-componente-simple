@@ -1,6 +1,6 @@
 principio
 (queso) texto: esto es un texto con id
-componente (comp)
+componente (comp):
 punto-por-punto:
 - esto es un componente
 - esto es un componente

@@ -151,7 +151,7 @@ expression:
   | PARENTESIS_IZQUIERDO ID PARENTESIS_DERECHO complex_expression          { $$ = ExpressionSemanticAction($2, NULL, $4, NULL, NULL, EXPRESSION_ID_COMPLEXEXPRESSION); }
   | STRING                                       { $$ = ExpressionSemanticAction(NULL, $1, NULL, NULL, NULL, EXPRESSION_STRING); }
   | simple_expression                            { $$ = ExpressionSemanticAction(NULL, NULL, NULL, $1, NULL, EXPRESSION_SIMPLE_EXPRESSION); }
-  | LLAVE_IZQUIERDA ID LLAVE_DERECHA             { $$ = ExpressionSemanticAction($2, NULL, NULL, NULL, NULL, EXPRESSION_ID); }
+  | LLAVE_IZQUIERDA ID LLAVE_DERECHA NEW_LINE            { $$ = ExpressionSemanticAction($2, NULL, NULL, NULL, NULL, EXPRESSION_ID); }
   | component                                    { $$ = ExpressionSemanticAction(NULL, NULL, NULL, NULL, $1, EXPRESSION_COMPONENTE); }
   | complex_expression                           { $$ = ExpressionSemanticAction(NULL, NULL, $1, NULL, NULL, EXPRESSION_COMPLEX_EXPRESSION); }
   ;
