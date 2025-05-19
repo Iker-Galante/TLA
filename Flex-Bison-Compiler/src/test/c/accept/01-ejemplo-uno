@@ -1,0 +1,13 @@
+principio
+titulo: Ejemplo
+subtitulo: Estoesunejemplo
+texto: Esteesunejemplodecomofuncionanuestrolenguaje
+texto: Podemosagregardistintoselementos
+imagen: httpsejemplocomimagenjpg
+punto-por-punto:
+- Estoesunelementodeunalista
+- Yesteesotroelemento
+fin-ppp
+texto: Estoesuntextodestacado
+texto: Yesteesotrotextoconcoloryestilo
+fin
