@@ -67,17 +67,15 @@ void releaseExpression(Expression * expression){
 				free(expression->string);
 				break;
 			case EXPRESSION_ID:
-
 				free(expression->componentId);
-			/*	free(expression->id);*/
 				break;
 			case EXPRESSION_ID_SIMPLEEXPRESSION:
+				releaseSimpleExpression(expression->simpleExpressionId);
 				free(expression->simpleId);
-				releaseSimpleExpression(expression->simpleExpression);
 				break;
 			case EXPRESSION_ID_COMPLEXEXPRESSION:
+				releaseComplexExpression(expression->complexExpressionId);
 				free(expression->complexId);
-				releaseComplexExpression(expression->complexExpression);
 				break;
 			case EXPRESSION_SIMPLE_EXPRESSION:
 				releaseSimpleExpression(expression->simpleExpression);
@@ -234,11 +232,21 @@ void releaseNavegador(Navegador * navegador) {
 void releaseFilaPPP(FilaPPP * rowPPP) {
     logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
     if (rowPPP != NULL) {
-       if(rowPPP->type == FILAPPP_EXPRESSION_FILAPPP){
+		switch (rowPPP->type) {
+		{
+		case FILAPPP_EXPRESSION_FILAPPP:
 			releaseFilaPPP(rowPPP->filaPPP);
-    }
-		releaseExpression(rowPPP->expression);
-		free(rowPPP);
+			releaseExpression(rowPPP->expressionFila);
+			break;
+		case FILAPPP_EXPRESSION:
+			releaseExpression(rowPPP->expression);
+			break;
+		default:
+			logError(_logger, "Unknown row PPP type: %d", rowPPP->type);
+			break;
+		}
+	}
+	free(rowPPP);
 	}
 }
 

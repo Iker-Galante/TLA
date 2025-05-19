@@ -18,7 +18,7 @@ for test in $(ls src/test/c/accept/); do
 	cat "src/test/c/accept/$test" | build/Compiler >/dev/null 2>&1
 	RESULT="$?"
 	if [ "$RESULT" == "0" ]; then
-		echo -e "    $test, ${GREEN}ANDA PEDAZO DE RE MIERDA${OFF} (status $RESULT)"
+		echo -e "    $test, ${GREEN}and it does${OFF} (status $RESULT)"
 	else
 		STATUS=1
 		echo -e "    $test, ${RED}but it rejects${OFF} (status $RESULT)"

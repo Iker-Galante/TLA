@@ -115,11 +115,11 @@ Expression * ExpressionSemanticAction(char * id, char * string, ComplexExpressio
         expression->complexExpression = complexExpression;
         break;
         case EXPRESSION_ID_SIMPLEEXPRESSION:
-        expression->simpleExpression = simpleExpression;
+        expression->simpleExpressionId = simpleExpression;
         expression->simpleId = id;
         break;
     case EXPRESSION_ID_COMPLEXEXPRESSION:
-        expression->complexExpression = complexExpression;
+        expression->complexExpressionId = complexExpression;
         expression->complexId = id;
         break;
     case EXPRESSION_ID:

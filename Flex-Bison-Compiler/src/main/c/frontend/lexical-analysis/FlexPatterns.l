@@ -52,7 +52,7 @@
 "italica"                           { return KeywordLexemeAction(createLexicalAnalyzerContext(), ITALICA); }
 "negrita"                           { return KeywordLexemeAction(createLexicalAnalyzerContext(), NEGRITA); }
 "tamanio"                           { return KeywordLexemeAction(createLexicalAnalyzerContext(), TAMANIO); }
-"punto-por-punto"                   {  yy_push_state(PPP);printf("PPP\n");return KeywordLexemeAction(createLexicalAnalyzerContext(), PUNTO_POR_PUNTO); }
+"punto-por-punto"                   {  yy_push_state(PPP);printf("TOKEN: PPP\n");return KeywordLexemeAction(createLexicalAnalyzerContext(), PUNTO_POR_PUNTO); }
 "seccion"                           { return KeywordLexemeAction(createLexicalAnalyzerContext(), SECCION); }
 "tabla"                             { return KeywordLexemeAction(createLexicalAnalyzerContext(), TABLA); }
 "navegador"                         { return KeywordLexemeAction(createLexicalAnalyzerContext(), NAVEGADOR); }
@@ -64,7 +64,7 @@
 "fin-seccion"                       { return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_SECCION); }
 "fin-componente"                    { return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_COMPONENTE); }
 "fin-fila"                          { return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_FILA); }
-<PPP>"fin-ppp"                           {yy_pop_state(); return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_PPP); }
+<PPP>"fin-ppp"                           {printf("TOKEN: FINPPP\n");  yy_pop_state(); return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_PPP); }
 ":"                                { yy_push_state(STRING_PROCESSING);printf("TOKEN: DOS PUNTOS\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(),DOS_PUNTOS); }
 <PPP>"-"[[:space:]]*                             { yy_push_state(STRING_PROCESSING); printf("TOKEN: MENOS\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), GUION); }
 <INITIAL,COMPONENT>"("                               { yy_push_state(IDENTIFICADOR);printf("TOKEN: PARENTESIS_IZQUIERDO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), PARENTESIS_IZQUIERDO); }
