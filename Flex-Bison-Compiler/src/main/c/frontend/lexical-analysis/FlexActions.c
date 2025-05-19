@@ -126,9 +126,9 @@ Token StringLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext)
 Token IdentifierLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext)
 {
 	_logLexicalAnalyzerContext(__FUNCTION__, lexicalAnalyzerContext);
-	lexicalAnalyzerContext->semanticValue->string = calloc(1 + lexicalAnalyzerContext->length, sizeof(char));
-	char *semanticValueString = lexicalAnalyzerContext->semanticValue->string;
-	semanticValueString = strncpy(semanticValueString, lexicalAnalyzerContext->lexeme, lexicalAnalyzerContext->length);
+	lexicalAnalyzerContext->semanticValue->id = calloc(1 + lexicalAnalyzerContext->length, sizeof(char));
+	char *semanticValueId = lexicalAnalyzerContext->semanticValue->id;
+	semanticValueId = strncpy(semanticValueId, lexicalAnalyzerContext->lexeme, lexicalAnalyzerContext->length);
 	destroyLexicalAnalyzerContext(lexicalAnalyzerContext);
 	return ID;
 }
