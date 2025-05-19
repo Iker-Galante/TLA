@@ -127,6 +127,8 @@ program:
   | PRINCIPIO NEW_LINE body FIN                      { $$ = ProgramSemanticAction($3, NULL, NULL, PROGRAM_BODY,currentCompilerState()); }
   | PRINCIPIO NEW_LINE header FIN                    { $$ = ProgramSemanticAction(NULL,$3, NULL, PROGRAM_HEADER,currentCompilerState()); }
   | PRINCIPIO NEW_LINE FIN                           { $$ = ProgramSemanticAction(NULL, NULL, NULL, PROGRAM_EMPTY,currentCompilerState()); }
+  | PRINCIPIO  FIN                           { $$ = ProgramSemanticAction(NULL, NULL, NULL, PROGRAM_EMPTY,currentCompilerState()); }  //Esto es para que pase el test de principio y fin con espacios en blanco
+
   ;
 
 header:
@@ -176,8 +178,8 @@ modifiers:
   ;
 
 component:
-    COMPONENTE PARENTESIS_IZQUIERDO ID PARENTESIS_DERECHO NEW_LINE body FIN_COMPONENTE NEW_LINE     { $$ = ComponentSemanticAction($3, $6, COMPONENT_COMPONENT); }
-  | COMPONENTE PARENTESIS_IZQUIERDO ID PARENTESIS_DERECHO NEW_LINE FIN_COMPONENTE NEW_LINE          { $$ = ComponentSemanticAction($3, NULL, COMPONENT_EMPTY); }
+    COMPONENTE PARENTESIS_IZQUIERDO ID PARENTESIS_DERECHO DOS_PUNTOS NEW_LINE body FIN_COMPONENTE NEW_LINE     { $$ = ComponentSemanticAction($3, $7, COMPONENT_COMPONENT); }
+  | COMPONENTE PARENTESIS_IZQUIERDO ID PARENTESIS_DERECHO DOS_PUNTOS NEW_LINE FIN_COMPONENTE NEW_LINE          { $$ = ComponentSemanticAction($3, NULL, COMPONENT_EMPTY); }
   ;
 
 complex_expression:
