@@ -15,9 +15,12 @@ add_custom_command(
 if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
 	message(NOTICE "The C compiler is GCC.")
 
+	#TODO aca comente el (-03) son las optimizaciones que hace el compilador
+	#xq capaz hace que me pise las lineas donde pongo los breakpoints
+	#es solo para debuguear, al entregar habria que descomentar
 	# Options for GCC.
-	add_compile_options(-fsanitize=address)
-	add_compile_options(-O3)
+	 add_compile_options(-fsanitize=address)
+	 #add_compile_options(-O3)
 	add_compile_options(-static-libgcc)
 	add_compile_options(-std=gnu99)
 	add_link_options(-fsanitize=address)
@@ -55,8 +58,8 @@ endif ()
 # Defines the entry-point of the application, and the source-codes (*.c extension).
 # The header files (*.h extension), are automatically included from the source-codes.
 add_executable(Compiler
-	src/main/c/backend/code-generation/Generator.c
-	src/main/c/backend/domain-specific/Calculator.c
+	# src/main/c/backend/code-generation/Generator.c
+	# src/main/c/backend/domain-specific/Calculator.c
 	src/main/c/EntryPoint.c
 	src/main/c/frontend/lexical-analysis/FlexActions.c
 	src/main/c/frontend/lexical-analysis/FlexScanner.c

@@ -20,8 +20,8 @@ const int main(const int count, const char ** arguments) {
 	initializeBisonActionsModule();
 	initializeSyntacticAnalyzerModule();
 	initializeAbstractSyntaxTreeModule();
-	initializeCalculatorModule();
-	initializeGeneratorModule();
+	/*initializeCalculatorModule();*/
+	/*initializeGeneratorModule();*/
 
 	// Logs the arguments of the application.
 	for (int k = 0; k < count; ++k) {
@@ -41,10 +41,11 @@ const int main(const int count, const char ** arguments) {
 		// ----------------------------------------------------------------------------------------
 		// Beginning of the Backend... ------------------------------------------------------------
 		logDebugging(logger, "Computing expression value...");
-		ComputationResult computationResult = computeExpression(program->expression);
+		/*
+		ComputationResult computationResult = computeExpression(program->body);
 		if (computationResult.succeed) {
 			compilerState.value = computationResult.value;
-			generate(&compilerState);
+			//generate(&compilerState);
 		}
 		else {
 			logError(logger, "The computation phase rejects the input program.");
@@ -52,16 +53,17 @@ const int main(const int count, const char ** arguments) {
 		}
 		// ...end of the Backend. -----------------------------------------------------------------
 		// ----------------------------------------------------------------------------------------
+		*/
 	}
 	else {
 		logError(logger, "The syntactic-analysis phase rejects the input program.");
 		compilationStatus = FAILED;
 	}
 	logDebugging(logger, "Releasing AST resources...");
-	releaseProgram(program);
+	/*releaseProgram(program);*/
 	logDebugging(logger, "Releasing modules resources...");
-	shutdownGeneratorModule();
-	shutdownCalculatorModule();
+	//shutdownGeneratorModule();
+	/*shutdownCalculatorModule();*/
 	shutdownAbstractSyntaxTreeModule();
 	shutdownSyntacticAnalyzerModule();
 	shutdownBisonActionsModule();
