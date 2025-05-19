@@ -68,7 +68,7 @@ void releaseExpression(Expression * expression){
 				break;
 			case EXPRESSION_ID:
 
-				releaseBody(expression->componentId);
+				free(expression->componentId);
 			/*	free(expression->id);*/
 				break;
 			case EXPRESSION_ID_SIMPLEEXPRESSION:

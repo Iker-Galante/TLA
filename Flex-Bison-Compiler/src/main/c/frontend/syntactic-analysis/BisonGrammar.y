@@ -72,6 +72,7 @@
 %destructor { releaseHref($$); } <href>
 %destructor { releasePuntoPorPunto($$); } <puntoPorPunto>
 %destructor { free($$); } STRING
+%destructor { releaseExpression($$); } <expression>
 
 /** Terminals. */
 %token <string> STRING
@@ -243,8 +244,8 @@ href:
   ;
 
 puntoPorPunto:
-    PUNTO_POR_PUNTO NEW_LINE row_ppp FIN_PPP NEW_LINE      { $$ = PuntoPorPuntoSemanticAction($3, PPP_FILA_PUNTO_POR_PUNTO); }
-  | PUNTO_POR_PUNTO NEW_LINE FIN_PPP NEW_LINE              { $$ = PuntoPorPuntoSemanticAction(NULL, PPP_EMPTY); }
+    PUNTO_POR_PUNTO DOS_PUNTOS NEW_LINE row_ppp FIN_PPP NEW_LINE      { $$ = PuntoPorPuntoSemanticAction($4, PPP_FILA_PUNTO_POR_PUNTO); }
+  | PUNTO_POR_PUNTO DOS_PUNTOS NEW_LINE FIN_PPP NEW_LINE              { $$ = PuntoPorPuntoSemanticAction(NULL, PPP_EMPTY); }
   ;
 
 
