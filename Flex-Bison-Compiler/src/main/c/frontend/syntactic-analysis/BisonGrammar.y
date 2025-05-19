@@ -228,7 +228,7 @@ subtitle:
        SUBTITULO DOS_PUNTOS STRING NEW_LINE                           { $$ = SubtitleSemanticAction($3); }
 
 link:
-       ENLACE DOS_PUNTOS PARENTESIS_IZQUIERDO href PARENTESIS_DERECHO simple_expression NEW_LINE  { $$ = LinkSemanticAction($4, $6); }
+       ENLACE DOS_PUNTOS PARENTESIS_IZQUIERDO href PARENTESIS_DERECHO simple_expression  { $$ = LinkSemanticAction($4, $6); }
 
 navigator:
     NAVEGADOR DOS_PUNTOS NEW_LINE row_nav FIN_NAVEGADOR NEW_LINE      { $$ = NavegadorSemanticAction($4, NAVEGADOR_FILA_NAVEGADOR); }
