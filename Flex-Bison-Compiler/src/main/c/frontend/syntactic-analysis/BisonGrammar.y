@@ -71,7 +71,6 @@
 %destructor { releaseTabla($$); } <table>
 %destructor { releaseHref($$); } <href>
 %destructor { releasePuntoPorPunto($$); } <puntoPorPunto>
-%destructor { free($$); } STRING
 %destructor { releaseExpression($$); } <expression>
 
 /** Terminals. */
