@@ -21,6 +21,7 @@
 %x COMPONENT
 %x DUMMY
 %x LINK
+%x INNERLINK
 /**
  * Reusable patterns.
  *
@@ -78,8 +79,13 @@
 <IDENTIFICADOR>[a-zA-Z_][a-zA-Z0-9_.]*         { printf("TOKEN: IDENTIFICADOR\n"); return IdentifierLexemeAction(createLexicalAnalyzerContext()); }
 [a-zA-Z0-9_ ]+                       { printf("TOKEN: ESTRIN \n");return StringLexemeAction(createLexicalAnalyzerContext()); }
 <STRING_PROCESSING>[^\n\r]+        { printf("TOKEN: ESTRIN RARO \n"); return StringLexemeAction(createLexicalAnalyzerContext()); }
-<COMPONENT,DUMMY,LINK,PPP>":"                               {yy_pop_state(); printf("TOKEN: DOS PUNTOS COMPLEJO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(),DOS_PUNTOS); }
-
+<COMPONENT,DUMMY,PPP>":"                               {yy_pop_state(); printf("TOKEN: DOS PUNTOS COMPLEJO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(),DOS_PUNTOS); }
+<LINK>":"                               {printf("TOKEN: DOS PUNTOS COMPLEJO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(),DOS_PUNTOS); }
+<LINK>"("                               {printf("TOKEN: PARENTESIS_IZQUIERDO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), PARENTESIS_IZQUIERDO); }
+<LINK>")"[[:space:]]*	                { yy_pop_state();printf("TOKEN: PARENTESIS_DERECHO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), PARENTESIS_DERECHO); }
+<LINK>"#"                              { yy_push_state(INNERLINK);printf("TOKEN: NUMERAL\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), NUMERAL); }
+<LINK>[a-zA-Z_][a-zA-Z0-9_.]*         { printf("TOKEN: IDENTIFICADOR\n"); return StringLexemeAction(createLexicalAnalyzerContext()); }
+<INNERLINK>[a-zA-Z_][a-zA-Z0-9_.]*         {yy_pop_state(); printf("TOKEN: IDENTIFICADOR\n"); return IdentifierLexemeAction(createLexicalAnalyzerContext()); }
 %%
 
 #include "FlexExport.h"
