@@ -21,8 +21,8 @@
 	Body * body;
 	Footer * footer;
 	SimpleExpression * simple_expression;
-       ComplexExpression * complex_expression;
-       Expression * expression;
+  ComplexExpression * complex_expression;
+  Expression * expression;
 	Modifier * modifiers;
 	Component * component;
 	FilaPPP * row_ppp;
@@ -34,11 +34,11 @@
 	Image * image;
 	Title * title;
 	Subtitle * subtitle;
-       Link * link;
-       Navegador * navigator;
-       Table * table;
-       Href * href;
-       PuntoPorPunto * puntoPorPunto;
+  Link * link;
+  Navegador * navigator;
+  Table * table;
+  Href * href;
+  PuntoPorPunto * puntoPorPunto;
 }
 
 /**

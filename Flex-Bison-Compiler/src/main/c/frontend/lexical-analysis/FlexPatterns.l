@@ -32,8 +32,8 @@
 <MULTILINE_COMMENT>[[:space:]]+		{ IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 <MULTILINE_COMMENT>[^*]+			{ IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 <MULTILINE_COMMENT>.				{ IgnoredLexemeAction(createLexicalAnalyzerContext()); }
-[\r]?\n                            { printf("TOKEN: NEWLINE WINDOWS\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), NEW_LINE); }
-"principio"                 { printf("TOKEN: PRINCIPIO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), PRINCIPIO); }
+[\r]?\n                             { printf("TOKEN: NEWLINE WINDOWS\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), NEW_LINE); }
+"principio"                         { printf("TOKEN: PRINCIPIO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), PRINCIPIO); }
 "final"                             { printf("TOKEN: FIN\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN); }
 "encabezado"						{  return KeywordLexemeAction(createLexicalAnalyzerContext(), ENCABEZADO); }
 "fin-encabezado"					{ return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_ENCABEZADO); }
@@ -53,7 +53,7 @@
 "seccion"                           { return KeywordLexemeAction(createLexicalAnalyzerContext(), SECCION); }
 "tabla"                             { return KeywordLexemeAction(createLexicalAnalyzerContext(), TABLA); }
 "navegador"                         { return KeywordLexemeAction(createLexicalAnalyzerContext(), NAVEGADOR); }
-"componente"                        {printf("COMPONENT\n");   return KeywordLexemeAction(createLexicalAnalyzerContext(), COMPONENTE); }
+"componente"                        { printf("COMPONENT\n");   return KeywordLexemeAction(createLexicalAnalyzerContext(), COMPONENTE); }
 "fin-navegador"                     { return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_NAVEGADOR); }
 "inicio-tabla"                      { return KeywordLexemeAction(createLexicalAnalyzerContext(), INICIO_TABLA); }
 "fin-tabla"                         { return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_TABLA); }
@@ -61,25 +61,25 @@
 "fin-seccion"                       { return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_SECCION); }
 "fin-componente"                    { return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_COMPONENTE); }
 "fin-fila"                          { return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_FILA); }
-"fin-ppp"                           {printf("TOKEN: FINPPP\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_PPP); }
-":"                                { printf("TOKEN: DOS PUNTOS\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(),DOS_PUNTOS); }
+"fin-ppp"                           { printf("TOKEN: FINPPP\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_PPP); }
+":"                                 { printf("TOKEN: DOS PUNTOS\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(),DOS_PUNTOS); }
 
 
-"\""                              { printf("TOKEN: COMILLAS\n"); BEGIN(STRING_PROCESSING); IgnoredLexemeAction(createLexicalAnalyzerContext()); }
-<STRING_PROCESSING>[^"]+        { printf("TOKEN: CADENA DE CARACTERES\n"); return StringLexemeAction(createLexicalAnalyzerContext()); }
-<STRING_PROCESSING>"\""        { printf("TOKEN: COMILLAS\n"); BEGIN(INITIAL);IgnoredLexemeAction(createLexicalAnalyzerContext()); }
+"\""                                { printf("TOKEN: COMILLAS\n"); BEGIN(STRING_PROCESSING); IgnoredLexemeAction(createLexicalAnalyzerContext()); }
+<STRING_PROCESSING>[^"]+            { printf("TOKEN: CADENA DE CARACTERES\n"); return StringLexemeAction(createLexicalAnalyzerContext()); }
+<STRING_PROCESSING>"\""             { printf("TOKEN: COMILLAS\n"); BEGIN(INITIAL);IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 
-"-"[[:space:]]*                             { printf("TOKEN: MENOS\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), GUION); }
+"-"[[:space:]]*                     { printf("TOKEN: MENOS\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), GUION); }
 
-"("                               {BEGIN(IDENTIFICADOR); printf("TOKEN: PARENTESIS_IZQUIERDO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), PARENTESIS_IZQUIERDO); }
-<IDENTIFICADOR>")"                               {BEGIN(INITIAL); printf("TOKEN: PARENTESIS_DERECHO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), PARENTESIS_DERECHO); }
-"{"                               {BEGIN(IDENTIFICADOR); printf("TOKEN: LLAVE_IZQUIERDA\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), LLAVE_IZQUIERDA); }
-<IDENTIFICADOR>"}"                               {BEGIN(INITIAL); printf("TOKEN: LLAVE_DERECHA\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), LLAVE_DERECHA); }
+"("                                              { BEGIN(IDENTIFICADOR); printf("TOKEN: PARENTESIS_IZQUIERDO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), PARENTESIS_IZQUIERDO); }
+<IDENTIFICADOR>")"                               { BEGIN(INITIAL); printf("TOKEN: PARENTESIS_DERECHO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), PARENTESIS_DERECHO); }
+"{"                                              { BEGIN(IDENTIFICADOR); printf("TOKEN: LLAVE_IZQUIERDA\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), LLAVE_IZQUIERDA); }
+<IDENTIFICADOR>"}"                               { BEGIN(INITIAL); printf("TOKEN: LLAVE_DERECHA\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), LLAVE_DERECHA); }
 <IDENTIFICADOR>"#"                               { printf("TOKEN: NUMERAL\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), NUMERAL); }
-<IDENTIFICADOR>[a-zA-Z_][a-zA-Z0-9_.]*         { printf("TOKEN: IDENTIFICADOR\n"); return IdentifierLexemeAction(createLexicalAnalyzerContext()); }
+<IDENTIFICADOR>[a-zA-Z_][a-zA-Z0-9_.]*           { printf("TOKEN: IDENTIFICADOR\n"); return IdentifierLexemeAction(createLexicalAnalyzerContext()); }
 
 
-<*>[[:space:]]+						{ ; IgnoredLexemeAction(createLexicalAnalyzerContext()); }
+<*>[[:space:]]+						             { ; IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 %%
 
 #include "FlexExport.h"
