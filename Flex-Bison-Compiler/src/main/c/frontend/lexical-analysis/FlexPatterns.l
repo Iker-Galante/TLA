@@ -35,7 +35,7 @@
 <MULTILINE_COMMENT>[[:space:]]+		{ IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 <MULTILINE_COMMENT>[^*]+			{ IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 <MULTILINE_COMMENT>.				{ IgnoredLexemeAction(createLexicalAnalyzerContext()); }
-
+[\r]?\n                            { printf("TOKEN: NEWLINE WINDOWS\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), NEW_LINE); }
 "principio"                 { printf("TOKEN: PRINCIPIO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), PRINCIPIO); }
 "final"                             { printf("TOKEN: FIN\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN); }
 "encabezado"						{ yy_push_state(DUMMY); return KeywordLexemeAction(createLexicalAnalyzerContext(), ENCABEZADO); }
@@ -64,23 +64,21 @@
 "fin-seccion"                       { return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_SECCION); }
 "fin-componente"                    { return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_COMPONENTE); }
 "fin-fila"                          { return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_FILA); }
-<PPP>"fin-ppp"                           {printf("TOKEN: FINPPP\n");  yy_pop_state(); return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_PPP); }
+"fin-ppp"                           {printf("TOKEN: FINPPP\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_PPP); }
 ":"                                { yy_push_state(STRING_PROCESSING);printf("TOKEN: DOS PUNTOS\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(),DOS_PUNTOS); }
-<PPP>"-"[[:space:]]*                             { yy_push_state(STRING_PROCESSING); printf("TOKEN: MENOS\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), GUION); }
+"-"[[:space:]]*                             { printf("TOKEN: MENOS\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), GUION); }
+[[:space:]]+						{ ; IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 <INITIAL,COMPONENT>"("                               { yy_push_state(IDENTIFICADOR);printf("TOKEN: PARENTESIS_IZQUIERDO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), PARENTESIS_IZQUIERDO); }
 <IDENTIFICADOR>")"                               { yy_pop_state();printf("TOKEN: PARENTESIS_DERECHO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), PARENTESIS_DERECHO); }
 "{"                               { yy_push_state(IDENTIFICADOR);printf("TOKEN: LLAVE_IZQUIERDA\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), LLAVE_IZQUIERDA); }
 <IDENTIFICADOR>"}"                               { yy_pop_state();printf("TOKEN: LLAVE_DERECHA\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), LLAVE_DERECHA); }
 <IDENTIFICADOR>"#"                               { printf("TOKEN: NUMERAL\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), NUMERAL); }
-[\r]?\n                            { printf("TOKEN: NEWLINE WINDOWS\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), NEW_LINE); }
 <IDENTIFICADOR>[a-zA-Z_][a-zA-Z0-9_.]*         { printf("TOKEN: IDENTIFICADOR\n"); return IdentifierLexemeAction(createLexicalAnalyzerContext()); }
 [a-zA-Z0-9_]+                       { printf("TOKEN: ESTRIN \n");return StringLexemeAction(createLexicalAnalyzerContext()); }
-[[:space:]]+						{ ; IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 <STRING_PROCESSING>[^\n\r]+        { printf("TOKEN: ESTRIN RARO \n"); return StringLexemeAction(createLexicalAnalyzerContext()); }
 <STRING_PROCESSING>[\r]?\n         { printf("TOKEN: NEWLINE WINDOWS (STR)\n"); yy_pop_state(); return KeywordLexemeAction(createLexicalAnalyzerContext(), NEW_LINE); }
-<PPP>":"                               { printf("TOKEN: DOS PUNTOS COMPLEJO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(),DOS_PUNTOS); }
 <PPP,COMPONENT,DUMMY,LINK>[\r]?\n         { printf("TOKEN: NEWLINE COMP O PPP \n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), NEW_LINE); }
-<COMPONENT,DUMMY,LINK>":"                               {yy_pop_state(); printf("TOKEN: DOS PUNTOS COMPLEJO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(),DOS_PUNTOS); }
+<COMPONENT,DUMMY,LINK,PPP>":"                               {yy_pop_state(); printf("TOKEN: DOS PUNTOS COMPLEJO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(),DOS_PUNTOS); }
 <COMPONENT,DUMMY,LINK>[[:space:]]+						{printf("Espacio\n") ; IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 
 %%
