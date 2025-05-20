@@ -1,9 +1,9 @@
 principio
-(queso) texto: esto es un texto con id
+(queso) texto: "esto es un texto con id"
 componente (comp):
 punto-por-punto:
-- texto: esto es un algo
-- imagen:esto es un algo
+- texto: "esto es un algo"
+- imagen:"esto es un algo"
 fin-ppp
 fin-componente
 {comp}
