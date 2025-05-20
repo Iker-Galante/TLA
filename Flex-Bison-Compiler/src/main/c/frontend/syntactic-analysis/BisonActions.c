@@ -194,7 +194,7 @@ Modifier * ModifierSemanticAction(Modifier * modifier, ColorType color, Modifier
     {
     case MODIFIER_COLOR_MOD:
         newModifier->color = color;
-        newModifier->modifier = modifier;
+        newModifier->modifierWithColor = modifier;
         break;
     case MODIFIER_EMPTY:
     break;
@@ -286,7 +286,7 @@ FilaPPP * FilaPPPSemanticAction(Expression * expression, FilaPPP * filaPPP, Fila
         newFilaPPP->expression = expression;
         break;
         case FILAPPP_EXPRESSION_FILAPPP:
-        newFilaPPP->expression = expression;
+        newFilaPPP->expressionFila = expression;
         newFilaPPP->filaPPP = filaPPP;
     break;
     }
@@ -323,7 +323,7 @@ FilaTabla * FilaTablaSemanticAction(ColumnaTabla * columnaTabla, FilaTabla * fil
 
         break;
         case FILA_FILA_TABLA:
-        newFilaTabla->columnaTabla = columnaTabla;
+        newFilaTabla->columnaTablaConFila = columnaTabla;
         newFilaTabla->filaTabla = filaTabla;
         break;
     

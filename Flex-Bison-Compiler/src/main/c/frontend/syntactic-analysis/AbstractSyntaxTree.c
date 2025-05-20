@@ -160,7 +160,7 @@ void releaseModifiers(Modifier * modifiers) {
 		switch (modifiers->type) {
 		case MODIFIER_COLOR_MOD:
 			/*free(modifiers->color);*/
-			releaseModifiers(modifiers->modifier);
+			releaseModifiers(modifiers->modifierWithColor);
 			break;
 		case MODIFIER_MODIFIER:
 			releaseModifiers(modifiers->modifier);
@@ -255,7 +255,11 @@ void releaseFilaTabla(FilaTabla * rowTable) {
     if (rowTable != NULL) {
         if(rowTable->type == TABLA_FILA_TABLA) {
 			releaseFilaTabla(rowTable->filaTabla);
-    }
+        	releaseColumnaTabla(rowTable->columnaTablaConFila);
+		}
+    	else {
+    		releaseColumnaTabla(rowTable->columnaTabla);
+    	}
 	free(rowTable);
 	}
 }
