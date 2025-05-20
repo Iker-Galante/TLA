@@ -215,7 +215,7 @@ row_table:
 
 column_table:
     simple_expression column_table          { $$ = ColumnaTablaSemanticAction($1, $2, COLUMNA_COL); }
-  | FIN_FILA                                { $$ = ColumnaTablaSemanticAction(NULL, NULL, COLUMNA_FIN_FILA); }
+  | FIN_FILA NEW_LINE                               { $$ = ColumnaTablaSemanticAction(NULL, NULL, COLUMNA_FIN_FILA); }
   ;
 
 row_nav:
