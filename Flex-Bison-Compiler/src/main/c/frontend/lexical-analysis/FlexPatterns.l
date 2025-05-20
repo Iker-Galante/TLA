@@ -66,20 +66,19 @@
 "fin-fila"                          { return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_FILA); }
 "fin-ppp"                           {printf("TOKEN: FINPPP\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_PPP); }
 ":"                                { yy_push_state(STRING_PROCESSING);printf("TOKEN: DOS PUNTOS\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(),DOS_PUNTOS); }
+<STRING_PROCESSING>[\r]?\n         { printf("TOKEN: NEWLINE WINDOWS (STR)\n"); yy_pop_state(); return KeywordLexemeAction(createLexicalAnalyzerContext(), NEW_LINE); }
+<PPP,COMPONENT,DUMMY,LINK>[\r]?\n         { printf("TOKEN: NEWLINE COMP O PPP \n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), NEW_LINE); }
 "-"[[:space:]]*                             { printf("TOKEN: MENOS\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), GUION); }
-[[:space:]]+						{ ; IgnoredLexemeAction(createLexicalAnalyzerContext()); }
+<*>[[:space:]]+						{ ; IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 <INITIAL,COMPONENT>"("                               { yy_push_state(IDENTIFICADOR);printf("TOKEN: PARENTESIS_IZQUIERDO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), PARENTESIS_IZQUIERDO); }
 <IDENTIFICADOR>")"                               { yy_pop_state();printf("TOKEN: PARENTESIS_DERECHO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), PARENTESIS_DERECHO); }
 "{"                               { yy_push_state(IDENTIFICADOR);printf("TOKEN: LLAVE_IZQUIERDA\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), LLAVE_IZQUIERDA); }
 <IDENTIFICADOR>"}"                               { yy_pop_state();printf("TOKEN: LLAVE_DERECHA\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), LLAVE_DERECHA); }
 <IDENTIFICADOR>"#"                               { printf("TOKEN: NUMERAL\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), NUMERAL); }
 <IDENTIFICADOR>[a-zA-Z_][a-zA-Z0-9_.]*         { printf("TOKEN: IDENTIFICADOR\n"); return IdentifierLexemeAction(createLexicalAnalyzerContext()); }
-[a-zA-Z0-9_]+                       { printf("TOKEN: ESTRIN \n");return StringLexemeAction(createLexicalAnalyzerContext()); }
+[a-zA-Z0-9_ ]+                       { printf("TOKEN: ESTRIN \n");return StringLexemeAction(createLexicalAnalyzerContext()); }
 <STRING_PROCESSING>[^\n\r]+        { printf("TOKEN: ESTRIN RARO \n"); return StringLexemeAction(createLexicalAnalyzerContext()); }
-<STRING_PROCESSING>[\r]?\n         { printf("TOKEN: NEWLINE WINDOWS (STR)\n"); yy_pop_state(); return KeywordLexemeAction(createLexicalAnalyzerContext(), NEW_LINE); }
-<PPP,COMPONENT,DUMMY,LINK>[\r]?\n         { printf("TOKEN: NEWLINE COMP O PPP \n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), NEW_LINE); }
 <COMPONENT,DUMMY,LINK,PPP>":"                               {yy_pop_state(); printf("TOKEN: DOS PUNTOS COMPLEJO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(),DOS_PUNTOS); }
-<COMPONENT,DUMMY,LINK>[[:space:]]+						{printf("Espacio\n") ; IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 
 %%
 
