@@ -71,7 +71,7 @@
 "-"[[:space:]]*                             { printf("TOKEN: MENOS\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), GUION); }
 <*>[[:space:]]+						{ ; IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 <INITIAL,COMPONENT>"("                               { yy_push_state(IDENTIFICADOR);printf("TOKEN: PARENTESIS_IZQUIERDO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), PARENTESIS_IZQUIERDO); }
-<IDENTIFICADOR>")"                               { yy_pop_state();printf("TOKEN: PARENTESIS_DERECHO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), PARENTESIS_DERECHO); }
+<IDENTIFICADOR>")"[[:space:]]*	                               { yy_pop_state();printf("TOKEN: PARENTESIS_DERECHO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), PARENTESIS_DERECHO); }
 "{"                               { yy_push_state(IDENTIFICADOR);printf("TOKEN: LLAVE_IZQUIERDA\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), LLAVE_IZQUIERDA); }
 <IDENTIFICADOR>"}"                               { yy_pop_state();printf("TOKEN: LLAVE_DERECHA\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), LLAVE_DERECHA); }
 <IDENTIFICADOR>"#"                               { printf("TOKEN: NUMERAL\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), NUMERAL); }
