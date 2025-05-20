@@ -1,0 +1,5 @@
+principio
+inicio-tabla:
+texto:"Esto es texto"
+fin-fila fin-tabla
+final

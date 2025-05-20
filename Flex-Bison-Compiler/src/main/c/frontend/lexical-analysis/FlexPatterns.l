@@ -17,6 +17,7 @@
 %x MULTILINE_COMMENT
 %x STRING_PROCESSING
 %x IDENTIFICADOR
+%x LINK
 
 /**
  * Reusable patterns.
@@ -43,7 +44,7 @@
 "imagen"							{ return KeywordLexemeAction(createLexicalAnalyzerContext(), IMAGEN); }
 "titulo"							{ printf("TOKEN: Titulo\n");return KeywordLexemeAction(createLexicalAnalyzerContext(), TITULO); }
 "subtitulo"						    { return KeywordLexemeAction(createLexicalAnalyzerContext(), SUBTITULO); }
-"enlace"                            { printf("TOKEN: ENLACE\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), ENLACE); }
+"enlace"                            {printf("TOKEN: ENLACE\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), ENLACE); }
 "color"                             { printf("TOKEN: COLOR\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), COLOR); }
 "subrayado"                         { return KeywordLexemeAction(createLexicalAnalyzerContext(), SUBRAYADO); }
 "italica"                           { printf("TOKEN: ITALICA\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), ITALICA); }
@@ -62,7 +63,7 @@
 "fin-componente"                    { return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_COMPONENTE); }
 "fin-fila"                          { return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_FILA); }
 "fin-ppp"                           { printf("TOKEN: FINPPP\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_PPP); }
-":"                                 { printf("TOKEN: DOS PUNTOS\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(),DOS_PUNTOS); }
+<*>":"                              { printf("TOKEN: DOS PUNTOS\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(),DOS_PUNTOS); }
 "grande"                            { printf("TOKEN: GRANDE\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), GRANDE); }
 "pequeno"                           { printf("TOKEN: PEQUENO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), PEQUENIO); }
 "normal"                            { printf("TOKEN: NORMAL\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), NORMAL); }
@@ -79,7 +80,7 @@
 <STRING_PROCESSING>"\""             { printf("TOKEN: COMILLAS\n"); BEGIN(INITIAL);IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 
 "-"[[:space:]]*                     { printf("TOKEN: MENOS\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), GUION); }
-
+"(\""                                          { BEGIN(STRING_PROCESSING); printf("TOKEN: PARENTESIS_IZQUIERDO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), PARENTESIS_IZQUIERDO); }
 "("                                              { BEGIN(IDENTIFICADOR); printf("TOKEN: PARENTESIS_IZQUIERDO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), PARENTESIS_IZQUIERDO); }
 <IDENTIFICADOR>")"                               { BEGIN(INITIAL); printf("TOKEN: PARENTESIS_DERECHO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), PARENTESIS_DERECHO); }
 "{"                                              { BEGIN(IDENTIFICADOR); printf("TOKEN: LLAVE_IZQUIERDA\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), LLAVE_IZQUIERDA); }
@@ -87,8 +88,8 @@
 <IDENTIFICADOR>"#"                               { printf("TOKEN: NUMERAL\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), NUMERAL); }
 <IDENTIFICADOR>[a-zA-Z_][a-zA-Z0-9_.]*           { printf("TOKEN: IDENTIFICADOR\n"); return IdentifierLexemeAction(createLexicalAnalyzerContext()); }
 
-
 <*>[[:space:]]+						             { ; IgnoredLexemeAction(createLexicalAnalyzerContext()); }
+")"                                                { printf("TOKEN: PARENTESIS_DERECHO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), PARENTESIS_DERECHO); }
 .									             { printf("TOKEN: UNKNOWN\n"); return UnknownLexemeAction(createLexicalAnalyzerContext()); }
 %%
 
