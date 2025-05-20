@@ -44,9 +44,9 @@
 "titulo"							{ printf("TOKEN: Titulo\n");return KeywordLexemeAction(createLexicalAnalyzerContext(), TITULO); }
 "subtitulo"						    { return KeywordLexemeAction(createLexicalAnalyzerContext(), SUBTITULO); }
 "enlace"                            { printf("TOKEN: ENLACE\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), ENLACE); }
-"color"                             { return KeywordLexemeAction(createLexicalAnalyzerContext(), COLOR); }
+"color"                             { printf("TOKEN: COLOR\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), COLOR); }
 "subrayado"                         { return KeywordLexemeAction(createLexicalAnalyzerContext(), SUBRAYADO); }
-"italica"                           { return KeywordLexemeAction(createLexicalAnalyzerContext(), ITALICA); }
+"italica"                           { printf("TOKEN: ITALICA\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), ITALICA); }
 "negrita"                           { return KeywordLexemeAction(createLexicalAnalyzerContext(), NEGRITA); }
 "tamanio"                           { return KeywordLexemeAction(createLexicalAnalyzerContext(), TAMANIO); }
 "punto-por-punto"                   {  printf("TOKEN: PPP\n");return KeywordLexemeAction(createLexicalAnalyzerContext(), PUNTO_POR_PUNTO); }
@@ -80,6 +80,7 @@
 
 
 <*>[[:space:]]+						             { ; IgnoredLexemeAction(createLexicalAnalyzerContext()); }
+.									             { printf("TOKEN: UNKNOWN\n"); return UnknownLexemeAction(createLexicalAnalyzerContext()); }
 %%
 
 #include "FlexExport.h"

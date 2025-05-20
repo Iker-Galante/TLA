@@ -215,7 +215,7 @@ section:
 
 text:
        TEXTO DOS_PUNTOS STRING NEW_LINE                               { $$ = TextSemanticAction($3,NULL, TEXT_SIMPLE_TEXT); }
-       | TEXTO DOS_PUNTOS STRING modifiers NEW_LINE                   { $$ = TextSemanticAction($3, $4, TEXT_MODIFIED_TEXT); }
+       | TEXTO modifiers DOS_PUNTOS STRING NEW_LINE                   { $$ = TextSemanticAction($4, $2, TEXT_MODIFIED_TEXT); }
 
 image:
        IMAGEN DOS_PUNTOS STRING NEW_LINE                              { $$ = ImgSemanticAction($3,NULL); };
