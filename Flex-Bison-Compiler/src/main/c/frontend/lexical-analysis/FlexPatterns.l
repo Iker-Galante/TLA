@@ -17,7 +17,6 @@
 %x MULTILINE_COMMENT
 %x STRING_PROCESSING
 %x IDENTIFICADOR
-%x LINK
 
 /**
  * Reusable patterns.
@@ -80,7 +79,7 @@
 <STRING_PROCESSING>"\""             { printf("TOKEN: COMILLAS\n"); BEGIN(INITIAL);IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 
 "-"[[:space:]]*                     { printf("TOKEN: MENOS\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), GUION); }
-"(\""                                          { BEGIN(STRING_PROCESSING); printf("TOKEN: PARENTESIS_IZQUIERDO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), PARENTESIS_IZQUIERDO); }
+"(\""                                          { BEGIN(STRING_PROCESSING); printf("TOKEN: PARENTESIS_IZQUIERDO CON \" \n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), PARENTESIS_IZQUIERDO); }
 "("                                              { BEGIN(IDENTIFICADOR); printf("TOKEN: PARENTESIS_IZQUIERDO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), PARENTESIS_IZQUIERDO); }
 <IDENTIFICADOR>")"                               { BEGIN(INITIAL); printf("TOKEN: PARENTESIS_DERECHO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), PARENTESIS_DERECHO); }
 "{"                                              { BEGIN(IDENTIFICADOR); printf("TOKEN: LLAVE_IZQUIERDA\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), LLAVE_IZQUIERDA); }

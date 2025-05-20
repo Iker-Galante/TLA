@@ -1,0 +1,25 @@
+principio
+encabezado:
+titulo: "Otro ejemplo"
+fin-encabezado
+texto: "Otra vez con otro ejemplo!"
+inicio-seccion:
+subtitulo: "Ejemplifiquemos"
+texto: "Estaría interesante contar cuantas veces puse ejemplo en estos ejemplos"
+fin-seccion
+imagen: "https://ejemplo.com/ana.jpg"
+inicio-seccion:
+subtitulo: "Mis ejemplos"
+punto-por-punto:
+- enlace: ("https://ejemplo1.com") texto:"EJEMPLO 1"
+- enlace: ("https://ejemplo2.com") texto:"EJEMPLO 2"
+- enlace: (#Algo) texto:"La data del color"
+fin-seccion
+inicio-seccion:
+subtitulo: "Más ejemplos"
+texto: "Mandame ejemplos a mi correo"
+fin-seccion
+pie:
+texto chico: "© 2025 TLA"
+fin-pie
+final
