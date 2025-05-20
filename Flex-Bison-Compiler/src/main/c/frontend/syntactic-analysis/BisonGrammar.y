@@ -149,7 +149,7 @@ body:
 expression:
     PARENTESIS_IZQUIERDO ID PARENTESIS_DERECHO simple_expression           { $$ = ExpressionSemanticAction($2, NULL, NULL, $4, NULL, EXPRESSION_ID_SIMPLEEXPRESSION); }
   | PARENTESIS_IZQUIERDO ID PARENTESIS_DERECHO complex_expression          { $$ = ExpressionSemanticAction($2, NULL, $4, NULL, NULL, EXPRESSION_ID_COMPLEXEXPRESSION); }
-  | STRING                                       { $$ = ExpressionSemanticAction(NULL, $1, NULL, NULL, NULL, EXPRESSION_STRING); }
+  | STRING NEW_LINE                                      { $$ = ExpressionSemanticAction(NULL, $1, NULL, NULL, NULL, EXPRESSION_STRING); }
   | simple_expression                            { $$ = ExpressionSemanticAction(NULL, NULL, NULL, $1, NULL, EXPRESSION_SIMPLE_EXPRESSION); }
   | LLAVE_IZQUIERDA ID LLAVE_DERECHA NEW_LINE            { $$ = ExpressionSemanticAction($2, NULL, NULL, NULL, NULL, EXPRESSION_ID); }
   | component                                    { $$ = ExpressionSemanticAction(NULL, NULL, NULL, NULL, $1, EXPRESSION_COMPONENTE); }
@@ -190,8 +190,8 @@ complex_expression:
   ;
 
 row_ppp:
-    GUION expression NEW_LINE row_ppp                  { $$ = FilaPPPSemanticAction($2, $4, FILAPPP_EXPRESSION_FILAPPP); }
-  | GUION expression NEW_LINE                         { $$ = FilaPPPSemanticAction($2, NULL, FILAPPP_EXPRESSION); }
+    GUION expression row_ppp                  { $$ = FilaPPPSemanticAction($2, $3, FILAPPP_EXPRESSION_FILAPPP); }
+  | GUION expression                          { $$ = FilaPPPSemanticAction($2, NULL, FILAPPP_EXPRESSION); }
   ;
 
 row_table:
