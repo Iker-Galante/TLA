@@ -1,0 +1,10 @@
+principio
+texto: "esto es un texto"
+((((((comp)))))) punto-por-punto:
+- "elemento de lista"
+- "elemento de lista"
+- "elemento de lista"
+fin-ppp
+texto: "esto es otro texto"
+{comp}
+final

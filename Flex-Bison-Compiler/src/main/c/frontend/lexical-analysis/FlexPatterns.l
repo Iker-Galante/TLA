@@ -63,6 +63,15 @@
 "fin-fila"                          { return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_FILA); }
 "fin-ppp"                           { printf("TOKEN: FINPPP\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_PPP); }
 ":"                                 { printf("TOKEN: DOS PUNTOS\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(),DOS_PUNTOS); }
+"grande"                            { printf("TOKEN: GRANDE\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), GRANDE); }
+"pequeno"                           { printf("TOKEN: PEQUENO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), PEQUENIO); }
+"normal"                            { printf("TOKEN: NORMAL\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), NORMAL); }
+"rojo"                              { printf("TOKEN: ROJO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), ROJO); }
+"verde"                             { printf("TOKEN: VERDE\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), VERDE); }
+"azul"                              { printf("TOKEN: AZUL\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), AZUL); }
+"amarillo"                          { printf("TOKEN: AMARILLO\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), AMARILLO); }
+"naranja"                           { printf("TOKEN: NARANJA\n"); return KeywordLexemeAction(createLexicalAnalyzerContext(), NARANJA); }
+
 
 
 "\""                                { printf("TOKEN: COMILLAS\n"); BEGIN(STRING_PROCESSING); IgnoredLexemeAction(createLexicalAnalyzerContext()); }

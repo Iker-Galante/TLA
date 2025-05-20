@@ -80,6 +80,7 @@
 %token <token> PUNTO_POR_PUNTO SECCION TABLA NAVEGADOR COMPONENTE FIN_NAVEGADOR
 %token <token> INICIO_TABLA FIN_TABLA INICIO_SECCION FIN_SECCION FIN_ENCABEZADO FIN_PIE FIN_COMPONENTE FIN_FILA FIN_PPP
 %token <token> UNKNOWN NEW_LINE DOS_PUNTOS GUION PARENTESIS_IZQUIERDO PARENTESIS_DERECHO LLAVE_IZQUIERDA LLAVE_DERECHA NUMERAL
+%token <token> GRANDE PEQUENIO NORMAL ROJO AZUL VERDE AMARILLO NARANJA
 
 /** Non-terminals. */
 %type <program> program
@@ -169,11 +170,25 @@ modifiers:
   | modifiers ITALICA                                 { $$ = ModifierSemanticAction($1, COLOR_BLUE, MODIFIER_COLOR_MOD); }
   | modifiers NEGRITA                                 { $$ = ModifierSemanticAction($1, COLOR_YELLOW, MODIFIER_COLOR_MOD); }
   | modifiers TAMANIO                                 { $$ = ModifierSemanticAction($1, COLOR_ORANGE, MODIFIER_COLOR_MOD); }
-  | COLOR                                             { $$ = ModifierSemanticAction(NULL, COLOR_RED, MODIFIER_COLOR_MOD); }
+  | modifiers GRANDE                                  { $$ = ModifierSemanticAction($1, COLOR_RED, MODIFIER_COLOR_MOD); }
+  | modifiers PEQUENIO                                { $$ = ModifierSemanticAction($1, COLOR_GREEN, MODIFIER_COLOR_MOD); }
+  | modifiers NORMAL                                  { $$ = ModifierSemanticAction($1, COLOR_BLUE, MODIFIER_COLOR_MOD); }
+  | modifiers ROJO                                    { $$ = ModifierSemanticAction($1, COLOR_RED, MODIFIER_COLOR_MOD); }
+  | modifiers AZUL                                    { $$ = ModifierSemanticAction($1, COLOR_BLUE, MODIFIER_COLOR_MOD); }
+  | modifiers VERDE                                   { $$ = ModifierSemanticAction($1, COLOR_GREEN, MODIFIER_COLOR_MOD); }
+  | modifiers AMARILLO                                { $$ = ModifierSemanticAction($1, COLOR_YELLOW, MODIFIER_COLOR_MOD); }
+  | modifiers NARANJA                                 { $$ = ModifierSemanticAction($1, COLOR_ORANGE, MODIFIER_COLOR_MOD); }
   | SUBRAYADO                                         { $$ = ModifierSemanticAction(NULL, COLOR_GREEN, MODIFIER_COLOR_MOD); }
   | ITALICA                                           { $$ = ModifierSemanticAction(NULL, COLOR_BLUE, MODIFIER_COLOR_MOD); }
   | NEGRITA                                           { $$ = ModifierSemanticAction(NULL, COLOR_YELLOW, MODIFIER_COLOR_MOD); }
-  | TAMANIO                                           { $$ = ModifierSemanticAction(NULL, COLOR_ORANGE, MODIFIER_COLOR_MOD); }
+  | GRANDE                                            { $$ = ModifierSemanticAction(NULL, COLOR_RED, MODIFIER_COLOR_MOD); }
+  | PEQUENIO                                          { $$ = ModifierSemanticAction(NULL, COLOR_GREEN, MODIFIER_COLOR_MOD); }
+  | NORMAL                                            { $$ = ModifierSemanticAction(NULL, COLOR_BLUE, MODIFIER_COLOR_MOD); }
+  | ROJO                                              { $$ = ModifierSemanticAction(NULL, COLOR_RED, MODIFIER_COLOR_MOD); }
+  | AZUL                                              { $$ = ModifierSemanticAction(NULL, COLOR_BLUE, MODIFIER_COLOR_MOD); }
+  | VERDE                                             { $$ = ModifierSemanticAction(NULL, COLOR_GREEN, MODIFIER_COLOR_MOD); }
+  | AMARILLO                                          { $$ = ModifierSemanticAction(NULL, COLOR_YELLOW, MODIFIER_COLOR_MOD); }
+  | NARANJA                                           { $$ = ModifierSemanticAction(NULL, COLOR_ORANGE, MODIFIER_COLOR_MOD); }
   ;
 
 component:
