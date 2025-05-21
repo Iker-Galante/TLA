@@ -15,9 +15,6 @@ void shutdownAbstractSyntaxTreeModule() {
 }
 
 /** PUBLIC FUNCTIONS */
-
-//TODO CHEQUEAR TODO ESTO PORQUE ME QUEME MAL Y DEJE ERRORES. 
-
 void releaseProgram(Program * program) {
 	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
 	if (program != NULL) {

@@ -50,8 +50,6 @@
 "negrita"                           { return KeywordLexemeAction(createLexicalAnalyzerContext(), NEGRITA); }
 "tamanio"                           { return KeywordLexemeAction(createLexicalAnalyzerContext(), TAMANIO); }
 "punto-por-punto"                   { return KeywordLexemeAction(createLexicalAnalyzerContext(), PUNTO_POR_PUNTO); }
-"seccion"                           { return KeywordLexemeAction(createLexicalAnalyzerContext(), SECCION); }
-"tabla"                             { return KeywordLexemeAction(createLexicalAnalyzerContext(), TABLA); }
 "navegador"                         { return KeywordLexemeAction(createLexicalAnalyzerContext(), NAVEGADOR); }
 "componente"                        { return KeywordLexemeAction(createLexicalAnalyzerContext(), COMPONENTE); }
 "fin-navegador"                     { return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN_NAVEGADOR); }
@@ -74,9 +72,9 @@
 
 
 
-"\""                                { BEGIN(STRING_PROCESSING); IgnoredLexemeAction(createLexicalAnalyzerContext()); }
-<STRING_PROCESSING>[^"]+            { return StringLexemeAction(createLexicalAnalyzerContext()); }
-<STRING_PROCESSING>"\""             { BEGIN(INITIAL);IgnoredLexemeAction(createLexicalAnalyzerContext()); }
+"\""                                             { BEGIN(STRING_PROCESSING); IgnoredLexemeAction(createLexicalAnalyzerContext()); }
+<STRING_PROCESSING>[^"]+                         { return StringLexemeAction(createLexicalAnalyzerContext()); }
+<STRING_PROCESSING>"\""                          { BEGIN(INITIAL);IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 
 "-"[[:space:]]*                                  { return KeywordLexemeAction(createLexicalAnalyzerContext(), GUION); }
 "(\""                                            { BEGIN(STRING_PROCESSING); return KeywordLexemeAction(createLexicalAnalyzerContext(), PARENTESIS_IZQUIERDO); }
