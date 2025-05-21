@@ -14,7 +14,7 @@
  *
  * @see https://westes.github.io/flex/manual/Start-Conditions.html
  */
-%x MULTILINE_COMMENT
+%x COMMENT
 %x STRING_PROCESSING
 %x IDENTIFICADOR
 
@@ -27,11 +27,9 @@
 
 %%
 
-"/*"								{ BEGIN(MULTILINE_COMMENT); BeginMultilineCommentLexemeAction(createLexicalAnalyzerContext()); }
-<MULTILINE_COMMENT>"*/"				{ EndMultilineCommentLexemeAction(createLexicalAnalyzerContext()); BEGIN(INITIAL); }
-<MULTILINE_COMMENT>[[:space:]]+		{ IgnoredLexemeAction(createLexicalAnalyzerContext()); }
-<MULTILINE_COMMENT>[^*]+			{ IgnoredLexemeAction(createLexicalAnalyzerContext()); }
-<MULTILINE_COMMENT>.				{ IgnoredLexemeAction(createLexicalAnalyzerContext()); }
+"//"								{ BEGIN(COMMENT); BeginMultilineCommentLexemeAction(createLexicalAnalyzerContext()); }
+<COMMENT>"\n"				        { EndMultilineCommentLexemeAction(createLexicalAnalyzerContext()); BEGIN(INITIAL); }
+<COMMENT>[^\n]* 		            { IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 [\r]?\n                             { return KeywordLexemeAction(createLexicalAnalyzerContext(), NEW_LINE); }
 "principio"                         { return KeywordLexemeAction(createLexicalAnalyzerContext(), PRINCIPIO); }
 "final"                             { return KeywordLexemeAction(createLexicalAnalyzerContext(), FIN); }

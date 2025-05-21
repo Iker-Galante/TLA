@@ -126,7 +126,7 @@ program:
   | PRINCIPIO NEW_LINE body FIN                      { $$ = ProgramSemanticAction($3, NULL, NULL, PROGRAM_BODY,currentCompilerState()); }
   | PRINCIPIO NEW_LINE header FIN                    { $$ = ProgramSemanticAction(NULL,$3, NULL, PROGRAM_HEADER,currentCompilerState()); }
   | PRINCIPIO NEW_LINE FIN                           { $$ = ProgramSemanticAction(NULL, NULL, NULL, PROGRAM_EMPTY,currentCompilerState()); }
-  | PRINCIPIO  FIN                           { $$ = ProgramSemanticAction(NULL, NULL, NULL, PROGRAM_EMPTY,currentCompilerState()); }  //Esto es para que pase el test de principio y fin con espacios en blanco
+  | PRINCIPIO FIN                                    { $$ = ProgramSemanticAction(NULL, NULL, NULL, PROGRAM_EMPTY,currentCompilerState()); }  //Esto es para que pase el test de principio y fin con espacios en blanco
 
   ;
 
