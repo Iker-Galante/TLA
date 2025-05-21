@@ -1,3 +1,4 @@
 principio
-/esto no es un comentario válido
+//esto  es un comentario válido
+texto: "Esto no es comentario valido" //No sirve asi, solo linea nueva
 final
