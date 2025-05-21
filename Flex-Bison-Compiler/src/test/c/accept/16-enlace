@@ -1,0 +1,9 @@
+principio
+inicio-seccion:
+punto-por-punto:
+- enlace: ("https://ejemplo1.com") texto:"EJEMPLO 1"
+- enlace: ("https://ejemplo2.com") texto:"EJEMPLO 2"
+- enlace: (#Algo) texto:"La data del color"
+fin-ppp
+fin-seccion
+final

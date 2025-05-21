@@ -97,9 +97,22 @@ Footer * FooterSemanticAction(Body * body, HeaderFooterType type) {
 Body * BodySemanticAction(Expression * expression, Body * body, BodyType type) {
     _logSyntacticAnalyzerAction(__FUNCTION__);
     Body * newBody = calloc(1, sizeof(Body));
-    newBody->expression = expression;
-    newBody->body = body;
-    newBody->type = type;
+    switch (type)
+    {
+    case BODY_EXPRESSION:
+        newBody->expression = expression;
+        break;
+    case BODY_EXPRESSION_BODY:
+        newBody->expressionB = expression;
+        newBody->bodyB = body;
+        break;
+    case BODY_EMPTY:
+        break;
+    default:
+        logError(_logger, "Unknown body type: %d", type);
+        break;
+    }
+
     return newBody;
 }
 
@@ -108,32 +121,31 @@ Expression * ExpressionSemanticAction(char * id, char * string, ComplexExpressio
     Expression * expression = calloc(1, sizeof(Expression));
     switch (type)
     {
-    case EXPRESSION_SIMPLE_EXPRESSION:
-        expression->simpleExpression = simpleExpression;
-        break;
-    case EXPRESSION_COMPLEX_EXPRESSION:
-        expression->complexExpression = complexExpression;
-        break;
+        case EXPRESSION_SIMPLE_EXPRESSION:
+            expression->simpleExpression = simpleExpression;
+            break;
+        case EXPRESSION_COMPLEX_EXPRESSION:
+            expression->complexExpression = complexExpression;
+            break;
         case EXPRESSION_ID_SIMPLEEXPRESSION:
-        expression->simpleExpressionId = simpleExpression;
-        expression->simpleId = id;
-        break;
-    case EXPRESSION_ID_COMPLEXEXPRESSION:
-        expression->complexExpressionId = complexExpression;
-        expression->complexId = id;
-        break;
-    case EXPRESSION_ID:
-        expression->componentId = id;
-        break;
+            expression->simpleExpressionId = simpleExpression;
+            expression->simpleId = id;
+            break;
+        case EXPRESSION_ID_COMPLEXEXPRESSION:
+            expression->complexExpressionId = complexExpression;
+            expression->complexId = id;
+            break;
+        case EXPRESSION_ID:
+            expression->componentId = id;
+            break;
         case EXPRESSION_STRING:
-        expression->string = string;
-        break;
-    case EXPRESSION_COMPONENTE:
-        expression->component = component;
-        break;
-    
-    default:
-        break;
+            expression->string = string;
+            break;
+        case EXPRESSION_COMPONENTE:
+            expression->component = component;
+            break;
+        default:
+            break;
     }
     expression->type = type;
     return expression;
@@ -182,7 +194,7 @@ Modifier * ModifierSemanticAction(Modifier * modifier, ColorType color, Modifier
     {
     case MODIFIER_COLOR_MOD:
         newModifier->color = color;
-        newModifier->modifier = modifier;
+        newModifier->modifierWithColor = modifier;
         break;
     case MODIFIER_EMPTY:
     break;
@@ -274,7 +286,7 @@ FilaPPP * FilaPPPSemanticAction(Expression * expression, FilaPPP * filaPPP, Fila
         newFilaPPP->expression = expression;
         break;
         case FILAPPP_EXPRESSION_FILAPPP:
-        newFilaPPP->expression = expression;
+        newFilaPPP->expressionFila = expression;
         newFilaPPP->filaPPP = filaPPP;
     break;
     }
@@ -311,7 +323,7 @@ FilaTabla * FilaTablaSemanticAction(ColumnaTabla * columnaTabla, FilaTabla * fil
 
         break;
         case FILA_FILA_TABLA:
-        newFilaTabla->columnaTabla = columnaTabla;
+        newFilaTabla->columnaTablaConFila = columnaTabla;
         newFilaTabla->filaTabla = filaTabla;
         break;
     

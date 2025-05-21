@@ -21,8 +21,8 @@
 	Body * body;
 	Footer * footer;
 	SimpleExpression * simple_expression;
-       ComplexExpression * complex_expression;
-       Expression * expression;
+  ComplexExpression * complex_expression;
+  Expression * expression;
 	Modifier * modifiers;
 	Component * component;
 	FilaPPP * row_ppp;
@@ -34,11 +34,11 @@
 	Image * image;
 	Title * title;
 	Subtitle * subtitle;
-       Link * link;
-       Navegador * navigator;
-       Table * table;
-       Href * href;
-       PuntoPorPunto * puntoPorPunto;
+  Link * link;
+  Navegador * navigator;
+  Table * table;
+  Href * href;
+  PuntoPorPunto * puntoPorPunto;
 }
 
 /**
@@ -71,16 +71,16 @@
 %destructor { releaseTabla($$); } <table>
 %destructor { releaseHref($$); } <href>
 %destructor { releasePuntoPorPunto($$); } <puntoPorPunto>
-%destructor { free($$); } STRING
 %destructor { releaseExpression($$); } <expression>
 
 /** Terminals. */
 %token <string> STRING
 %token <id> ID
 %token <token> PRINCIPIO FIN ENCABEZADO PIE TEXTO IMAGEN TITULO SUBTITULO ENLACE COLOR SUBRAYADO ITALICA NEGRITA TAMANIO
-%token <token> PUNTO_POR_PUNTO SECCION TABLA NAVEGADOR COMPONENTE FIN_NAVEGADOR
+%token <token> PUNTO_POR_PUNTO NAVEGADOR COMPONENTE FIN_NAVEGADOR
 %token <token> INICIO_TABLA FIN_TABLA INICIO_SECCION FIN_SECCION FIN_ENCABEZADO FIN_PIE FIN_COMPONENTE FIN_FILA FIN_PPP
 %token <token> UNKNOWN NEW_LINE DOS_PUNTOS GUION PARENTESIS_IZQUIERDO PARENTESIS_DERECHO LLAVE_IZQUIERDA LLAVE_DERECHA NUMERAL
+%token <token> GRANDE PEQUENIO NORMAL ROJO AZUL VERDE AMARILLO NARANJA
 
 /** Non-terminals. */
 %type <program> program
@@ -116,7 +116,6 @@
 %%
 
 // IMPORTANT: To use λ in the following grammar, use the %empty symbol.
-// TODO CHECK IF THIS IS OK!
 
 program:
     PRINCIPIO NEW_LINE header body footer FIN        { $$ = ProgramSemanticAction($4, $3, $5, PROGRAM_HEADER_FOOTER_BODY,currentCompilerState()); }
@@ -127,7 +126,7 @@ program:
   | PRINCIPIO NEW_LINE body FIN                      { $$ = ProgramSemanticAction($3, NULL, NULL, PROGRAM_BODY,currentCompilerState()); }
   | PRINCIPIO NEW_LINE header FIN                    { $$ = ProgramSemanticAction(NULL,$3, NULL, PROGRAM_HEADER,currentCompilerState()); }
   | PRINCIPIO NEW_LINE FIN                           { $$ = ProgramSemanticAction(NULL, NULL, NULL, PROGRAM_EMPTY,currentCompilerState()); }
-  | PRINCIPIO  FIN                           { $$ = ProgramSemanticAction(NULL, NULL, NULL, PROGRAM_EMPTY,currentCompilerState()); }  //Esto es para que pase el test de principio y fin con espacios en blanco
+  | PRINCIPIO FIN                                    { $$ = ProgramSemanticAction(NULL, NULL, NULL, PROGRAM_EMPTY,currentCompilerState()); }  //Esto es para que pase el test de principio y fin con espacios en blanco
 
   ;
 
@@ -170,11 +169,25 @@ modifiers:
   | modifiers ITALICA                                 { $$ = ModifierSemanticAction($1, COLOR_BLUE, MODIFIER_COLOR_MOD); }
   | modifiers NEGRITA                                 { $$ = ModifierSemanticAction($1, COLOR_YELLOW, MODIFIER_COLOR_MOD); }
   | modifiers TAMANIO                                 { $$ = ModifierSemanticAction($1, COLOR_ORANGE, MODIFIER_COLOR_MOD); }
-  | COLOR                                             { $$ = ModifierSemanticAction(NULL, COLOR_RED, MODIFIER_COLOR_MOD); }
+  | modifiers GRANDE                                  { $$ = ModifierSemanticAction($1, COLOR_RED, MODIFIER_COLOR_MOD); }
+  | modifiers PEQUENIO                                { $$ = ModifierSemanticAction($1, COLOR_GREEN, MODIFIER_COLOR_MOD); }
+  | modifiers NORMAL                                  { $$ = ModifierSemanticAction($1, COLOR_BLUE, MODIFIER_COLOR_MOD); }
+  | modifiers ROJO                                    { $$ = ModifierSemanticAction($1, COLOR_RED, MODIFIER_COLOR_MOD); }
+  | modifiers AZUL                                    { $$ = ModifierSemanticAction($1, COLOR_BLUE, MODIFIER_COLOR_MOD); }
+  | modifiers VERDE                                   { $$ = ModifierSemanticAction($1, COLOR_GREEN, MODIFIER_COLOR_MOD); }
+  | modifiers AMARILLO                                { $$ = ModifierSemanticAction($1, COLOR_YELLOW, MODIFIER_COLOR_MOD); }
+  | modifiers NARANJA                                 { $$ = ModifierSemanticAction($1, COLOR_ORANGE, MODIFIER_COLOR_MOD); }
   | SUBRAYADO                                         { $$ = ModifierSemanticAction(NULL, COLOR_GREEN, MODIFIER_COLOR_MOD); }
   | ITALICA                                           { $$ = ModifierSemanticAction(NULL, COLOR_BLUE, MODIFIER_COLOR_MOD); }
   | NEGRITA                                           { $$ = ModifierSemanticAction(NULL, COLOR_YELLOW, MODIFIER_COLOR_MOD); }
-  | TAMANIO                                           { $$ = ModifierSemanticAction(NULL, COLOR_ORANGE, MODIFIER_COLOR_MOD); }
+  | GRANDE                                            { $$ = ModifierSemanticAction(NULL, COLOR_RED, MODIFIER_COLOR_MOD); }
+  | PEQUENIO                                          { $$ = ModifierSemanticAction(NULL, COLOR_GREEN, MODIFIER_COLOR_MOD); }
+  | NORMAL                                            { $$ = ModifierSemanticAction(NULL, COLOR_BLUE, MODIFIER_COLOR_MOD); }
+  | ROJO                                              { $$ = ModifierSemanticAction(NULL, COLOR_RED, MODIFIER_COLOR_MOD); }
+  | AZUL                                              { $$ = ModifierSemanticAction(NULL, COLOR_BLUE, MODIFIER_COLOR_MOD); }
+  | VERDE                                             { $$ = ModifierSemanticAction(NULL, COLOR_GREEN, MODIFIER_COLOR_MOD); }
+  | AMARILLO                                          { $$ = ModifierSemanticAction(NULL, COLOR_YELLOW, MODIFIER_COLOR_MOD); }
+  | NARANJA                                           { $$ = ModifierSemanticAction(NULL, COLOR_ORANGE, MODIFIER_COLOR_MOD); }
   ;
 
 component:
@@ -201,7 +214,7 @@ row_table:
 
 column_table:
     simple_expression column_table          { $$ = ColumnaTablaSemanticAction($1, $2, COLUMNA_COL); }
-  | FIN_FILA                                { $$ = ColumnaTablaSemanticAction(NULL, NULL, COLUMNA_FIN_FILA); }
+  | FIN_FILA NEW_LINE                               { $$ = ColumnaTablaSemanticAction(NULL, NULL, COLUMNA_FIN_FILA); }
   ;
 
 row_nav:
@@ -216,7 +229,7 @@ section:
 
 text:
        TEXTO DOS_PUNTOS STRING NEW_LINE                               { $$ = TextSemanticAction($3,NULL, TEXT_SIMPLE_TEXT); }
-       | TEXTO DOS_PUNTOS STRING modifiers NEW_LINE                   { $$ = TextSemanticAction($3, $4, TEXT_MODIFIED_TEXT); }
+       | TEXTO modifiers DOS_PUNTOS STRING NEW_LINE                   { $$ = TextSemanticAction($4, $2, TEXT_MODIFIED_TEXT); }
 
 image:
        IMAGEN DOS_PUNTOS STRING NEW_LINE                              { $$ = ImgSemanticAction($3,NULL); };

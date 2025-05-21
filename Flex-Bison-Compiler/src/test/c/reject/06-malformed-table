@@ -1,0 +1,7 @@
+principio
+inicio-tabla:
+texto:"Esto es texto" fin-fila
+titulo: "Esto es un titulo dentro de tabla"
+fin-fila
+fin-tabla
+final

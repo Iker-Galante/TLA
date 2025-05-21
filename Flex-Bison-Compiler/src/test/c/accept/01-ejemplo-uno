@@ -1,13 +1,13 @@
 principio
-titulo: Ejemplo
-subtitulo: Estoesunejemplo
-texto: Esteesunejemplodecomofuncionanuestrolenguaje
-texto: Podemosagregardistintoselementos
-imagen: httpsejemplocomimagenjpg
+titulo: "Ejemplo"
+subtitulo: "Estoesunejemplo"
+texto: "Esteesunejemplod  ecomo   funcionan   uestrolenguaje"
+texto: "Podemosagregardistintoselementos"
+imagen: "httpsejemplocomimagenjpg"
 punto-por-punto:
-- Estoesunelementodeunalista
-- Yesteesotroelemento
+- "Esto es une lementode una lista"
+- "Yestees   otroelemento"
 fin-ppp
-texto: Estoesuntextodestacado
-texto: Yesteesotrotextoconcoloryestilo
+texto: "Estoesuntextodestacado"
+texto: "Yesteesotrotextoconcoloryestilo"
 final

@@ -1,0 +1,13 @@
+principio
+titulo: "Ejemplo"
+subtitulo: "Esto es un ejemplo"
+texto: "Este es un ejemplo de cómo funciona nuestro lenguaje."
+texto: "Podemos agregar distintos elementos."
+imagen: "https://ejemplo.com/imagen.jpg"
+punto-por-punto:
+- "Esto es un elemento de una lista"
+- "Y este es otro elemento"
+fin-ppp
+texto grande negrita: "Esto es un texto destacado."
+texto rojo subrayado: "Y este es otro texto con color y estilo."
+final
