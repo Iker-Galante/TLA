@@ -21,6 +21,6 @@ subtitulo: "Más ejemplos"
 texto: "Mandame ejemplos a mi correo"
 fin-seccion
 pie:
-texto chico: "© 2025 TLA"
+texto pequeno: "© 2025 TLA"
 fin-pie
 final
