@@ -373,9 +373,14 @@ struct Footer {
 };
 
 struct Body {
-	Expression * expression;
-	Body * body;
-
+	union
+	{
+		struct{
+			Expression * expressionB;
+			Body * bodyB;
+		};
+		Expression * expression;
+	};
 	BodyType type;
 };
 

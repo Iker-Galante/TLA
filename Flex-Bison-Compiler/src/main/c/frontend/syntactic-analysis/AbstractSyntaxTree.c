@@ -15,29 +15,26 @@ void shutdownAbstractSyntaxTreeModule() {
 }
 
 /** PUBLIC FUNCTIONS */
-
-//TODO CHEQUEAR TODO ESTO PORQUE ME QUEME MAL Y DEJE ERRORES. 
-
 void releaseProgram(Program * program) {
 	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
 	if (program != NULL) {
 		switch (program->type) {
 			case PROGRAM_HEADER_FOOTER_BODY:
-				releaseHeader(program->header);
-				releaseBody(program->body);
-				releaseFooter(program->footer);
+				releaseHeader(program->headerFull);
+				releaseBody(program->bodyFull);
+				releaseFooter(program->footerFull);
 				break;
 			case PROGRAM_FOOTER_BODY:
-				releaseBody(program->body);
-				releaseFooter(program->footer);
+				releaseBody(program->bodyFB);
+				releaseFooter(program->footerFB);
 				break;
 			case PROGRAM_HEADER_BODY:
-				releaseHeader(program->header);
-				releaseBody(program->body);
+				releaseHeader(program->headerHB);
+				releaseBody(program->bodyHB);
 				break;
 			case PROGRAM_HEADER_FOOTER:
-				releaseHeader(program->header);
-				releaseFooter(program->footer);
+				releaseHeader(program->headerHF);
+				releaseFooter(program->footerHF);
 				break;
 			case PROGRAM_BODY:
 				releaseBody(program->body);
@@ -67,17 +64,15 @@ void releaseExpression(Expression * expression){
 				free(expression->string);
 				break;
 			case EXPRESSION_ID:
-
-				releaseBody(expression->componentId);
-			/*	free(expression->id);*/
+				free(expression->componentId);
 				break;
 			case EXPRESSION_ID_SIMPLEEXPRESSION:
+				releaseSimpleExpression(expression->simpleExpressionId);
 				free(expression->simpleId);
-				releaseSimpleExpression(expression->simpleExpression);
 				break;
 			case EXPRESSION_ID_COMPLEXEXPRESSION:
+				releaseComplexExpression(expression->complexExpressionId);
 				free(expression->complexId);
-				releaseComplexExpression(expression->complexExpression);
 				break;
 			case EXPRESSION_SIMPLE_EXPRESSION:
 				releaseSimpleExpression(expression->simpleExpression);
@@ -120,8 +115,8 @@ void releaseBody(Body * body) {
     logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
     if (body != NULL) {
         if (body->type == BODY_EXPRESSION_BODY) {
-            releaseExpression(body->expression);
-            releaseBody(body->body);
+            releaseExpression(body->expressionB);
+            releaseBody(body->bodyB);
         } else if (body->type == BODY_EXPRESSION) {
             releaseExpression(body->expression);
         }
@@ -162,7 +157,7 @@ void releaseModifiers(Modifier * modifiers) {
 		switch (modifiers->type) {
 		case MODIFIER_COLOR_MOD:
 			/*free(modifiers->color);*/
-			releaseModifiers(modifiers->modifier);
+			releaseModifiers(modifiers->modifierWithColor);
 			break;
 		case MODIFIER_MODIFIER:
 			releaseModifiers(modifiers->modifier);
@@ -234,11 +229,21 @@ void releaseNavegador(Navegador * navegador) {
 void releaseFilaPPP(FilaPPP * rowPPP) {
     logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
     if (rowPPP != NULL) {
-       if(rowPPP->type == FILAPPP_EXPRESSION_FILAPPP){
+		switch (rowPPP->type) {
+		{
+		case FILAPPP_EXPRESSION_FILAPPP:
 			releaseFilaPPP(rowPPP->filaPPP);
-    }
-		releaseExpression(rowPPP->expression);
-		free(rowPPP);
+			releaseExpression(rowPPP->expressionFila);
+			break;
+		case FILAPPP_EXPRESSION:
+			releaseExpression(rowPPP->expression);
+			break;
+		default:
+			logError(_logger, "Unknown row PPP type: %d", rowPPP->type);
+			break;
+		}
+	}
+	free(rowPPP);
 	}
 }
 
@@ -247,7 +252,11 @@ void releaseFilaTabla(FilaTabla * rowTable) {
     if (rowTable != NULL) {
         if(rowTable->type == TABLA_FILA_TABLA) {
 			releaseFilaTabla(rowTable->filaTabla);
-    }
+        	releaseColumnaTabla(rowTable->columnaTablaConFila);
+		}
+    	else {
+    		releaseColumnaTabla(rowTable->columnaTabla);
+    	}
 	free(rowTable);
 	}
 }

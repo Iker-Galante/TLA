@@ -1,5 +1,5 @@
 principio
-titulo:hola.
-texto:anda el enlace?
-enlace:(itba.com)texto:itba
+titulo:"hola."
+texto:"anda el enlace?"
+enlace:(#Color) texto:"itba"
 final
