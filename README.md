@@ -6,3 +6,6 @@ Trabajo practico TLA
   - Juan Bautista Albertoni Salini
   - Juan Oliva Morroni
 
+## Notas:
+  - Dejamos comentados los flags de sanitizer 
+  - Los comenatarios solo funcionan en lineas nuevas
