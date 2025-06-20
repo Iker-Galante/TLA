@@ -7,6 +7,9 @@
 #include "../../shared/String.h"
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "../symbol-tables/TableOfSymbols.h"
 
 /** Initialize module's internal state. */
 void initializeGeneratorModule();
@@ -17,6 +20,6 @@ void shutdownGeneratorModule();
 /**
  * Generates the final output using the current compiler state.
  */
-void generate(CompilerState * compilerState);
+void generate(CompilerState *compilerState, TableOfSymbols *tableOfSymbols);
 
 #endif
