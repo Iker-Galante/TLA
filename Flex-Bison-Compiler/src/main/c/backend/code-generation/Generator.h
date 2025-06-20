@@ -20,6 +20,6 @@ void shutdownGeneratorModule();
 /**
  * Generates the final output using the current compiler state.
  */
-void generate(CompilerState *compilerState, TableOfSymbols *tableOfSymbols);
+void generate(Program *program, TableOfSymbols *tableOfSymbols);
 
 #endif

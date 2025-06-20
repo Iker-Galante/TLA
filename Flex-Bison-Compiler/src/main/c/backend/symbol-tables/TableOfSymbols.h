@@ -3,6 +3,8 @@
 
 #include <string.h>
 
+extern TableOfSymbols *tableOfSymbols;
+
 typedef struct node
 {
     char *attribute;
@@ -23,5 +25,7 @@ typedef struct tableOfSymbols
     list *errors;
     int size;
 } TableOfSymbols;
+
+// si hacemos uso de la tabla, agregar los respectivos metodos para el list y la tabla
 
 #endif

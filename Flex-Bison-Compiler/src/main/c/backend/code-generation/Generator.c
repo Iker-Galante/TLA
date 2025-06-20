@@ -21,18 +21,30 @@ void shutdownGeneratorModule()
 
 /** PUBLIC FUNCTIONS */
 
-void generate(CompilerState *compilerState, TableOfSymbols *tableOfSymbols)
+void generate(Program *program, TableOfSymbols *tableOfSymbols)
 {
+	if (program == NULL)
+	{
+		logError(_logger, "Program is NULL, cannot generate code.");
+		return;
+	}
+
 	logDebugging(_logger, "Generating code...\n");
-	_generatePrologue();
-	_generateProgram(compilerState->abstractSyntaxtTree);
-	_generateEpilogue(compilerState->value);
-	if (compilerState->succeed)
+
+	FILE *f = fopen("index.html", "w");
+
+	if (f == NULL)
 	{
-		logDebugging(_logger, "Code generation succeeded.");
+		logError(_logger, "Could not open file for writing: index.html");
+		return;
 	}
-	else
-	{
-		logError(_logger, "Code generation failed.");
-	}
+
+	fprintf(f, "<!DOCTYPE html>\n<html>\n");
+
+	// seguimos con el programa
+	// el resto de los generates...
+
+	// Si todo salio bien, cerramos el archivo
+	fprintf(f, "</html>\n");
+	fclose(f);
 }

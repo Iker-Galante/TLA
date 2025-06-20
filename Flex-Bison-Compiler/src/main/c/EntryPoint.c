@@ -38,7 +38,7 @@ const int main(const int count, const char **arguments)
 
 	const SyntacticAnalysisStatus syntacticAnalysisStatus = parse(&compilerState);
 	CompilationStatus compilationStatus = SUCCEED;
-	Program *program = compilerState.abstractSyntaxtTree;
+	Program *program = compilerState.abstractSyntaxtTree; // no veo en que momento llamamos al ProgramSemanticAction...
 
 	if (syntacticAnalysisStatus == ACCEPT)
 	{
@@ -49,7 +49,7 @@ const int main(const int count, const char **arguments)
 		ComputationResult computationResult = computeExpression(program->body);
 		if (computationResult.succeed) {
 			compilerState.value = computationResult.value;
-			generate(&compilerState, &tableOfSymbols);
+			generate(&program, &tableOfSymbols);
 		}
 		else {
 			logError(logger, "The computation phase rejects the input program.");
