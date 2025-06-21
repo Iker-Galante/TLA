@@ -204,6 +204,28 @@ static void _generateSimpleExpression(const unsigned int indentationLevel, Simpl
 	}
 }
 
+static void _generateImage(const unsigned int indentationLevel, Image * img) {
+    _output(indentationLevel, "<img src=\"%s\" alt=\"%s\">\n", img->url, img->alternative);
+}
+
+
+static void _generateTitle(const unsigned int indentationLevel, Title * title) {
+	_output(indentationLevel, "<h1>%s</h1>\n", title->string);
+}
+
+static void _generateLink(const unsigned int indentationLevel, Link * link) {
+	_output(indentationLevel, "<a href=\"%s\">", link->href->url);
+	_generateSimpleExpression(1 + indentationLevel, link->simpleExpression);
+	_output(indentationLevel, "</a>\n");
+}
+
+static void _generateSubtitle(const unsigned int indentationLevel, Subtitle * subtitle) {
+	_output(indentationLevel, "%s", "<h2>");
+	_output(1 + indentationLevel, "%s", subtitle->string);
+	_output(indentationLevel, "%s", "</h2>\n");
+}
+
+//TODO Mancio tema CSS
 static void _generateText(const unsigned int indentationLevel, Text * text) {
 	switch (text->type) {
 		case TEXT_MODIFIED_TEXT:
@@ -216,6 +238,9 @@ static void _generateText(const unsigned int indentationLevel, Text * text) {
 			logError(_logger, "Unknown text type: %d", text->type);
 			break;
 	}
+}
+
+static void _generateModifiedText(const unsigned int indentationLevel, Modifier * modifier) {
 
 }
 
