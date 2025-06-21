@@ -534,6 +534,7 @@ static void _generatePrologue(void) {
 		"<head>\n"
 		"    <meta charset=\"UTF-8\">\n"
 		"    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"
+		"    <link rel=\"stylesheet\" href=\"styles.css\">\n"
 		"    <title>Generated HTML</title>\n"
 		"</head>\n"
 		"<body>\n"
