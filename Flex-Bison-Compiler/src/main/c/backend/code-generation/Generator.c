@@ -135,7 +135,6 @@ static void _generateFooter(const unsigned int indentationLevel, Footer * footer
 }
 
 static void _generateBody(const unsigned int indentationLevel, Body * body){
-	_output(indentationLevel, "%s", "<body>\n");
 	if(body->type == BODY_EXPRESSION_BODY){
 		_generateExpression(1 + indentationLevel, body->expressionB);
 		_generateBody(1 + indentationLevel, body->bodyB);
@@ -143,7 +142,6 @@ static void _generateBody(const unsigned int indentationLevel, Body * body){
 	else if(body->type == BODY_EXPRESSION){
 		_generateExpression(1 + indentationLevel, body->expression);
 	}
-	_output(indentationLevel, "%s", "</body>\n");
 }
 
 static void _generateExpression(const unsigned int indentationLevel, Expression * expression) {
@@ -202,24 +200,37 @@ static void _generateImage(const unsigned int indentationLevel, Image * img) {
     _output(indentationLevel, "<img src=\"%s\" alt=\"%s\">\n", img->url, img->alternative);
 }
 
-
 static void _generateTitle(const unsigned int indentationLevel, Title * title) {
 	_output(indentationLevel, "<h1>%s</h1>\n", title->string);
 }
 
-static void _generateLink(const unsigned int indentationLevel, Link * link) {
-	_output(indentationLevel, "<a href=\"%s\">", link->href->url);
-	_generateSimpleExpression(1 + indentationLevel, link->simpleExpression);
-	_output(indentationLevel, "</a>\n");
+
+static void _generateLink(const unsigned int indentationLevel, Link *link) {
+    if (!link || !link->href) return;
+
+    const char *hrefValue = "";
+    if (link->href->type == HREF_URL) {
+        hrefValue = link->href->url;
+        _output(indentationLevel, "<a href=\"%s\">", hrefValue);
+    } else if (link->href->type == HREF_ID) {
+        _output(indentationLevel, "<a href=\"#%s\">", link->href->id);
+    } else {
+        _output(indentationLevel, "<a>");
+    }
+	
+    _generateSimpleExpression(indentationLevel, link->simpleExpression);
+    
+
+    _output(indentationLevel, "</a>\n");
 }
 
 static void _generateSubtitle(const unsigned int indentationLevel, Subtitle * subtitle) {
 	_output(indentationLevel, "%s", "<h2>");
-	_output(1 + indentationLevel, "%s", subtitle->string);
+	_output(indentationLevel, "%s", subtitle->string);
 	_output(indentationLevel, "%s", "</h2>\n");
 }
 
-//TODO Mancio tema CSS
+
 static void _generateText(const unsigned int indentationLevel, Text * text) {
 	switch (text->type) {
 		case TEXT_MODIFIED_TEXT:
@@ -235,7 +246,194 @@ static void _generateText(const unsigned int indentationLevel, Text * text) {
 }
 
 static void _generateModifiedText(const unsigned int indentationLevel, Modifier * modifier) {
+	if (modifier == NULL) {
+		logError(_logger, "Modifier is NULL, cannot generate modified text.");
+		return;
+	}
 
+	switch (modifier->type) {
+		case MODIFIER_COLOR_MOD:
+			_output(indentationLevel, "<span style=\"color: %s;\">", modifier->color);
+			_generateModifiedText(1 + indentationLevel, modifier->modifierWithColor);
+			_output(indentationLevel, "%s", "</span>\n");
+			break;
+		case MODIFIER_EMPTY:
+			// No action needed for empty modifier
+			break;
+		case MODIFIER_MODIFIER:
+			_generateModifiedText(1 + indentationLevel, modifier->modifier);
+			break;
+		default:
+			logError(_logger, "Unknown modifier type: %d", modifier->type);
+			break;
+	}
+
+}
+
+static void _generateSimpleText(const unsigned int indentationLevel, const char * string) {
+	_output(indentationLevel, "%s", "<p>");
+	_output(indentationLevel, "%s", string);
+	_output(indentationLevel, "%s", "</p>\n");
+}
+
+static void _generateComplexExpression(const unsigned int indentationLevel, ComplexExpression * complexExpression) {
+	switch (complexExpression->type) {
+		case CEXPRESSION_SECCION:
+			_generateSection(1 + indentationLevel, complexExpression->seccion);
+			break;
+		case CEXPRESSION_TABLA:
+			_generateTable(1 + indentationLevel, complexExpression->tabla);
+			break;
+		case CEXPRESSION_NAVEGADOR:
+			_generateNavigator(1 + indentationLevel, complexExpression->navegador);
+			break;
+		case CEXPRESSION_PUNTO_POR_PUNTO:
+			_generatePPP(1 + indentationLevel, complexExpression->puntoPorPunto);
+			break;
+		default:
+			logError(_logger, "Unknown complex expression type: %d", complexExpression->type);
+			break;
+	}
+}
+
+
+static void _generateSection(const unsigned int indentationLevel, Seccion * section) {
+	_output(indentationLevel, "%s", "<div>\n");
+	if (section->type == SECCION_BODY) {
+		_generateBody(1 + indentationLevel, section->body);
+	}
+	_output(indentationLevel, "%s", "</div>\n");
+}
+
+
+static void _generateTable(const unsigned int indentationLevel, Table * table) {
+	_output(indentationLevel, "%s", "<table>\n");
+	if (table->type == TABLA_FILA_TABLA) {
+		_generateRow(1 + indentationLevel, table->filaTabla);
+	}
+	_output(indentationLevel, "%s", "</table>\n");
+}
+
+
+static void _generateNavigator(const unsigned int indentationLevel, Navegador * nav) {
+	_output(indentationLevel, "%s", "<nav>\n");
+	if (nav->type == NAVEGADOR_FILA_NAVEGADOR) {
+		_generateRowNav(1 + indentationLevel, nav->filaNav);
+	}
+	_output(indentationLevel, "%s", "</nav>\n");
+}
+
+
+static void _generatePPP(const unsigned int indentationLevel, PuntoPorPunto * ppp) {
+	_output(indentationLevel, "%s", "<ul>\n");
+	if (ppp->type == PPP_FILA_PUNTO_POR_PUNTO) {
+		_generateRowPPP(1 + indentationLevel, ppp->filaPPP);
+	}
+	_output(indentationLevel, "%s", "</ul>\n");
+}
+
+
+static void _generateRow(const unsigned int indentationLevel, FilaTabla * tableRow) {
+	_output(indentationLevel, "%s", "<tr>\n");
+	if (tableRow->type == FILATABLA_COLUMNA_TABLA) {
+		_generateColumn(1 + indentationLevel, tableRow->columnaTabla);
+	}
+	_output(indentationLevel, "%s", "</tr>\n");
+}
+
+
+static void _generateRowNav(const unsigned int indentationLevel, FilaNav * navRow) {
+    while (navRow) {
+        if (navRow->id && navRow->string) {
+            _output(indentationLevel, "<a href=\"#%s\">%s</a>\n", navRow->id, navRow->string);
+        }
+        if (navRow->type == FILANAV_FILA_NAVEGADOR) {
+            navRow = navRow->filaNav;
+        } else {
+            break;
+        }
+    }
+}
+
+
+static void _generateRowPPP(const unsigned int indentationLevel, FilaPPP * pppRow) {
+	_output(indentationLevel, "%s", "<li>\n");
+	if (pppRow->type == FILAPPP_EXPRESSION_FILAPPP) {
+		_generateExpression(1 + indentationLevel, pppRow->expressionFila);
+		_generateRowPPP(1 + indentationLevel, pppRow->filaPPP);
+	} else if (pppRow->type == FILAPPP_EXPRESSION) {
+		_generateExpression(1 + indentationLevel, pppRow->expression);
+	}
+	_output(indentationLevel, "%s", "</li>\n");
+}
+
+
+
+static void _generateColumn(const unsigned int indentationLevel, ColumnaTabla * columnaTabla) {
+	_output(indentationLevel, "%s", "<td>\n");
+	if (columnaTabla->type == COLUMNA_TABLA_EXPRESSION) {
+		_generateExpression(1 + indentationLevel, columnaTabla->expression);
+	} else if (columnaTabla->type == COLUMNA_FIN_FILA) {
+		// No action needed for end of row
+	}
+	_output(indentationLevel, "%s", "</td>\n");
+}
+
+//TODO DUDAS DE COMO HACER ESTE. LATER TALK WITH MANCIO
+static void _generateComponent(const unsigned int indentationLevel, Component * component) {
+    if (!component) return;
+    if (component->id) {
+        _output(indentationLevel, "<div id=\"%s\">\n", component->id);
+    } else {
+        _output(indentationLevel, "<div>\n");
+    }
+    if (component->type == COMPONENT_COMPONENT) {
+        _generateBody(1 + indentationLevel, component->body);
+    }
+    _output(indentationLevel, "%s", "</div>\n");
+}
+
+
+//TODO como "spawneo" al componente (?)
+static void _generateComponentId(const unsigned int indentationLevel, const char * componentId) {
+	if (componentId) {
+		_output(indentationLevel, "%s", "<div id=\"");
+		_output(indentationLevel, "%s", componentId);
+		_output(indentationLevel, "%s", "\">\n");
+	} else {
+		_output(indentationLevel, "%s", "<div>\n");
+	}
+	_output(indentationLevel, "%s", "</div>\n");
+}
+
+//TODO si no me equivoco estoe era poner un string pelado.
+static void _generateString(const unsigned int indentationLevel, const char * string) {
+	_output(1 + indentationLevel, "%s", string);
+}
+
+//TODO para que tenga el id, ¿Fuerzo a que esté envuelta en un div que se lo agregue?
+static void _generateSimpleExpressionId(const unsigned int indentationLevel, SimpleExpression * simpleExpression, const char * simpleId) {
+	if (simpleId) {
+		_output(indentationLevel, "%s", "<div id=\"");
+		_output(indentationLevel, "%s", simpleId);
+		_output(indentationLevel, "%s", "\">\n");
+	} else {
+		_output(indentationLevel, "%s", "<div>\n");
+	}
+	_generateSimpleExpression(1 + indentationLevel, simpleExpression);
+	_output(indentationLevel, "%s", "</div>\n");
+}
+
+static void _generateComplexExpressionId(const unsigned int indentationLevel, ComplexExpression * complexExpression, const char * complexId) {
+	if (complexId) {
+		_output(indentationLevel, "%s", "<div id=\"");
+		_output(indentationLevel, "%s", complexId);
+		_output(indentationLevel, "%s", "\">\n");
+	} else {
+		_output(indentationLevel, "%s", "<div>\n");
+	}
+	_generateComplexExpression(1 + indentationLevel, complexExpression);
+	_output(indentationLevel, "%s", "</div>\n");
 }
 
 /**
