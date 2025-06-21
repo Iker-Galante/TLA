@@ -112,11 +112,9 @@ static void _output(const unsigned int indentationLevel, const char * const form
  * completes a valid Latex document.
  */
 static void _generateEpilogue(const int value) {
-	_output(0, "%s%d%s",
-		"            [ $", value, "$, circle, draw, blue ]\n"
-		"        ]\n"
-		"    \\end{forest}\n"
-		"\\end{document}\n\n"
+	_output(0, "%s",
+		"</body>\n"
+		"</html>\n\n"
 	);
 }
 
@@ -333,16 +331,14 @@ static void _generateProgram(Program * program) {
  */
 static void _generatePrologue(void) {
 	_output(0, "%s",
-		"\\documentclass{standalone}\n\n"
-		"\\usepackage[utf8]{inputenc}\n"
-		"\\usepackage[T1]{fontenc}\n"
-		"\\usepackage{amsmath}\n"
-		"\\usepackage{forest}\n"
-		"\\usepackage{microtype}\n\n"
-		"\\begin{document}\n"
-		"    \\centering\n"
-		"    \\begin{forest}\n"
-		"        [ \\text{$=$}, circle, draw, purple\n"
+		"<!DOCTYPE html>\n"
+		"<html lang=\"en\">\n"
+		"<head>\n"
+		"    <meta charset=\"UTF-8\">\n"
+		"    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"
+		"    <title>Generated HTML</title>\n"
+		"</head>\n"
+		"<body>\n"
 	);
 }
 
