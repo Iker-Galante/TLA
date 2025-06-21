@@ -35,7 +35,7 @@ const int main(const int count, const char **arguments)
 	CompilerState compilerState = {
 		.abstractSyntaxtTree = NULL,
 		// Create a hash table that can store structs
-		.symbolTable = (g_str_hash, g_str_equal, g_free, free_symbol_entry),
+		.symbolTable = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, free_symbol_entry),
 		.succeed = false,
 		.value = 0};
 
@@ -48,16 +48,7 @@ const int main(const int count, const char **arguments)
 		// ----------------------------------------------------------------------------------------
 		// Beginning of the Backend... ------------------------------------------------------------
 		logDebugging(logger, "Computing expression value...");
-		
-		ComputationResult computationResult = computeExpression(program->body);
-		if (computationResult.succeed) {
-			compilerState.value = computationResult.value;
 			generate(&compilerState);
-		}
-		else {
-			logError(logger, "The computation phase rejects the input program.");
-			compilationStatus = FAILED;
-		}
 		// ...end of the Backend. -----------------------------------------------------------------
 		// ----------------------------------------------------------------------------------------
 		

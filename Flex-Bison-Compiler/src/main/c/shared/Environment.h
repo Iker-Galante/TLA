@@ -4,6 +4,7 @@
 #include "Type.h"
 #include <stdlib.h>
 #include <string.h>
+#include <glib.h>
 
 /**
  * Analog to "getStringOrDefault", but returning true if the string is exactly

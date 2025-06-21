@@ -178,7 +178,7 @@ Expression *ExpressionSemanticAction(char *id, char *string, ComplexExpression *
     expression->type = type;
     return expression;
 }
-static boolean checkIdExistanceAndAddSimpleIdToSymbolTable(char *id, idType type)
+static boolean checkIdExistanceAndAddToSymbolTable(char *id, idType type)
 {
     _logSyntacticAnalyzerAction(__FUNCTION__);
 
@@ -199,14 +199,6 @@ static boolean checkIdExistanceAndAddSimpleIdToSymbolTable(char *id, idType type
         g_hash_table_insert(currentCompilerState()->symbolTable, g_strdup(id), entry);
     }
     return true;
-}
-
-static boolean checkIdExistanceAndAddComponentToSymbolTable(char * id)
-{
-     if (g_hash_table_contains(currentCompilerState()->symbolTable, id))
-    {
-        logError(_logger, "The identifier '%s' already exists in the symbol table.", id);
-    }
 }
 
 SimpleExpression *SimpleExpressionSemanticAction(Text *text, Image *img, Title *title, Subtitle *subtitle, Link *link, SimpleExpressionType type)

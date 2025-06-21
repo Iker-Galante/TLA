@@ -21,6 +21,7 @@ void shutdownGeneratorModule()
 
 /** PUBLIC FUNCTIONS */
 
+/*
 void generate(Program *program, TableOfSymbols *tableOfSymbols)
 {
 	if (program == NULL)
@@ -51,20 +52,9 @@ void generate(Program *program, TableOfSymbols *tableOfSymbols)
 	fprintf(f, "</html>\n");
 	fclose(f);
 }
-
+*/
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/* MODULE INTERNAL STATE */
-
-void initializeGeneratorModule() {
-	_logger = createLogger("Generator");
-}
-
-void shutdownGeneratorModule() {
-	if (_logger != NULL) {
-		destroyLogger(_logger);
-	}
-}
 
 /** PRIVATE FUNCTIONS */
 
@@ -254,7 +244,7 @@ static void _generateModifiedText(const unsigned int indentationLevel, Modifier 
 			case TINY:
 				_output(indentationLevel, "<span style=\"font-size: smaller;\">");
 				break;
-			case NORMAL:
+			case MEDIUM:
 				_output(indentationLevel, "<span style=\"font-size: medium;\">");
 				break;
 			default:
@@ -335,7 +325,7 @@ static void _generatePPP(const unsigned int indentationLevel, PuntoPorPunto * pp
 
 static void _generateRow(const unsigned int indentationLevel, FilaTabla * tableRow) {
 	_output(indentationLevel, "%s", "<tr>\n");
-	if (tableRow->type == FILATABLA_COLUMNA_TABLA) {
+	if (tableRow->type == TABLA_FILA_TABLA) {
 		_generateColumn(1 + indentationLevel, tableRow->columnaTabla);
 	}
 	_output(indentationLevel, "%s", "</tr>\n");
@@ -371,7 +361,7 @@ static void _generateRowPPP(const unsigned int indentationLevel, FilaPPP * pppRo
 
 static void _generateColumn(const unsigned int indentationLevel, ColumnaTabla * columnaTabla) {
 	_output(indentationLevel, "%s", "<td>\n");
-	if (columnaTabla->type == COLUMNA_TABLA_EXPRESSION) {
+	if (columnaTabla->type == COLUMNA_COL) {
 		_generateExpression(1 + indentationLevel, columnaTabla->expression);
 	} else if (columnaTabla->type == COLUMNA_FIN_FILA) {
 		// No action needed for end of row
@@ -470,7 +460,7 @@ static void _generateProgram(Program * program) {
 	case PROGRAM_BODY:
 		_generateBody(1, program->body);
 		break;
-	case default:
+	default:
 		logError(_logger, "Unknown program type: %d", program->type);
 		break;
 	}

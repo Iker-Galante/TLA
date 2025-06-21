@@ -165,7 +165,7 @@ enum ColorType {
 	ITALIC,
 	BIG,
 	TINY,
-	NORMAL
+	MEDIUM
 };
 enum TextType {
 	TEXT_MODIFIED_TEXT,
