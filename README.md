@@ -9,3 +9,13 @@ Trabajo practico TLA
 ## Notas:
   - Dejamos comentados los flags de sanitizer 
   - Los comenatarios solo funcionan en lineas nuevas
+
+## Correr el script:
+### En caso de Ubunutu:
+```
+script/ubuntu/install.sh
+```
+### En caso de Windows:
+```
+script/windows/install.sh
+```
