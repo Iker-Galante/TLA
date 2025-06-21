@@ -54,15 +54,7 @@ void generate(Program *program, TableOfSymbols *tableOfSymbols)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-/*
-#include "Generator.h"
-
 /* MODULE INTERNAL STATE */
-
-const char _indentationCharacter = ' ';
-const char _indentationSize = 4;
-static Logger * _logger = NULL;
 
 void initializeGeneratorModule() {
 	_logger = createLogger("Generator");
@@ -76,47 +68,12 @@ void shutdownGeneratorModule() {
 
 /** PRIVATE FUNCTIONS */
 
-static const char _expressionTypeToCharacter(const ExpressionType type);
-// static void _generateConstant(const unsigned int indentationLevel, Constant * constant);
 static void _generateEpilogue(const int value);
 static void _generateExpression(const unsigned int indentationLevel, Expression * expression);
-// static void _generateFactor(const unsigned int indentationLevel, Factor * factor);
 static void _generateProgram(Program * program);
 static void _generatePrologue(void);
 static char * _indentation(const unsigned int indentationLevel);
 static void _output(const unsigned int indentationLevel, const char * const format, ...);
-
-/**
- * Converts and expression type to the proper character of the operation
- * involved, or returns '\0' if that's not possible.
- */
-// static const char _expressionTypeToCharacter(const ExpressionType type) {
-// 	switch (type) {
-// 		case ADDITION: return '+';
-// 		case DIVISION: return '/';
-// 		case MULTIPLICATION: return '*';
-// 		case SUBTRACTION: return '-';
-// 		default:
-// 			logError(_logger, "The specified expression type cannot be converted into character: %d", type);
-// 			return '\0';
-// 	}
-// }
-
-/**
- * Generates the output of a constant.
- */
-//  
-
-/**
- * Creates the epilogue of the generated output, that is, the final lines that
- * completes a valid Latex document.
- */
-static void _generateEpilogue(const int value) {
-	_output(0, "%s",
-		"</body>\n"
-		"</html>\n\n"
-	);
-}
 
 static void _generateHeader(const unsigned int indentationLevel, Header * header){
 	_output(indentationLevel, "%s", "<header>\n");
@@ -235,6 +192,8 @@ static void _generateText(const unsigned int indentationLevel, Text * text) {
 	switch (text->type) {
 		case TEXT_MODIFIED_TEXT:
 			_generateModifiedText(1 + indentationLevel, text->modifier);
+			_generateSimpleText(1 + indentationLevel, text->string);
+			_output(indentationLevel, "%s", "</span>\n"); // Close the span opened in _generateModifiedText
 			break;
 		case TEXT_SIMPLE_TEXT:
 			_generateSimpleText(1 + indentationLevel, text->string);
@@ -250,17 +209,58 @@ static void _generateModifiedText(const unsigned int indentationLevel, Modifier 
 		logError(_logger, "Modifier is NULL, cannot generate modified text.");
 		return;
 	}
-
 	switch (modifier->type) {
 		case MODIFIER_COLOR_MOD:
-			_output(indentationLevel, "<span style=\"color: %s;\">", modifier->color);
+			switch (modifier->color)
+			{
+			case COLOR_RED:
+				_output(indentationLevel, "<span style=\"color: red;\">");
+				break;
+			case COLOR_GREEN:
+				_output(indentationLevel, "<span style=\"color: green;\">");
+				break;
+			case COLOR_BLUE:
+				_output(indentationLevel, "<span style=\"color: blue;\">");
+				break;
+			case COLOR_YELLOW:
+				_output(indentationLevel, "<span style=\"color: yellow;\">");
+				break;
+			case COLOR_ORANGE:
+				_output(indentationLevel, "<span style=\"color: orange;\">");
+				break;
+			default:
+				break;
+			}
 			_generateModifiedText(1 + indentationLevel, modifier->modifierWithColor);
-			_output(indentationLevel, "%s", "</span>\n");
 			break;
 		case MODIFIER_EMPTY:
 			// No action needed for empty modifier
 			break;
 		case MODIFIER_MODIFIER:
+			switch (modifier->style)
+			{
+			case UNDERLINE:
+				_output(indentationLevel, "<span style=\"text-decoration: underline;\">");
+				break;
+			case BOLD:
+				_output(indentationLevel, "<span style=\"font-weight: bold;\">");
+				break;
+			case ITALIC:
+				_output(indentationLevel, "<span style=\"font-style: italic;\">");
+				break;
+			case BIG:
+				_output(indentationLevel, "<span style=\"font-size: larger;\">");
+				break;
+			case TINY:
+				_output(indentationLevel, "<span style=\"font-size: smaller;\">");
+				break;
+			case NORMAL:
+				_output(indentationLevel, "<span style=\"font-size: medium;\">");
+				break;
+			default:
+				logError(_logger, "Unknown style type: %d", modifier->style);
+				return; // Exit if an unknown style is encountered
+			}
 			_generateModifiedText(1 + indentationLevel, modifier->modifier);
 			break;
 		default:
@@ -406,12 +406,11 @@ static void _generateComponentId(const unsigned int indentationLevel, const char
 	_output(indentationLevel, "%s", "</div>\n");
 }
 
-//TODO si no me equivoco estoe era poner un string pelado.
 static void _generateString(const unsigned int indentationLevel, const char * string) {
 	_output(1 + indentationLevel, "%s", string);
 }
 
-//TODO para que tenga el id, ¿Fuerzo a que esté envuelta en un div que se lo agregue?
+
 static void _generateSimpleExpressionId(const unsigned int indentationLevel, SimpleExpression * simpleExpression, const char * simpleId) {
 	if (simpleId) {
 		_output(indentationLevel, "%s", "<div id=\"");
@@ -437,54 +436,6 @@ static void _generateComplexExpressionId(const unsigned int indentationLevel, Co
 }
 
 /**
- * Generates the output of an expression.
- */
-// static void _generateExpression(const unsigned int indentationLevel, Expression * expression) {
-// 	_output(indentationLevel, "%s", "[ $E$, circle, draw, black!20\n");
-// 	switch (expression->type) {
-// 		case ADDITION:
-// 		case DIVISION:
-// 		case MULTIPLICATION:
-// 		case SUBTRACTION:
-// 			_generateExpression(1 + indentationLevel, expression->leftExpression);
-// 			_output(1 + indentationLevel, "%s%c%s", "[ $", _expressionTypeToCharacter(expression->type), "$, circle, draw, purple ]\n");
-// 			_generateExpression(1 + indentationLevel, expression->rightExpression);
-// 			break;
-// 		case FACTOR:
-// 			_generateFactor(1 + indentationLevel, expression->factor);
-// 			break;
-// 		default:
-// 			logError(_logger, "The specified expression type is unknown: %d", expression->type);
-// 			break;
-// 	}
-// 	_output(indentationLevel, "%s", "]\n");
-// }
-static void _generateExpression(const unsigned int indentationLevel, Expression * expression) {
-	_output(indentationLevel, "%s", "[ $E$, circle, draw, black!20\n");
-}
-
-/**
- * Generates the output of a factor.
- */
-// static void _generateFactor(const unsigned int indentationLevel, Factor * factor) {
-// 	_output(indentationLevel, "%s", "[ $F$, circle, draw, black!20\n");
-// 	switch (factor->type) {
-// 		case CONSTANT:
-// 			_generateConstant(1 + indentationLevel, factor->constant);
-// 			break;
-// 		case EXPRESSION:
-// 			_output(1 + indentationLevel, "%s", "[ $($, circle, draw, purple ]\n");
-// 			_generateExpression(1 + indentationLevel, factor->expression);
-// 			_output(1 + indentationLevel, "%s", "[ $)$, circle, draw, purple ]\n");
-// 			break;
-// 		default:
-// 			logError(_logger, "The specified factor type is unknown: %d", factor->type);
-// 			break;
-// 	}
-// 	_output(indentationLevel, "%s", "]\n");
-// }
-
-/**
  * Generates the output of the program.
  */
 static void _generateProgram(Program * program) {
@@ -498,46 +449,59 @@ static void _generateProgram(Program * program) {
 		_generateBody(1,program->bodyFull);
 		_generateFooter(1,program->footerFull);
 		break;
-
 	case PROGRAM_HEADER_FOOTER:
-
+		_generateHeader(1, program->headerHF);
+		_generateFooter(1, program->footerHF);
 		break;
 	case PROGRAM_HEADER_BODY:
+		_generateHeader(1, program->headerHB);
+		_generateBody(1, program->bodyHB);
 		break;
-	
 	case PROGRAM_HEADER:
+		_generateHeader(1, program->header);
 		break;
-	
 	case PROGRAM_FOOTER_BODY:
+		_generateBody(1, program->bodyFB);
+		_generateFooter(1, program->footerFB);
 		break;
-	
 	case PROGRAM_FOOTER:
-
+		_generateFooter(1, program->footer);
 		break;
-
 	case PROGRAM_BODY:
+		_generateBody(1, program->body);
+		break;
+	case default:
+		logError(_logger, "Unknown program type: %d", program->type);
 		break;
 	}
 	
 }
 
 /**
- * Creates the prologue of the generated output, a Latex document that renders
- * a tree thanks to the Forest package.
- *
- * @see https://ctan.dcc.uchile.cl/graphics/pgf/contrib/forest/forest-doc.pdf
+ * Creates the prologue of the generated output, an HTML document. 
  */
 static void _generatePrologue(void) {
 	_output(0, "%s",
 		"<!DOCTYPE html>\n"
-		"<html lang=\"en\">\n"
+		"<html lang=\"es\">\n"
 		"<head>\n"
 		"    <meta charset=\"UTF-8\">\n"
 		"    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"
 		"    <link rel=\"stylesheet\" href=\"styles.css\">\n"
-		"    <title>Generated HTML</title>\n"
+		"    <title>HTML Generado</title>\n"
 		"</head>\n"
 		"<body>\n"
+	);
+}
+
+/**
+ * Creates the epilogue of the generated output, that is, the final lines that
+ * completes a valid HTML document.
+ */
+static void _generateEpilogue(const int value) {
+	_output(0, "%s",
+		"</body>\n"
+		"</html>\n\n"
 	);
 }
 

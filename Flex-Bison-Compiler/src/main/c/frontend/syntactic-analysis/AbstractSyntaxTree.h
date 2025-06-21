@@ -160,10 +160,12 @@ enum ColorType {
 	COLOR_BLUE,
 	COLOR_YELLOW,
 	COLOR_ORANGE,
-	COLOR_PINK,
-	COLOR_PURPLE,
-	COLOR_BLACK,
-	COLOR_WHITE
+	UNDERLINE, 
+	BOLD, 
+	ITALIC,
+	BIG,
+	TINY,
+	NORMAL
 };
 enum TextType {
 	TEXT_MODIFIED_TEXT,
@@ -391,6 +393,7 @@ struct Modifier {
 			Modifier * modifierWithColor;
 		};
 		struct {
+			ColorType style;
 			Modifier * modifier;
 		};
 		struct{};

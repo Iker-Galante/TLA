@@ -260,6 +260,7 @@ Modifier *ModifierSemanticAction(Modifier *modifier, ColorType color, ModifierTy
     case MODIFIER_EMPTY:
         break;
     case MODIFIER_MODIFIER:
+        newModifier->style = color; // Assuming color is used for style in this case
         newModifier->modifier = modifier;
         break;
     }

@@ -1,7 +1,7 @@
 %{
 
 #include "BisonActions.h"
-
+#define NO_COLOR 0
 %}
 
 // You touch this, and you die.
@@ -168,25 +168,23 @@ simple_expression:
   ;
 
 modifiers:
-    modifiers COLOR                                   { $$ = ModifierSemanticAction($1, COLOR_RED, MODIFIER_COLOR_MOD); }
-  | modifiers SUBRAYADO                               { $$ = ModifierSemanticAction($1, COLOR_GREEN, MODIFIER_COLOR_MOD); }
-  | modifiers ITALICA                                 { $$ = ModifierSemanticAction($1, COLOR_BLUE, MODIFIER_COLOR_MOD); }
-  | modifiers NEGRITA                                 { $$ = ModifierSemanticAction($1, COLOR_YELLOW, MODIFIER_COLOR_MOD); }
-  | modifiers TAMANIO                                 { $$ = ModifierSemanticAction($1, COLOR_ORANGE, MODIFIER_COLOR_MOD); }
-  | modifiers GRANDE                                  { $$ = ModifierSemanticAction($1, COLOR_RED, MODIFIER_COLOR_MOD); }
-  | modifiers PEQUENIO                                { $$ = ModifierSemanticAction($1, COLOR_GREEN, MODIFIER_COLOR_MOD); }
-  | modifiers NORMAL                                  { $$ = ModifierSemanticAction($1, COLOR_BLUE, MODIFIER_COLOR_MOD); }
+    modifiers SUBRAYADO                               { $$ = ModifierSemanticAction($1, UNDERLINE, MODIFIER_MODIFIER); }
+  | modifiers ITALICA                                 { $$ = ModifierSemanticAction($1, ITALIC, MODIFIER_MODIFIER); }
+  | modifiers NEGRITA                                 { $$ = ModifierSemanticAction($1, BOLD, MODIFIER_MODIFIER); }
+  | modifiers GRANDE                                  { $$ = ModifierSemanticAction($1, BIG, MODIFIER_MODIFIER); }
+  | modifiers PEQUENIO                                { $$ = ModifierSemanticAction($1, TINY, MODIFIER_MODIFIER); }
+  | modifiers NORMAL                                  { $$ = ModifierSemanticAction($1, NORMAL, MODIFIER_MODIFIER); }
   | modifiers ROJO                                    { $$ = ModifierSemanticAction($1, COLOR_RED, MODIFIER_COLOR_MOD); }
   | modifiers AZUL                                    { $$ = ModifierSemanticAction($1, COLOR_BLUE, MODIFIER_COLOR_MOD); }
   | modifiers VERDE                                   { $$ = ModifierSemanticAction($1, COLOR_GREEN, MODIFIER_COLOR_MOD); }
-  | modifiers AMARILLO                                { $$ = ModifierSemanticAction($1, COLOR_YELLOW, MODIFIER_COLOR_MOD); }
+  | modifiers AMARILLO                                { $$ = ModifierSemanticAction($1, COLOR_yELLOW, MODIFIER_COLOR_MOD); }
   | modifiers NARANJA                                 { $$ = ModifierSemanticAction($1, COLOR_ORANGE, MODIFIER_COLOR_MOD); }
-  | SUBRAYADO                                         { $$ = ModifierSemanticAction(NULL, COLOR_GREEN, MODIFIER_COLOR_MOD); }
-  | ITALICA                                           { $$ = ModifierSemanticAction(NULL, COLOR_BLUE, MODIFIER_COLOR_MOD); }
-  | NEGRITA                                           { $$ = ModifierSemanticAction(NULL, COLOR_YELLOW, MODIFIER_COLOR_MOD); }
-  | GRANDE                                            { $$ = ModifierSemanticAction(NULL, COLOR_RED, MODIFIER_COLOR_MOD); }
-  | PEQUENIO                                          { $$ = ModifierSemanticAction(NULL, COLOR_GREEN, MODIFIER_COLOR_MOD); }
-  | NORMAL                                            { $$ = ModifierSemanticAction(NULL, COLOR_BLUE, MODIFIER_COLOR_MOD); }
+  | SUBRAYADO                                         { $$ = ModifierSemanticAction(NULL, UNDERLINE, MODIFIER_MODIFIER); }
+  | ITALICA                                           { $$ = ModifierSemanticAction(NULL, ITALIC, MODIFIER_MODIFIER); }
+  | NEGRITA                                           { $$ = ModifierSemanticAction(NULL, BOLD, MODIFIER_MODIFIER); }
+  | GRANDE                                            { $$ = ModifierSemanticAction(NULL, BIG, MODIFIER_MODIFIER); }
+  | PEQUENIO                                          { $$ = ModifierSemanticAction(NULL, TINY, MODIFIER_MODIFIER); }
+  | NORMAL                                            { $$ = ModifierSemanticAction(NULL, NORMAL, MODIFIER_MODIFIER); }
   | ROJO                                              { $$ = ModifierSemanticAction(NULL, COLOR_RED, MODIFIER_COLOR_MOD); }
   | AZUL                                              { $$ = ModifierSemanticAction(NULL, COLOR_BLUE, MODIFIER_COLOR_MOD); }
   | VERDE                                             { $$ = ModifierSemanticAction(NULL, COLOR_GREEN, MODIFIER_COLOR_MOD); }
