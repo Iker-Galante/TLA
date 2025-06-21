@@ -6,6 +6,17 @@ typedef enum {
 	true = 1
 } boolean;
 
+typedef enum {
+	COMPONENT_ID = 0,
+	SIMPLE_ID = 1,
+} idType;
+
+typedef struct {
+	idType type;
+	char * component; //es opcional, solo si el type es COMPONENT_ID. la idea es que esto sea basicamente un vomito de html
+	///que voy a pegar cada vez que llame al componente.
+} SymbolTableEntry;
+
 typedef int Token;
 
 #endif

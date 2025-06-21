@@ -34,7 +34,8 @@ const int main(const int count, const char **arguments)
 	// Begin compilation process.
 	CompilerState compilerState = {
 		.abstractSyntaxtTree = NULL,
-		.symbolTable = g_hash_table_new(g_str_hash,g_str_equal),
+		// Create a hash table that can store structs
+		.symbolTable = (g_str_hash, g_str_equal, g_free, free_symbol_entry),
 		.succeed = false,
 		.value = 0};
 

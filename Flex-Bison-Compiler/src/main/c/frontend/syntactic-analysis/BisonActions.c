@@ -24,7 +24,7 @@ extern unsigned int flexCurrentContext(void);
 /* PRIVATE FUNCTIONS */
 
 static void _logSyntacticAnalyzerAction(const char *functionName);
-static void checkIdExistanceAndAddToSymbolTable(char *id, CompilerState *compilerState);
+static boolean checkIdExistanceAndAddToSymbolTable(char *id, idType type);
 
 /**
  * Logs a syntactic-analyzer action in DEBUGGING level.
@@ -140,15 +140,29 @@ Expression *ExpressionSemanticAction(char *id, char *string, ComplexExpression *
         break;
     case EXPRESSION_ID_SIMPLEEXPRESSION:
         expression->simpleExpressionId = simpleExpression;
-        if(checkIdExistanceAndAddToSymbolTable(id))
+        if(checkIdExistanceAndAddToSymbolTable(id, SIMPLE_ID))
+        {
             expression->simpleId = id;
+        }
         else
+        {
             expression->simpleId = "UNDEFINED"; 
+            logError(_logger, "Attempting to redefine ID '%s'.", id);
+        }
         break;
     case EXPRESSION_ID_COMPLEXEXPRESSION:
         expression->complexExpressionId = complexExpression;
-        expression->complexId = id;
+        if(checkIdExistanceAndAddToSymbolTable(id, SIMPLE_ID))
+        {
+            expression->complexId = id;
+        }
+        else
+        {
+            expression->complexId = "UNDEFINED"; 
+            logError(_logger, "Attempting to redefine ID '%s'.", id);
+        }
         break;
+    
     case EXPRESSION_ID:
         expression->componentId = id;
         break;
@@ -164,18 +178,34 @@ Expression *ExpressionSemanticAction(char *id, char *string, ComplexExpression *
     expression->type = type;
     return expression;
 }
-static boolean checkIdExistanceAndAddToSymbolTable(char *id)
+static boolean checkIdExistanceAndAddSimpleIdToSymbolTable(char *id, idType type)
 {
+    _logSyntacticAnalyzerAction(__FUNCTION__);
+
     ///TODO me acabo de dar cuenta que enrealidad vamos a tener que por un lado
     ///vamos a tener los id de los divs o expresiones, y por el otro los ids
     ///del los componentes reutilizables, asi que hay que chequear el tipo de alguna manera
     if (g_hash_table_contains(currentCompilerState()->symbolTable, id))
     {
         logError(_logger, "The identifier '%s' already exists in the symbol table.", id);
+        return false;
     }
     else
     {
-        g_hash_table_add(currentCompilerState()->symbolTable, id);
+        //creo un SymbolTableEntry y asigno el typo si es un componente o no
+        SymbolTableEntry* entry = malloc(sizeof(SymbolTableEntry));
+        entry->type = type; 
+
+        g_hash_table_insert(currentCompilerState()->symbolTable, g_strdup(id), entry);
+    }
+    return true;
+}
+
+static boolean checkIdExistanceAndAddComponentToSymbolTable(char * id)
+{
+     if (g_hash_table_contains(currentCompilerState()->symbolTable, id))
+    {
+        logError(_logger, "The identifier '%s' already exists in the symbol table.", id);
     }
 }
 
@@ -405,7 +435,18 @@ Component *ComponentSemanticAction(char *id, Body *body, ComponentType type)
     GHashTable * symbolTable = currentCompilerState()->symbolTable;
     if(!g_hash_table_contains(symbolTable, id))
     {
-        g_hash_table_insert(symbolTable, id, body);
+        SymbolTableEntry* entry = malloc(sizeof(SymbolTableEntry));
+        entry->type = COMPONENT_ID;
+        ///TODO 
+        ///Yo aca estoy metiendo en la tabla de simbolos una entrada que va a ser de componente y 
+        ///va a estar vacia. por ahora mi idea es que cuando el back lea este componente, que venga a la entrada
+        ///de la tabla y que me escriba el html del componente y la meta en la SymbolTableEntry.
+        ///la otra opcion es meter el componente entero ahora en la tabla y que dsp el back cada vez que lo 
+        ///lea lo tiene que pasar a su html correspondiente.
+        ///me parece que la primera opcion es mejor.
+
+        g_hash_table_insert(symbolTable, g_strdup(id), entry);
+        
     }
     else
     {
