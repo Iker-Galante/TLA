@@ -2,6 +2,8 @@
 #define COMPILER_STATE_HEADER
 
 #include "Type.h"
+#include <glib.h>
+
 
 /**
  * The general status of a compilation.
@@ -24,12 +26,14 @@ typedef struct {
 
 	// TODO: Add an stack to handle nested scopes.
 	// TODO: Add a symbol table.
-	
+	GHashTable * symbolTable;
 	// TODO: Add configuration.
 	// TODO: ...
 
 	// The computed value of the entire program (only for the calculator).
 	int value;
 } CompilerState;
+
+
 
 #endif

@@ -145,6 +145,10 @@ body:
   | expression                                        { $$ = BodySemanticAction($1, NULL, BODY_EXPRESSION); }
   ;
 
+
+///TODO Para la tabla de simbolos, simpleExpression y compleExpression estan creando un ID nuevo
+/// {id} espera un ID de un COMPONENTE ESPECIFICAMENTE que ya haya sido creado
+///component tambien crea un id nuevo
 expression:
     PARENTESIS_IZQUIERDO ID PARENTESIS_DERECHO simple_expression           { $$ = ExpressionSemanticAction($2, NULL, NULL, $4, NULL, EXPRESSION_ID_SIMPLEEXPRESSION); }
   | PARENTESIS_IZQUIERDO ID PARENTESIS_DERECHO complex_expression          { $$ = ExpressionSemanticAction($2, NULL, $4, NULL, NULL, EXPRESSION_ID_COMPLEXEXPRESSION); }

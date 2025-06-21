@@ -24,6 +24,7 @@ extern unsigned int flexCurrentContext(void);
 /* PRIVATE FUNCTIONS */
 
 static void _logSyntacticAnalyzerAction(const char *functionName);
+static void checkIdExistanceAndAddToSymbolTable(char *id, CompilerState *compilerState);
 
 /**
  * Logs a syntactic-analyzer action in DEBUGGING level.
@@ -139,7 +140,10 @@ Expression *ExpressionSemanticAction(char *id, char *string, ComplexExpression *
         break;
     case EXPRESSION_ID_SIMPLEEXPRESSION:
         expression->simpleExpressionId = simpleExpression;
-        expression->simpleId = id;
+        if(checkIdExistanceAndAddToSymbolTable(id))
+            expression->simpleId = id;
+        else
+            expression->simpleId = "UNDEFINED"; 
         break;
     case EXPRESSION_ID_COMPLEXEXPRESSION:
         expression->complexExpressionId = complexExpression;
@@ -159,6 +163,20 @@ Expression *ExpressionSemanticAction(char *id, char *string, ComplexExpression *
     }
     expression->type = type;
     return expression;
+}
+static boolean checkIdExistanceAndAddToSymbolTable(char *id)
+{
+    ///TODO me acabo de dar cuenta que enrealidad vamos a tener que por un lado
+    ///vamos a tener los id de los divs o expresiones, y por el otro los ids
+    ///del los componentes reutilizables, asi que hay que chequear el tipo de alguna manera
+    if (g_hash_table_contains(currentCompilerState()->symbolTable, id))
+    {
+        logError(_logger, "The identifier '%s' already exists in the symbol table.", id);
+    }
+    else
+    {
+        g_hash_table_add(currentCompilerState()->symbolTable, id);
+    }
 }
 
 SimpleExpression *SimpleExpressionSemanticAction(Text *text, Image *img, Title *title, Subtitle *subtitle, Link *link, SimpleExpressionType type)
@@ -378,6 +396,22 @@ ColumnaTabla *ColumnaTablaSemanticAction(SimpleExpression *simpleExpression, Col
 
 Component *ComponentSemanticAction(char *id, Body *body, ComponentType type)
 {
+   
+    ///Current compilerState es una funcion de SyntacticAnalyzer.h el compiler state esta hecho para que
+    ///todas las fases puedan acceder a el. ahi guardo la tabla de simbolos que la van a poder ver todos.
+    ///Se llena en bison al ver la gramatica.
+
+
+    GHashTable * symbolTable = currentCompilerState()->symbolTable;
+    if(!g_hash_table_contains(symbolTable, id))
+    {
+        g_hash_table_insert(symbolTable, id, body);
+    }
+    else
+    {
+        logError(_logger, "Component with id '%s' is already defined.", id);
+    }
+    
     _logSyntacticAnalyzerAction(__FUNCTION__);
     Component *component = calloc(1, sizeof(Component));
     switch (type)

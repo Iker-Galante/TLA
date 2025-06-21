@@ -8,6 +8,7 @@
 #include "shared/Environment.h"
 #include "shared/Logger.h"
 #include "shared/String.h"
+#include <glib.h>
 
 /**
  * The main entry-point of the entire application. If you use "strtok" to
@@ -33,6 +34,7 @@ const int main(const int count, const char **arguments)
 	// Begin compilation process.
 	CompilerState compilerState = {
 		.abstractSyntaxtTree = NULL,
+		.symbolTable = g_hash_table_new(g_str_hash,g_str_equal),
 		.succeed = false,
 		.value = 0};
 
@@ -45,11 +47,11 @@ const int main(const int count, const char **arguments)
 		// ----------------------------------------------------------------------------------------
 		// Beginning of the Backend... ------------------------------------------------------------
 		logDebugging(logger, "Computing expression value...");
-		/*
+		
 		ComputationResult computationResult = computeExpression(program->body);
 		if (computationResult.succeed) {
 			compilerState.value = computationResult.value;
-			generate(&program, &tableOfSymbols);
+			generate(&compilerState);
 		}
 		else {
 			logError(logger, "The computation phase rejects the input program.");
@@ -57,7 +59,7 @@ const int main(const int count, const char **arguments)
 		}
 		// ...end of the Backend. -----------------------------------------------------------------
 		// ----------------------------------------------------------------------------------------
-		*/
+		
 	}
 	else
 	{
