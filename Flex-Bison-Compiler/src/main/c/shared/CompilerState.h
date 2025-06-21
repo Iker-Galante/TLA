@@ -24,6 +24,7 @@ typedef struct {
 
 	// TODO: Add an stack to handle nested scopes.
 	// TODO: Add a symbol table.
+	
 	// TODO: Add configuration.
 	// TODO: ...
 
