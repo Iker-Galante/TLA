@@ -20,4 +20,7 @@ const boolean getBooleanOrDefault(const char * name, const boolean defaultValue)
  */
 const char * getStringOrDefault(const char * name, const char * defaultValue);
 
+
+
+void free_symbol_entry(gpointer data);
 #endif
