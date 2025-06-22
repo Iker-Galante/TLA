@@ -1465,7 +1465,11 @@ static void _output(FILE* output,const unsigned int indentationLevel, const char
 void generate(CompilerState * compilerState) {
 	logDebugging(_logger, "Generating final output...");
     _currentCompilerState = compilerState;
-    FILE *output = fopen("results/index.html", "w");
+const char *output_dir = getenv("OUTPUT_DIR");
+    if (!output_dir) output_dir = "results";
+    char index_path[512];
+    snprintf(index_path, sizeof(index_path), "%s/index.html", output_dir);
+    FILE *output = fopen(index_path, "w");
     if (!output) {
         logError(_logger, "Could not open output file for writing.");
         return;
@@ -1475,6 +1479,8 @@ void generate(CompilerState * compilerState) {
 	_generateEpilogue(output);
 	checkUndeclaredIdsAndLog(compilerState->unDeclaredSymbols);
     fclose(output);
-    _generateCSS(fopen("results/style.css", "w"));
+    char css_path[512];
+    snprintf(css_path, sizeof(css_path), "%s/style.css", output_dir);
+    _generateCSS(fopen(css_path, "w"));
 	logDebugging(_logger, "Finished generation.");
 }
