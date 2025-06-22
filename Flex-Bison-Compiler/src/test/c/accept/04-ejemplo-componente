@@ -1,4 +1,5 @@
 principio
+(queso) texto: "esto es un texto con id"
 texto: "esto es un texto"
 (comp) punto-por-punto:
 - "elemento de lista"

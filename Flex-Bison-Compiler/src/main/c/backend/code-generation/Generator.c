@@ -27,6 +27,21 @@ CompilerState * backendCompilerState()
 	return _currentCompilerState;
 }
 
+void checkUndeclaredIdsAndLog(GPtrArray *undeclaredSymbols) {
+	if (undeclaredSymbols == NULL || undeclaredSymbols->len == 0) {
+		return;
+	}
+
+	GHashTable *symbolTable = _currentCompilerState->symbolTable;
+	for (unsigned int i = 0; i < undeclaredSymbols->len; i++) {
+		char *id = g_ptr_array_index(undeclaredSymbols, i);
+
+		if (!g_hash_table_contains(symbolTable, id)) {
+			logWarning(_logger, "Undeclared identifier '%s' used", id);
+		}
+	}
+}
+
 /** PUBLIC FUNCTIONS */
 
 /*
@@ -111,7 +126,7 @@ static void _generateExpression(const unsigned int indentationLevel, Expression 
 			_generateComponent(indentationLevel, expression->component, output);
 			break;
 		case EXPRESSION_STRING:
-			_generateString(indentationLevel, expression->string, output); 
+			_generateString(indentationLevel, expression->string, output);
 			break;
 		case EXPRESSION_ID:
 			_generateComponentId(indentationLevel, expression->componentId, output);
@@ -425,7 +440,7 @@ static void _generateComponentId(const unsigned int indentationLevel, const char
 		///aunque ahora que lo pienso no se realmente para que serviria eso, capaz los hacemos que no tengan IDs y listo
 		///pasa que pensaba que vos le podrias hacer un href a un componente reutilizable pero ahora no podrias
 		// _output(indentationLevel, "<div id=%s>\n",componentId );
-		_output(output,indentationLevel,"<div>\n	%s </div>\n", entry->component);
+		_output(output,indentationLevel,"%s\n", entry->component);
 	}
 }
 
@@ -1368,6 +1383,7 @@ void generate(CompilerState * compilerState) {
 	_generatePrologue(output);
 	_generateProgram(compilerState->abstractSyntaxtTree,output);
 	_generateEpilogue(output);
+	checkUndeclaredIdsAndLog(compilerState->unDeclaredSymbols);
     fclose(output);
 	logDebugging(_logger, "Generation is done.");
 }
