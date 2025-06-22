@@ -50,8 +50,12 @@
  * @see https://www.gnu.org/software/bison/manual/html_node/Destructor-Decl.html
  */
 
-/*
-%destructor { releaseProgram($$); } <program>
+/*los destructors hay que usarlos por si el parseo falla
+el de program lo que hace es que se fija si el parseo anduvo bien o no
+xq si anduvo bien quiero que no me libere el AST xq lo necesito en el backend
+*/
+%destructor {  if ($$ != currentCompilerState()->abstractSyntaxtTree) 
+    releaseProgram($$);  } <program>
 %destructor { releaseHeader($$); } <header>
 %destructor { releaseFooter($$); } <footer>
 %destructor { releaseBody($$); } <body>
@@ -73,7 +77,7 @@
 %destructor { releaseHref($$); } <href>
 %destructor { releasePuntoPorPunto($$); } <puntoPorPunto>
 %destructor { releaseExpression($$); } <expression>
-*/
+
 
 /** Terminals. */
 %token <string> STRING
@@ -118,6 +122,9 @@
 %%
 
 // IMPORTANT: To use λ in the following grammar, use the %empty symbol.
+
+
+
 
 program:
     PRINCIPIO NEW_LINE header body footer FIN        { $$ = ProgramSemanticAction($4, $3, $5, PROGRAM_HEADER_FOOTER_BODY,currentCompilerState()); }
