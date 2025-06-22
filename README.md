@@ -9,6 +9,7 @@ Trabajo practico TLA
 ## Notas:
   - Dejamos comentados los flags de sanitizer 
   - Los comenatarios solo funcionan en lineas nuevas
+  - En caso de no setear la variable, se vera el archvio en la carpeta "results" dentro de Flex-Bison-Compiler
 
 ## Correr test con output definido por el usuario:
 ```
