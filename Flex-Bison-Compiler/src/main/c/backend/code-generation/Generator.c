@@ -44,39 +44,6 @@ void checkUndeclaredIdsAndLog(GPtrArray *undeclaredSymbols) {
 
 /** PUBLIC FUNCTIONS */
 
-/*
-void generate(Program *program, TableOfSymbols *tableOfSymbols)
-{
-	if (program == NULL)
-	{
-		logError(_logger, "Program is NULL, cannot generate code.");
-		return;
-	}
-
-	logDebugging(_logger, "Generating code...\n");
-
-	FILE *f = fopen("index.html", "w");
-
-	if (f == NULL)
-	{
-		logError(_logger, "Could not open file for writing: index.html");
-		return;
-	}
-
-	fprintf(f, "<!DOCTYPE html>\n<html>\n");
-
-
-	_generateProgram(program);
-
-	// seguimos con el programa
-	// el resto de los generates...
-
-	// Si todo salio bien, cerramos el archivo
-	fprintf(f, "</html>\n");
-	fclose(f);
-}
-*/
-////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 /** PRIVATE FUNCTIONS */
@@ -1374,7 +1341,7 @@ static void _output(FILE* output,const unsigned int indentationLevel, const char
 void generate(CompilerState * compilerState) {
 	logDebugging(_logger, "Generating final output...");
     _currentCompilerState = compilerState;
-    FILE *output=fopen("results/index.html", "w");
+    FILE *output = fopen("results/index.html", "w");
     if (!output) {
         logError(_logger, "Could not open output file for writing.");
         return;
@@ -1384,5 +1351,5 @@ void generate(CompilerState * compilerState) {
 	_generateEpilogue(output);
 	checkUndeclaredIdsAndLog(compilerState->unDeclaredSymbols);
     fclose(output);
-	logDebugging(_logger, "Generation is done.");
+	logDebugging(_logger, "Finished generation.");
 }
