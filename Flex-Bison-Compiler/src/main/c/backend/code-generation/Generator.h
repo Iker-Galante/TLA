@@ -36,6 +36,7 @@ static void _generateString(const unsigned int indentationLevel, const char * st
 static void _generatePrologue(void);
 static void _generateEpilogue(const int value);
 static void _output(const unsigned int indentationLevel, const char * const format, ...);
+static char * _outputToString(const unsigned int indentationLevel, const char * const format, ...);
 static void _generateLink(const unsigned int indentationLevel, Link * link);
 static void _generateText(const unsigned int indentationLevel, Text * text);
 static void _generateImage(const unsigned int indentationLevel, Image * image);

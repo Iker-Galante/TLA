@@ -1,5 +1,7 @@
 #include "Generator.h"
 
+#include "../../frontend/syntactic-analysis/SyntacticAnalyzer.h"
+
 /* MODULE INTERNAL STATE */
 
 const char _indentationCharacter = ' ';
@@ -372,8 +374,14 @@ static void _generateColumn(const unsigned int indentationLevel, ColumnaTabla * 
 }
 
 //TODO DUDAS DE COMO HACER ESTE. LATER TALK WITH MANCIO
+/*
+ * ESTA TE CREA UN NUEVO COMPONENTE
+ */
 static void _generateComponent(const unsigned int indentationLevel, Component * component) {
-    if (!component) return;
+
+	SymbolTableEntry * entry = g_hash_table_lookup(currentCompilerState()->symbolTable, component->id);
+	char * componentHtml;
+
     if (component->id) {
         _output(indentationLevel, "<div id=\"%s\">\n", component->id);
     } else {
@@ -387,11 +395,17 @@ static void _generateComponent(const unsigned int indentationLevel, Component * 
 
 
 //TODO como "spawneo" al componente (?)
+/*
+ * ESTA TE SPAWNEA UN COMPONENTE YA CREADO
+ */
 static void _generateComponentId(const unsigned int indentationLevel, const char * componentId) {
+	if (!g_hash_table_contains(currentCompilerState()->symbolTable, componentId)) {
+		logError(_logger, "Component with id '%s' is not defined.", componentId);
+		return;
+	}
 	if (componentId) {
-		_output(indentationLevel, "%s", "<div id=\"");
-		_output(indentationLevel, "%s", componentId);
-		_output(indentationLevel, "%s", "\">\n");
+		_output(indentationLevel, "<div id=%s>\n",componentId );
+
 	} else {
 		_output(indentationLevel, "%s", "<div>\n");
 	}
@@ -502,6 +516,55 @@ static void _generateEpilogue(const int value) {
 static char * _indentation(const unsigned int level) {
 	return indentation(_indentationCharacter, level, _indentationSize);
 }
+
+
+
+/**
+ * Creates a formatted string with indentation and returns it as a heap-allocated string.
+ * The caller is responsible for freeing the memory.
+ */
+static char* _outputToString(const unsigned int indentationLevel, const char* const format, ...) {
+	char* indentation = _indentation(indentationLevel);
+	char* effectiveFormat = concatenate(2, indentation, format);
+
+	// get lenght
+	va_list arguments;
+	va_start(arguments, format);
+	va_list argumentsCopy;
+	va_copy(argumentsCopy, arguments);
+
+
+	int size = vsnprintf(NULL, 0, effectiveFormat, arguments);
+	va_end(arguments);
+
+	if (size < 0) {
+		free(effectiveFormat);
+		free(indentation);
+		va_end(argumentsCopy);
+		return NULL;
+	}
+
+	//malloc
+	char* result = malloc((size + 1) * sizeof(char));
+	if (!result) {
+		free(effectiveFormat);
+		free(indentation);
+		va_end(argumentsCopy);
+		return NULL;
+	}
+
+
+	vsnprintf(result, size + 1, effectiveFormat, argumentsCopy);
+	va_end(argumentsCopy);
+
+	//limpio temporales
+	free(effectiveFormat);
+	free(indentation);
+
+	return result;
+}
+
+
 
 /**
  * Outputs a formatted string to standard output. The "fflush" instruction
