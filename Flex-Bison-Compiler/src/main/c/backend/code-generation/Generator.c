@@ -172,9 +172,7 @@ static void _generateLink(const unsigned int indentationLevel, Link *link) {
 }
 
 static void _generateSubtitle(const unsigned int indentationLevel, Subtitle * subtitle) {
-	_output(indentationLevel, "%s", "<h2>");
-	_output(indentationLevel, "%s", subtitle->string);
-	_output(indentationLevel, "%s", "</h2>\n");
+	_output(indentationLevel, "<h2>%s</h2>\n", subtitle->string);
 }
 
 
@@ -261,9 +259,7 @@ static void _generateModifiedText(const unsigned int indentationLevel, Modifier 
 }
 
 static void _generateSimpleText(const unsigned int indentationLevel, const char * string) {
-	_output(indentationLevel, "%s", "<p>");
-	_output(indentationLevel, "%s", string);
-	_output(indentationLevel, "%s", "</p>\n");
+	_output(indentationLevel, "<p>%s</p>\n", string);
 }
 
 static void _generateComplexExpression(const unsigned int indentationLevel, ComplexExpression * complexExpression) {
@@ -347,14 +343,14 @@ static void _generateRowNav(const unsigned int indentationLevel, FilaNav * navRo
 
 
 static void _generateRowPPP(const unsigned int indentationLevel, FilaPPP * pppRow) {
-	_output(indentationLevel, "%s", "<li>\n");
+	_output(indentationLevel, "<li>\n");
 	if (pppRow->type == FILAPPP_EXPRESSION_FILAPPP) {
 		_generateExpression(1 + indentationLevel, pppRow->expressionFila);
 		_generateRowPPP(1 + indentationLevel, pppRow->filaPPP);
 	} else if (pppRow->type == FILAPPP_EXPRESSION) {
 		_generateExpression(1 + indentationLevel, pppRow->expression);
 	}
-	_output(indentationLevel, "%s", "</li>\n");
+	_output(indentationLevel,"</li>\n");
 }
 
 
