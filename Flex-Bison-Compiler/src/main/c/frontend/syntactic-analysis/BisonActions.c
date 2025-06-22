@@ -480,7 +480,7 @@ ComplexExpression *ComplexExpressionSemanticAction(Seccion *seccion, Table *tabl
     case CEXPRESSION_NAVEGADOR:
         complexExpression->navegador = navegador;
         break;
-        complexExpression->type = type;
-        return complexExpression;
     }
+    complexExpression->type = type;
+        return complexExpression;
 }

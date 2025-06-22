@@ -50,6 +50,7 @@
  * @see https://www.gnu.org/software/bison/manual/html_node/Destructor-Decl.html
  */
 
+/*
 %destructor { releaseProgram($$); } <program>
 %destructor { releaseHeader($$); } <header>
 %destructor { releaseFooter($$); } <footer>
@@ -72,6 +73,7 @@
 %destructor { releaseHref($$); } <href>
 %destructor { releasePuntoPorPunto($$); } <puntoPorPunto>
 %destructor { releaseExpression($$); } <expression>
+*/
 
 /** Terminals. */
 %token <string> STRING

@@ -10,6 +10,8 @@ void initializeAbstractSyntaxTreeModule();
 /** Shutdown module's internal state. */
 void shutdownAbstractSyntaxTreeModule();
 
+
+
 typedef enum ProgramType ProgramType;
 typedef enum HeaderFooterType HeaderFooterType;
 typedef enum BodyType BodyType;
@@ -59,6 +61,9 @@ typedef struct FilaNav FilaNav;
 typedef struct FilaTabla FilaTabla;
 typedef struct ColumnaTabla ColumnaTabla;
 
+
+// Add this with the other function declarations
+void logAbstractSyntaxTree(Program* program);
 
 /**
  * Node types for the Abstract Syntax Tree (AST).
