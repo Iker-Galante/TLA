@@ -36,6 +36,7 @@ static void _generateString(const unsigned int indentationLevel, const char * st
 static void _generatePrologue(void);
 static void _generateEpilogue(const int value);
 static void _output(const unsigned int indentationLevel, const char * const format, ...);
+static char * _outputToString(const unsigned int indentationLevel, const char * const format, ...);
 static void _generateLink(const unsigned int indentationLevel, Link * link);
 static void _generateText(const unsigned int indentationLevel, Text * text);
 static void _generateImage(const unsigned int indentationLevel, Image * image);
@@ -53,6 +54,33 @@ static void _generateRow(const unsigned int indentationLevel, FilaTabla * filaTa
 static void _generateSimpleText(const unsigned int indentationLevel, const char * string);
 static void _generateRowNav(const unsigned int indentationLevel, FilaNav * filaNav);
 static void _generateColumn(const unsigned int indentationLevel, ColumnaTabla * columnaTabla);
+static char* _generateProgramAsString(Program* program);
+static char* _generateHeaderAsString(const unsigned int indentationLevel, Header* header);
+static char* _generateFooterAsString(const unsigned int indentationLevel, Footer* footer);
+static char* _generateBodyAsString(const unsigned int indentationLevel, Body* body);
+static char* _generateExpressionAsString(const unsigned int indentationLevel, Expression* expression);
+static char* _generateSimpleExpressionAsString(const unsigned int indentationLevel, SimpleExpression* simpleExpression);
+static char* _generateImageAsString(const unsigned int indentationLevel, Image* img);
+static char* _generateTitleAsString(const unsigned int indentationLevel, Title* title);
+static char* _generateSubtitleAsString(const unsigned int indentationLevel, Subtitle* subtitle);
+static char* _generateTextAsString(const unsigned int indentationLevel, Text* text);
+static char* _generateModifiedTextAsString(const unsigned int indentationLevel, Modifier* modifier);
+static char* _generateSimpleTextAsString(const unsigned int indentationLevel, const char* string);
+static char* _generateLinkAsString(const unsigned int indentationLevel, Link* link);
+static char* _generateComplexExpressionAsString(const unsigned int indentationLevel, ComplexExpression* complexExpression);
+static char* _generateComponentAsString(const unsigned int indentationLevel, Component* component);
+static char* _generateComponentIdAsString(const unsigned int indentationLevel, const char* componentId);
+static char* _generateStringAsString(const unsigned int indentationLevel, const char* string);
+static char* _generateSectionAsString(const unsigned int indentationLevel, Seccion* section);
+static char* _generateTableAsString(const unsigned int indentationLevel, Table* table);
+static char* _generateNavigatorAsString(const unsigned int indentationLevel, Navegador* nav);
+static char* _generatePPPAsString(const unsigned int indentationLevel, PuntoPorPunto* ppp);
+static char* _generateSimpleExpressionIdAsString(const unsigned int indentationLevel, SimpleExpression* simpleExpression, const char* simpleId);
+static char* _generateComplexExpressionIdAsString(const unsigned int indentationLevel, ComplexExpression* complexExpression, const char* complexId);
+static char* _generateRowAsString(const unsigned int indentationLevel, FilaTabla* tableRow);
+static char* _generateColumnAsString(const unsigned int indentationLevel, ColumnaTabla* columnaTabla);
+static char* _generateRowNavAsString(const unsigned int indentationLevel, FilaNav* navRow);
+static char* _generateRowPPPAsString(const unsigned int indentationLevel, FilaPPP* pppRow);
 
 
 

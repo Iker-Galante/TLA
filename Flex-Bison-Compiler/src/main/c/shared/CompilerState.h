@@ -27,6 +27,10 @@ typedef struct {
 	// TODO: Add an stack to handle nested scopes.
 	// TODO: Add a symbol table.
 	GHashTable * symbolTable;
+
+	///unDeclaredSymbols es una lista que va a ir metiendo los ids que no estan declarados.
+	///la idea es que al final de la compilacion recorrerla y tirar errores por cada uno que este en la lista en cuestion
+	GPtrArray * unDeclaredSymbols;
 	// TODO: Add configuration.
 	// TODO: ...
 

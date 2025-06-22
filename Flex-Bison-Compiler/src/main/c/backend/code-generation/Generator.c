@@ -1,5 +1,7 @@
 #include "Generator.h"
 
+#include "../../frontend/syntactic-analysis/SyntacticAnalyzer.h"
+
 /* MODULE INTERNAL STATE */
 
 const char _indentationCharacter = ' ';
@@ -385,8 +387,14 @@ static void _generateColumn(const unsigned int indentationLevel, ColumnaTabla * 
 }
 
 //TODO DUDAS DE COMO HACER ESTE. LATER TALK WITH MANCIO
+/*
+ * ESTA TE CREA UN NUEVO COMPONENTE
+ */
 static void _generateComponent(const unsigned int indentationLevel, Component * component) {
-    if (!component) return;
+
+	SymbolTableEntry * entry = g_hash_table_lookup(currentCompilerState()->symbolTable, component->id);
+	char * componentHtml;
+
     if (component->id) {
         _output(indentationLevel, "<div id=\"%s\">\n", component->id);
     } else {
@@ -400,11 +408,17 @@ static void _generateComponent(const unsigned int indentationLevel, Component * 
 
 
 //TODO como "spawneo" al componente (?)
+/*
+ * ESTA TE SPAWNEA UN COMPONENTE YA CREADO
+ */
 static void _generateComponentId(const unsigned int indentationLevel, const char * componentId) {
+	if (!g_hash_table_contains(currentCompilerState()->symbolTable, componentId)) {
+		logError(_logger, "Component with id '%s' is not defined.", componentId);
+		return;
+	}
 	if (componentId) {
-		_output(indentationLevel, "%s", "<div id=\"");
-		_output(indentationLevel, "%s", componentId);
-		_output(indentationLevel, "%s", "\">\n");
+		_output(indentationLevel, "<div id=%s>\n",componentId );
+
 	} else {
 		_output(indentationLevel, "%s", "<div>\n");
 	}
@@ -482,6 +496,761 @@ static void _generateProgram(Program * program) {
 	
 }
 
+
+
+/* GENERADORES A STRING PARA EL COMPONENTE REUTILIZABLE EN VEZ DE OUTPUT */
+
+
+
+/**
+ * Generates the HTML for a program and returns it as a heap-allocated string.
+ */
+static char* _generateProgramAsString(Program* program) {
+    char* result = NULL;
+    
+    switch (program->type) {
+    case PROGRAM_EMPTY:
+        return strdup(""); // Empty string for empty program
+        
+    case PROGRAM_HEADER_FOOTER_BODY:
+        {
+            char* header = _generateHeaderAsString(1, program->headerFull);
+            char* body = _generateBodyAsString(1, program->bodyFull);
+            char* footer = _generateFooterAsString(1, program->footerFull);
+            
+            result = concatenate(3, header, body, footer);
+            
+            free(header);
+            free(body);
+            free(footer);
+        }
+        break;
+        
+    case PROGRAM_HEADER_FOOTER:
+        {
+            char* header = _generateHeaderAsString(1, program->headerHF);
+            char* footer = _generateFooterAsString(1, program->footerHF);
+            
+            result = concatenate(2, header, footer);
+            
+            free(header);
+            free(footer);
+        }
+        break;
+        
+    case PROGRAM_HEADER_BODY:
+        {
+            char* header = _generateHeaderAsString(1, program->headerHB);
+            char* body = _generateBodyAsString(1, program->bodyHB);
+            
+            result = concatenate(2, header, body);
+            
+            free(header);
+            free(body);
+        }
+        break;
+        
+    case PROGRAM_HEADER:
+        result = _generateHeaderAsString(1, program->header);
+        break;
+        
+    case PROGRAM_FOOTER_BODY:
+        {
+            char* body = _generateBodyAsString(1, program->bodyFB);
+            char* footer = _generateFooterAsString(1, program->footerFB);
+            
+            result = concatenate(2, body, footer);
+            
+            free(body);
+            free(footer);
+        }
+        break;
+        
+    case PROGRAM_FOOTER:
+        result = _generateFooterAsString(1, program->footer);
+        break;
+        
+    case PROGRAM_BODY:
+        result = _generateBodyAsString(1, program->body);
+        break;
+        
+    default:
+        result = _outputToString(0, "<!-- Unknown program type: %d -->\n", program->type);
+        break;
+    }
+    
+    return result;
+}
+
+/**
+ * Generates the HTML for a header and returns it as a heap-allocated string.
+ */
+static char* _generateHeaderAsString(const unsigned int indentationLevel, Header* header) {
+    char* openTag = _outputToString(indentationLevel, "<header>\n");
+    char* content = strdup("");
+    char* closeTag = _outputToString(indentationLevel, "</header>\n");
+    
+    if (header->type == HEADER_BODY) {
+        free(content);
+        content = _generateBodyAsString(1 + indentationLevel, header->body);
+    }
+    
+    char* result = concatenate(3, openTag, content, closeTag);
+    
+    free(openTag);
+    free(content);
+    free(closeTag);
+    
+    return result;
+}
+
+/**
+ * Generates the HTML for a footer and returns it as a heap-allocated string.
+ */
+static char* _generateFooterAsString(const unsigned int indentationLevel, Footer* footer) {
+    char* openTag = _outputToString(indentationLevel, "<footer>\n");
+    char* content = strdup("");
+    char* closeTag = _outputToString(indentationLevel, "</footer>\n");
+    
+    if (footer->type == HEADER_BODY) {
+        free(content);
+        content = _generateBodyAsString(1 + indentationLevel, footer->body);
+    }
+    
+    char* result = concatenate(3, openTag, content, closeTag);
+    
+    free(openTag);
+    free(content);
+    free(closeTag);
+    
+    return result;
+}
+
+/**
+ * Generates the HTML for a body and returns it as a heap-allocated string.
+ */
+static char* _generateBodyAsString(const unsigned int indentationLevel, Body* body) {
+    if (body->type == BODY_EXPRESSION_BODY) {
+        char* expr = _generateExpressionAsString(indentationLevel, body->expressionB);
+        char* remainingBody = _generateBodyAsString(indentationLevel, body->bodyB);
+        
+        char* result = concatenate(2, expr, remainingBody);
+        
+        free(expr);
+        free(remainingBody);
+        
+        return result;
+    } 
+    else if (body->type == BODY_EXPRESSION) {
+        return _generateExpressionAsString(indentationLevel, body->expression);
+    }
+    else {
+        return strdup(""); // Empty body
+    }
+}
+
+
+/**
+ * Generates the HTML for an expression and returns it as a heap-allocated string.
+ */
+static char* _generateExpressionAsString(const unsigned int indentationLevel, Expression* expression) {
+    switch (expression->type) {
+    case EXPRESSION_SIMPLE_EXPRESSION:
+        return _generateSimpleExpressionAsString(indentationLevel, expression->simpleExpression);
+        
+    case EXPRESSION_COMPLEX_EXPRESSION:
+        return _generateComplexExpressionAsString(indentationLevel, expression->complexExpression);
+        
+    case EXPRESSION_COMPONENTE:
+        return _generateComponentAsString(indentationLevel, expression->component);
+        
+    case EXPRESSION_STRING:
+        return _generateStringAsString(indentationLevel, expression->string);
+        
+    case EXPRESSION_ID:
+        return _generateComponentIdAsString(indentationLevel, expression->componentId);
+        
+    case EXPRESSION_ID_SIMPLEEXPRESSION:
+        return _generateSimpleExpressionIdAsString(indentationLevel, expression->simpleExpression, expression->simpleId);
+        
+    case EXPRESSION_ID_COMPLEXEXPRESSION:
+        return _generateComplexExpressionIdAsString(indentationLevel, expression->complexExpression, expression->complexId);
+        
+    default:
+        return _outputToString(indentationLevel, "<!-- Unknown expression type: %d -->\n", expression->type);
+    }
+}
+
+/**
+ * Generates the HTML for a simple expression and returns it as a heap-allocated string.
+ */
+static char* _generateSimpleExpressionAsString(const unsigned int indentationLevel, SimpleExpression* simpleExpression) {
+    switch (simpleExpression->type) {
+    case SEXPRESSION_TEXT:
+        return _generateTextAsString(indentationLevel, simpleExpression->text);
+        
+    case SEXPRESSION_IMG:
+        return _generateImageAsString(indentationLevel, simpleExpression->img);
+        
+    case SEXPRESSION_TITLE:
+        return _generateTitleAsString(indentationLevel, simpleExpression->title);
+        
+    case SEXPRESSION_SUBTITLE:
+        return _generateSubtitleAsString(indentationLevel, simpleExpression->subtitle);
+        
+    case SEXPRESSION_LINK:
+        return _generateLinkAsString(indentationLevel, simpleExpression->link);
+        
+    default:
+        return _outputToString(indentationLevel, "<!-- Unknown simple expression type: %d -->\n", simpleExpression->type);
+    }
+}
+
+
+/**
+ * Generates the HTML for an image and returns it as a heap-allocated string.
+ */
+static char* _generateImageAsString(const unsigned int indentationLevel, Image* img) {
+    if (img->alternative == NULL) {
+        return _outputToString(indentationLevel, "<img src=\"%s\"/>\n", img->url);
+    } else {
+        return _outputToString(indentationLevel, "<img src=\"%s\" alt=\"%s\"/>\n", img->url, img->alternative);
+    }
+}
+
+/**
+ * Generates the HTML for a title and returns it as a heap-allocated string.
+ */
+static char* _generateTitleAsString(const unsigned int indentationLevel, Title* title) {
+    return _outputToString(indentationLevel, "<h1>%s</h1>\n", title->string);
+}
+
+/**
+ * Generates the HTML for a subtitle and returns it as a heap-allocated string.
+ */
+static char* _generateSubtitleAsString(const unsigned int indentationLevel, Subtitle* subtitle) {
+    return _outputToString(indentationLevel, "<h2>%s</h2>\n", subtitle->string);
+}
+
+/**
+ * Generates the HTML for text and returns it as a heap-allocated string.
+ */
+static char* _generateTextAsString(const unsigned int indentationLevel, Text* text) {
+    switch (text->type) {
+    case TEXT_MODIFIED_TEXT:
+        {
+            char* openSpan = _outputToString(indentationLevel, "<span style=\"");
+            char* style = _generateModifiedTextAsString(indentationLevel, text->modifier);
+            char* closeStyle = strdup("\">");
+            char* content = _generateSimpleTextAsString(0, text->string);
+            char* closeSpan = strdup("</span>\n");
+            
+            char* result = concatenate(5, openSpan, style, closeStyle, content, closeSpan);
+            
+            free(openSpan);
+            free(style);
+            free(closeStyle);
+            free(content);
+            free(closeSpan);
+            
+            return result;
+        }
+        
+    case TEXT_SIMPLE_TEXT:
+        return _generateSimpleTextAsString(indentationLevel, text->string);
+        
+    default:
+        return _outputToString(indentationLevel, "<!-- Unknown text type: %d -->\n", text->type);
+    }
+}
+
+/**
+ * Generates the CSS style for modified text and returns it as a heap-allocated string.
+ */
+static char* _generateModifiedTextAsString(const unsigned int indentationLevel, Modifier* modifier) {
+    if (modifier == NULL) {
+        return strdup("");
+    }
+    
+    char* result = NULL;
+    
+    switch (modifier->type) {
+    case MODIFIER_COLOR_MOD:
+        {
+            char* colorStyle = NULL;
+            
+            switch (modifier->color) {
+            case COLOR_RED:
+                colorStyle = strdup("color: red;");
+                break;
+            case COLOR_GREEN:
+                colorStyle = strdup("color: green;");
+                break;
+            case COLOR_BLUE:
+                colorStyle = strdup("color: blue;");
+                break;
+            case COLOR_YELLOW:
+                colorStyle = strdup("color: yellow;");
+                break;
+            case COLOR_ORANGE:
+                colorStyle = strdup("color: orange;");
+                break;
+            default:
+                colorStyle = strdup("");
+                break;
+            }
+            
+            char* nextModifiers = _generateModifiedTextAsString(indentationLevel, modifier->modifierWithColor);
+            result = concatenate(2, colorStyle, nextModifiers);
+            
+            free(colorStyle);
+            free(nextModifiers);
+        }
+        break;
+        
+    case MODIFIER_EMPTY:
+        result = strdup("");
+        break;
+        
+    case MODIFIER_MODIFIER:
+        {
+            char* styleStr = NULL;
+            
+            switch (modifier->style) {
+            case UNDERLINE:
+                styleStr = strdup("text-decoration: underline;");
+                break;
+            case BOLD:
+                styleStr = strdup("font-weight: bold;");
+                break;
+            case ITALIC:
+                styleStr = strdup("font-style: italic;");
+                break;
+            case BIG:
+                styleStr = strdup("font-size: larger;");
+                break;
+            case TINY:
+                styleStr = strdup("font-size: smaller;");
+                break;
+            case MEDIUM:
+                styleStr = strdup("font-size: medium;");
+                break;
+            default:
+                styleStr = strdup("");
+                break;
+            }
+            
+            char* nextModifiers = _generateModifiedTextAsString(indentationLevel, modifier->modifier);
+            result = concatenate(2, styleStr, nextModifiers);
+            
+            free(styleStr);
+            free(nextModifiers);
+        }
+        break;
+        
+    default:
+        result = strdup("");
+        break;
+    }
+    
+    return result;
+}
+
+
+/**
+ * Generates the HTML for simple text and returns it as a heap-allocated string.
+ */
+static char* _generateSimpleTextAsString(const unsigned int indentationLevel, const char* string) {
+    return _outputToString(indentationLevel, "<p>%s</p>\n", string);
+}
+
+/**
+ * Generates the HTML for a link and returns it as a heap-allocated string.
+ */
+static char* _generateLinkAsString(const unsigned int indentationLevel, Link* link) {
+    if (!link || !link->href) {
+        return strdup("");
+    }
+    
+    char* openTag = NULL;
+    
+    if (link->href->type == HREF_URL) {
+        openTag = _outputToString(indentationLevel, "<a href=\"%s\">", link->href->url);
+    } else if (link->href->type == HREF_ID) {
+        openTag = _outputToString(indentationLevel, "<a href=\"#%s\">", link->href->id);
+    } else {
+        openTag = _outputToString(indentationLevel, "<a>");
+    }
+    
+    char* content = _generateSimpleExpressionAsString(0, link->simpleExpression);
+    char* closeTag = strdup("</a>\n");
+    
+    char* result = concatenate(3, openTag, content, closeTag);
+    
+    free(openTag);
+    free(content);
+    free(closeTag);
+    
+    return result;
+}
+
+/**
+ * Generates the HTML for a complex expression and returns it as a heap-allocated string.
+ */
+static char* _generateComplexExpressionAsString(const unsigned int indentationLevel, ComplexExpression* complexExpression) {
+    switch (complexExpression->type) {
+    case CEXPRESSION_SECCION:
+        return _generateSectionAsString(indentationLevel, complexExpression->seccion);
+        
+    case CEXPRESSION_TABLA:
+        return _generateTableAsString(indentationLevel, complexExpression->tabla);
+        
+    case CEXPRESSION_NAVEGADOR:
+        return _generateNavigatorAsString(indentationLevel, complexExpression->navegador);
+        
+    case CEXPRESSION_PUNTO_POR_PUNTO:
+        return _generatePPPAsString(indentationLevel, complexExpression->puntoPorPunto);
+        
+    default:
+        return _outputToString(indentationLevel, "<!-- Unknown complex expression type: %d -->\n", complexExpression->type);
+    }
+}
+
+/**
+ * Generates the HTML for a component with ID and returns it as a heap-allocated string.
+ */
+static char* _generateComponentAsString(const unsigned int indentationLevel, Component* component) {
+    char* openTag = NULL;
+    
+    if (component->id) {
+        openTag = _outputToString(indentationLevel, "<div id=\"%s\">\n", component->id);
+    } else {
+        openTag = _outputToString(indentationLevel, "<div>\n");
+    }
+    
+    char* content = strdup("");
+    
+    if (component->type == COMPONENT_COMPONENT) {
+        free(content);
+        content = _generateBodyAsString(1 + indentationLevel, component->body);
+    }
+    
+    char* closeTag = _outputToString(indentationLevel, "</div>\n");
+    
+    char* result = concatenate(3, openTag, content, closeTag);
+    
+    free(openTag);
+    free(content);
+    free(closeTag);
+    
+    return result;
+}
+
+/**
+ * Generates the HTML for a component reference and returns it as a heap-allocated string.
+ */
+static char* _generateComponentIdAsString(const unsigned int indentationLevel, const char* componentId) {
+    if (!g_hash_table_contains(currentCompilerState()->symbolTable, componentId)) {
+        logError(_logger, "Component with id '%s' is not defined.", componentId);
+        return strdup("<!-- Component not found -->\n");
+    }
+    
+    char* openTag = NULL;
+    
+    if (componentId) {
+        openTag = _outputToString(indentationLevel, "<div id=\"%s\">\n", componentId);
+    } else {
+        openTag = _outputToString(indentationLevel, "<div>\n");
+    }
+    
+    // Here you would insert the component content from the symbol table
+    
+    char* closeTag = _outputToString(indentationLevel, "</div>\n");
+    
+    char* result = concatenate(2, openTag, closeTag);
+    
+    free(openTag);
+    free(closeTag);
+    
+    return result;
+}
+
+/**
+ * Generates the HTML for a string literal and returns it as a heap-allocated string.
+ */
+static char* _generateStringAsString(const unsigned int indentationLevel, const char* string) {
+    return _outputToString(indentationLevel, "%s", string);
+}
+
+
+/**
+ * Generates the HTML for a section and returns it as a heap-allocated string.
+ */
+static char* _generateSectionAsString(const unsigned int indentationLevel, Seccion* section) {
+    char* openTag = _outputToString(indentationLevel, "<div>\n");
+    char* content = strdup("");
+    
+    if (section->type == SECCION_BODY) {
+        free(content);
+        content = _generateBodyAsString(1 + indentationLevel, section->body);
+    }
+    
+    char* closeTag = _outputToString(indentationLevel, "</div>\n");
+    
+    char* result = concatenate(3, openTag, content, closeTag);
+    
+    free(openTag);
+    free(content);
+    free(closeTag);
+    
+    return result;
+}
+
+/**
+ * Generates the HTML for a table and returns it as a heap-allocated string.
+ */
+static char* _generateTableAsString(const unsigned int indentationLevel, Table* table) {
+    char* openTag = _outputToString(indentationLevel, "<table>\n");
+    char* content = strdup("");
+    
+    if (table->type == TABLA_FILA_TABLA) {
+        free(content);
+        content = _generateRowAsString(1 + indentationLevel, table->filaTabla);
+    }
+    
+    char* closeTag = _outputToString(indentationLevel, "</table>\n");
+    
+    char* result = concatenate(3, openTag, content, closeTag);
+    
+    free(openTag);
+    free(content);
+    free(closeTag);
+    
+    return result;
+}
+
+/**
+ * Generates the HTML for a navigator and returns it as a heap-allocated string.
+ */
+static char* _generateNavigatorAsString(const unsigned int indentationLevel, Navegador* nav) {
+    char* openTag = _outputToString(indentationLevel, "<nav>\n");
+    char* content = strdup("");
+    
+    if (nav->type == NAVEGADOR_FILA_NAVEGADOR) {
+        free(content);
+        content = _generateRowNavAsString(1 + indentationLevel, nav->filaNav);
+    }
+    
+    char* closeTag = _outputToString(indentationLevel, "</nav>\n");
+    
+    char* result = concatenate(3, openTag, content, closeTag);
+    
+    free(openTag);
+    free(content);
+    free(closeTag);
+    
+    return result;
+}
+
+/**
+ * Generates the HTML for a punto-por-punto list and returns it as a heap-allocated string.
+ */
+static char* _generatePPPAsString(const unsigned int indentationLevel, PuntoPorPunto* ppp) {
+    char* openTag = _outputToString(indentationLevel, "<ul>\n");
+    char* content = strdup("");
+    
+    if (ppp->type == PPP_FILA_PUNTO_POR_PUNTO) {
+        free(content);
+        content = _generateRowPPPAsString(1 + indentationLevel, ppp->filaPPP);
+    }
+    
+    char* closeTag = _outputToString(indentationLevel, "</ul>\n");
+    
+    char* result = concatenate(3, openTag, content, closeTag);
+    
+    free(openTag);
+    free(content);
+    free(closeTag);
+    
+    return result;
+}
+
+
+/**
+ * Generates the HTML for a simple expression with ID and returns it as a heap-allocated string.
+ */
+static char* _generateSimpleExpressionIdAsString(const unsigned int indentationLevel, SimpleExpression* simpleExpression, const char* simpleId) {
+    char* openTag = NULL;
+    
+    if (simpleId) {
+        openTag = _outputToString(indentationLevel, "<div id=\"%s\">\n", simpleId);
+    } else {
+        openTag = _outputToString(indentationLevel, "<div>\n");
+    }
+    
+    char* content = _generateSimpleExpressionAsString(1 + indentationLevel, simpleExpression);
+    char* closeTag = _outputToString(indentationLevel, "</div>\n");
+    
+    char* result = concatenate(3, openTag, content, closeTag);
+    
+    free(openTag);
+    free(content);
+    free(closeTag);
+    
+    return result;
+}
+
+/**
+ * Generates the HTML for a complex expression with ID and returns it as a heap-allocated string.
+ */
+static char* _generateComplexExpressionIdAsString(const unsigned int indentationLevel, ComplexExpression* complexExpression, const char* complexId) {
+    char* openTag = NULL;
+    
+    if (complexId) {
+        openTag = _outputToString(indentationLevel, "<div id=\"%s\">\n", complexId);
+    } else {
+        openTag = _outputToString(indentationLevel, "<div>\n");
+    }
+    
+    char* content = _generateComplexExpressionAsString(1 + indentationLevel, complexExpression);
+    char* closeTag = _outputToString(indentationLevel, "</div>\n");
+    
+    char* result = concatenate(3, openTag, content, closeTag);
+    
+    free(openTag);
+    free(content);
+    free(closeTag);
+    
+    return result;
+}
+
+/**
+ * Generates the HTML for a table row and returns it as a heap-allocated string.
+ */
+static char* _generateRowAsString(const unsigned int indentationLevel, FilaTabla* tableRow) {
+    char* openTag = _outputToString(indentationLevel, "<tr>\n");
+    char* content = strdup("");
+    
+    if (tableRow->type == TABLA_FILA_TABLA) {
+        free(content);
+        content = _generateColumnAsString(indentationLevel + 1, tableRow->columnaTabla);
+    }
+    
+    char* closeTag = _outputToString(indentationLevel, "</tr>\n");
+    
+    char* result = concatenate(3, openTag, content, closeTag);
+    
+    free(openTag);
+    free(content);
+    free(closeTag);
+    
+    return result;
+}
+
+/**
+ * Generates the HTML for a navigation row and returns it as a heap-allocated string.
+ */
+static char* _generateRowNavAsString(const unsigned int indentationLevel, FilaNav* navRow) {
+    if (!navRow) {
+        return strdup("");
+    }
+    
+    char* links = strdup("");
+    FilaNav* currentRow = navRow;
+    
+    while (currentRow) {
+        if (currentRow->id && currentRow->string) {
+            char* linkTag = _outputToString(indentationLevel, "<a href=\"#%s\">%s</a>\n", 
+                                          currentRow->id, currentRow->string);
+            
+            char* tempLinks = links;
+            links = concatenate(2, tempLinks, linkTag);
+            
+            free(tempLinks);
+            free(linkTag);
+        }
+        
+        if (currentRow->type == FILANAV_FILA_NAVEGADOR) {
+            currentRow = currentRow->filaNav;
+        } else {
+            break;
+        }
+    }
+    
+    return links;
+}
+
+/**
+ * Generates the HTML for punto-por-punto rows and returns it as a heap-allocated string.
+ */
+static char* _generateRowPPPAsString(const unsigned int indentationLevel, FilaPPP* pppRow) {
+    if (!pppRow) {
+        return strdup("");
+    }
+    
+    char* result = NULL;
+    
+    if (pppRow->type == FILAPPP_EXPRESSION_FILAPPP) {
+        char* openTag = _outputToString(indentationLevel, "<li>");
+        char* content = _generateExpressionAsString(0, pppRow->expressionFila); 
+        char* closeTag = strdup("</li>\n");
+        char* nextRows = _generateRowPPPAsString(indentationLevel, pppRow->filaPPP);
+        
+        result = concatenate(4, openTag, content, closeTag, nextRows);
+        
+        free(openTag);
+        free(content);
+        free(closeTag);
+        free(nextRows);
+    } 
+    else if (pppRow->type == FILAPPP_EXPRESSION) {
+        char* openTag = _outputToString(indentationLevel, "<li>");
+        char* content = _generateExpressionAsString(0, pppRow->expression);
+        char* closeTag = strdup("</li>\n");
+        
+        result = concatenate(3, openTag, content, closeTag);
+        
+        free(openTag);
+        free(content);
+        free(closeTag);
+    }
+    else {
+        result = strdup("");
+    }
+    
+    return result;
+}
+
+/**
+ * Generates the HTML for a column and returns it as a heap-allocated string.
+ */
+static char* _generateColumnAsString(const unsigned int indentationLevel, ColumnaTabla* columnaTabla) {
+    if (!columnaTabla) {
+        return strdup("");
+    }
+    
+    char* result = NULL;
+    
+    if (columnaTabla->type == COLUMNA_COL) {
+        char* openTag = _outputToString(indentationLevel, "<td>\n");
+        char* content = _generateSimpleExpressionAsString(indentationLevel + 1, columnaTabla->expression);
+        char* closeTag = _outputToString(indentationLevel, "</td>\n");
+        
+        result = concatenate(3, openTag, content, closeTag);
+        
+        free(openTag);
+        free(content);
+        free(closeTag);
+    }
+    else if (columnaTabla->type == COLUMNA_FIN_FILA) {
+        // No content for end of row
+        result = strdup("");
+    }
+    
+    return result;
+}
+
+
 /**
  * Creates the prologue of the generated output, an HTML document. 
  */
@@ -515,6 +1284,55 @@ static void _generateEpilogue(const int value) {
 static char * _indentation(const unsigned int level) {
 	return indentation(_indentationCharacter, level, _indentationSize);
 }
+
+
+
+/**
+ * Creates a formatted string with indentation and returns it as a heap-allocated string.
+ * The caller is responsible for freeing the memory.
+ */
+static char* _outputToString(const unsigned int indentationLevel, const char* const format, ...) {
+	char* indentation = _indentation(indentationLevel);
+	char* effectiveFormat = concatenate(2, indentation, format);
+
+	// get lenght
+	va_list arguments;
+	va_start(arguments, format);
+	va_list argumentsCopy;
+	va_copy(argumentsCopy, arguments);
+
+
+	int size = vsnprintf(NULL, 0, effectiveFormat, arguments);
+	va_end(arguments);
+
+	if (size < 0) {
+		free(effectiveFormat);
+		free(indentation);
+		va_end(argumentsCopy);
+		return NULL;
+	}
+
+	//malloc
+	char* result = malloc((size + 1) * sizeof(char));
+	if (!result) {
+		free(effectiveFormat);
+		free(indentation);
+		va_end(argumentsCopy);
+		return NULL;
+	}
+
+
+	vsnprintf(result, size + 1, effectiveFormat, argumentsCopy);
+	va_end(argumentsCopy);
+
+	//limpio temporales
+	free(effectiveFormat);
+	free(indentation);
+
+	return result;
+}
+
+
 
 /**
  * Outputs a formatted string to standard output. The "fflush" instruction

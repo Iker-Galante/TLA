@@ -24,7 +24,7 @@ extern unsigned int flexCurrentContext(void);
 /* PRIVATE FUNCTIONS */
 
 static void _logSyntacticAnalyzerAction(const char *functionName);
-static boolean checkIdExistanceAndAddToSymbolTable(char *id, idType type);
+static boolean checkIdExistanceAndAddToSymbolTable(char *id);
 
 /**
  * Logs a syntactic-analyzer action in DEBUGGING level.
@@ -140,7 +140,7 @@ Expression *ExpressionSemanticAction(char *id, char *string, ComplexExpression *
         break;
     case EXPRESSION_ID_SIMPLEEXPRESSION:
         expression->simpleExpressionId = simpleExpression;
-        if(checkIdExistanceAndAddToSymbolTable(id, SIMPLE_ID))
+        if(checkIdExistanceAndAddToSymbolTable(id))
         {
             expression->simpleId = id;
         }
@@ -152,7 +152,7 @@ Expression *ExpressionSemanticAction(char *id, char *string, ComplexExpression *
         break;
     case EXPRESSION_ID_COMPLEXEXPRESSION:
         expression->complexExpressionId = complexExpression;
-        if(checkIdExistanceAndAddToSymbolTable(id, SIMPLE_ID))
+        if(checkIdExistanceAndAddToSymbolTable(id))
         {
             expression->complexId = id;
         }
@@ -178,7 +178,7 @@ Expression *ExpressionSemanticAction(char *id, char *string, ComplexExpression *
     expression->type = type;
     return expression;
 }
-static boolean checkIdExistanceAndAddToSymbolTable(char *id, idType type)
+static boolean checkIdExistanceAndAddToSymbolTable(char *id)
 {
     _logSyntacticAnalyzerAction(__FUNCTION__);
 
@@ -194,7 +194,7 @@ static boolean checkIdExistanceAndAddToSymbolTable(char *id, idType type)
     {
         //creo un SymbolTableEntry y asigno el typo si es un componente o no
         SymbolTableEntry* entry = malloc(sizeof(SymbolTableEntry));
-        entry->type = type; 
+        entry->type = SIMPLE_ID;
 
         g_hash_table_insert(currentCompilerState()->symbolTable, g_strdup(id), entry);
     }
@@ -302,6 +302,12 @@ Href *HrefSemanticAction(char *url, char *id, HrefType type)
     href->url = url;
     href->id = id;
     href->type = type;
+    if (type == HREF_ID) {
+        if (!g_hash_table_contains(currentCompilerState()->symbolTable, id)) {
+            ///TODO chequear memoria dinamica n shit puede tirar nullPointer o double free
+            g_ptr_array_add(currentCompilerState()->unDeclaredSymbols, id);
+        }
+    }
     return href;
 }
 
@@ -376,6 +382,10 @@ FilaNav *FilaNavSemanticAction(char *id, char *navName, FilaNav *filaNav, FilaNa
         break;
     }
     newFilaNav->type = type;
+    if (!g_hash_table_contains(currentCompilerState()->symbolTable, id)) {
+        ///TODO chequear memoria y mallocs, capaz hacemos double free o null pointer
+        g_ptr_array_add(currentCompilerState()->unDeclaredSymbols,id);
+    }
     return newFilaNav;
 }
 
@@ -439,9 +449,10 @@ Component *ComponentSemanticAction(char *id, Body *body, ComponentType type)
         ///la otra opcion es meter el componente entero ahora en la tabla y que dsp el back cada vez que lo 
         ///lea lo tiene que pasar a su html correspondiente.
         ///me parece que la primera opcion es mejor.
+        ///
+        ///y seguro hay que hacerle malloc al entry->body
 
         g_hash_table_insert(symbolTable, g_strdup(id), entry);
-        
     }
     else
     {

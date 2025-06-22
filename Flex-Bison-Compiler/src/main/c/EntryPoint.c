@@ -36,12 +36,13 @@ const int main(const int count, const char **arguments)
 		.abstractSyntaxtTree = NULL,
 		// Create a hash table that can store structs
 		.symbolTable = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, free_symbol_entry),
+		.unDeclaredSymbols = g_ptr_array_new(),
 		.succeed = false,
 		.value = 0};
 
 	const SyntacticAnalysisStatus syntacticAnalysisStatus = parse(&compilerState);
 	// Log the AST structure
-    logAbstractSyntaxTree((&compilerState)->abstractSyntaxtTree);
+    logAbstractSyntaxTree(compilerState.abstractSyntaxtTree);
 	CompilationStatus compilationStatus = SUCCEED;
 	Program *program = compilerState.abstractSyntaxtTree; // no veo en que momento llamamos al ProgramSemanticAction...
 
