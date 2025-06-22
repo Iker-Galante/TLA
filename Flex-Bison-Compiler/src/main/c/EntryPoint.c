@@ -23,7 +23,7 @@ const int main(const int count, const char **arguments)
 	initializeSyntacticAnalyzerModule();
 	initializeAbstractSyntaxTreeModule();
 	/*initializeCalculatorModule();*/
-	/*initializeGeneratorModule();*/
+	initializeGeneratorModule();
 
 	// Logs the arguments of the application.
 	for (int k = 0; k < count; ++k)

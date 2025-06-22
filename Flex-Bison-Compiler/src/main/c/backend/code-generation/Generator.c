@@ -362,7 +362,7 @@ static void _generateRowPPP(const unsigned int indentationLevel, FilaPPP * pppRo
 static void _generateColumn(const unsigned int indentationLevel, ColumnaTabla * columnaTabla) {
 	_output(indentationLevel, "%s", "<td>\n");
 	if (columnaTabla->type == COLUMNA_COL) {
-		_generateExpression(1 + indentationLevel, columnaTabla->expression);
+		_generateSimpleExpression(1 + indentationLevel, columnaTabla->expression);
 	} else if (columnaTabla->type == COLUMNA_FIN_FILA) {
 		// No action needed for end of row
 	}
