@@ -1278,6 +1278,7 @@ static void _generatePrologue(FILE* output) {
 		"<head>\n"
 		"    <meta charset=\"UTF-8\">\n"
 		"    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"
+        "    <link rel=\"stylesheet\" href=\"style.css\">\n"
 		"    <title>HTML Generado</title>\n"
 		"</head>\n"
 		"<body>\n"
