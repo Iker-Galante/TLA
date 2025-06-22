@@ -62,10 +62,19 @@ const int main(const int count, const char **arguments)
 	}
 
 	logDebugging(logger, "Releasing AST resources...");
-	/*releaseProgram(program);*/
+	releaseProgram(program);
 	logDebugging(logger, "Releasing modules resources...");
 	// shutdownGeneratorModule();
 	/*shutdownCalculatorModule();*/
+
+	//FREE GLIB structures
+	if (compilerState.symbolTable != NULL) {
+		g_hash_table_destroy(compilerState.symbolTable);
+	}
+	if (compilerState.unDeclaredSymbols != NULL) {
+		g_ptr_array_free(compilerState.unDeclaredSymbols, TRUE);
+	}
+
 	shutdownAbstractSyntaxTreeModule();
 	shutdownSyntacticAnalyzerModule();
 	shutdownBisonActionsModule();

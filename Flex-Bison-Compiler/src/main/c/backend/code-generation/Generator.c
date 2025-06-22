@@ -14,18 +14,21 @@ void initializeGeneratorModule()
 	_logger = createLogger("Generator");
 }
 
+CompilerState * backendCompilerState()
+{
+	return _currentCompilerState;
+}
+
 void shutdownGeneratorModule()
 {
 	if (_logger != NULL)
 	{
 		destroyLogger(_logger);
 	}
+
 }
 
-CompilerState * backendCompilerState()
-{
-	return _currentCompilerState;
-}
+
 
 void checkUndeclaredIdsAndLog(GPtrArray *undeclaredSymbols) {
 	if (undeclaredSymbols == NULL || undeclaredSymbols->len == 0) {
@@ -135,7 +138,8 @@ static void _generateSimpleExpression(const unsigned int indentationLevel, Simpl
 
 static void _generateImage(const unsigned int indentationLevel, Image * img, FILE* output) {
 	if(img->alternative == NULL){
-    _output(output,indentationLevel, "<img src=\"%s\"/>\n", img->url);
+		 logWarning(_logger,"Image without alternative text. URL: %s", img->url);
+		_output(output,indentationLevel, "<img src=\"%s\"/>\n", img->url);
 	} else {
 	_output(output,indentationLevel, "<img src=\"%s\" alt=\"%s\"/>\n", img->url, img->alternative);
 	}
@@ -386,7 +390,7 @@ static void _generateComponent(const unsigned int indentationLevel, Component * 
 		 entry->component = _generateComponentAsString(indentationLevel,component);
 
 	}else {
-		entry->component = "";
+		entry->component = strdup("");
 	}
 	entry->type = COMPONENT_ID_INITIALIZED_AND_CREATED;
 }
@@ -430,7 +434,7 @@ static void _generateSimpleExpressionId(const unsigned int indentationLevel, Sim
 
 static void _generateComplexExpressionId(const unsigned int indentationLevel, ComplexExpression * complexExpression, const char * complexId, FILE* output) {
 	if (complexId) {
-		_output(output,indentationLevel, "<div id=\"%s\"\n", complexId);
+		_output(output,indentationLevel, "<div id=\"%s\">\n", complexId);
 	} else {
 		_output(output,indentationLevel, "<div>\n");
 	}
@@ -902,17 +906,17 @@ static char* _generateComplexExpressionAsString(const unsigned int indentationLe
 }
 
 /**
- * Generates the HTML for a component with ID and returns it as a heap-allocated string.
+ * Generates HTML for component. returns it AS HEAP ALLOCATED SO NEED TO FREE
  */
 static char* _generateComponentAsString(const unsigned int indentationLevel, Component* component) {
     char* openTag = NULL;
-    
+
     if (component->id) {
-        openTag = _outputToString(indentationLevel, "<div id=\"%s\">\n", component->id);
+        openTag = _outputToString(indentationLevel, "<div class=\"%s\">\n", component->id);
     } else {
         openTag = _outputToString(indentationLevel, "<div>\n");
     }
-    
+
     char* content = strdup("");
     
     if (component->type == COMPONENT_COMPONENT) {

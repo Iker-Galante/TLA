@@ -31,7 +31,7 @@ void free_symbol_entry(gpointer data) {
     if (data == NULL) return;
     
     SymbolTableEntry* entry = (SymbolTableEntry*)data;
-    if (entry->component != NULL) {
+    if (entry->type != SIMPLE_ID && entry->component != NULL) {
         free(entry->component);
     }
     free(entry);

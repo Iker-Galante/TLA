@@ -302,7 +302,6 @@ void releaseText(Text * text){
 		else if(text->type == TEXT_MODIFIED_TEXT){
 			releaseModifiers(text->modifier);
 		}
-		printf("RELEASING TEXT STRING");
 		free(text->string);
 		free(text);
 	}
@@ -328,7 +327,7 @@ void releaseTitle(Title * title) {
 
 void releaseSubtitle(Subtitle * subtitle) {
     logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
-	printf("RELEASING SUBTITLE STRING");
+
 	if (subtitle != NULL) {
 		free(subtitle->string);
 		subtitle->string = NULL;
@@ -341,6 +340,9 @@ void releaseLink(Link * link) {
     if (link != NULL) {
         releaseHref(link->href);
         releaseSimpleExpression(link->simpleExpression);
+    	if (link->text != NULL) {
+    		free(link->text);
+    	}
         free(link);
     }
 }
@@ -367,7 +369,7 @@ void releaseTabla(Table * tabla) {
 void releaseFilaNav(FilaNav * filaNav) {
     logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
     if (filaNav != NULL) {
-        if (filaNav->type == NAVEGADOR_FILA_NAVEGADOR) {
+        if (filaNav->type == FILANAV_FILA_NAVEGADOR) {
             releaseFilaNav(filaNav->filaNav);
         }
         free(filaNav->id);
