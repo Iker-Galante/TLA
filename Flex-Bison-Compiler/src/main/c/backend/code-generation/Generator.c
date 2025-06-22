@@ -7,6 +7,7 @@
 const char _indentationCharacter = ' ';
 const char _indentationSize = 2;
 static Logger *_logger = NULL;
+static CompilerState * _currentCompilerState = NULL;
 
 void initializeGeneratorModule()
 {
@@ -19,6 +20,11 @@ void shutdownGeneratorModule()
 	{
 		destroyLogger(_logger);
 	}
+}
+
+CompilerState * backendCompilerState()
+{
+	return _currentCompilerState;
 }
 
 /** PUBLIC FUNCTIONS */
@@ -392,18 +398,15 @@ static void _generateColumn(const unsigned int indentationLevel, ColumnaTabla * 
  */
 static void _generateComponent(const unsigned int indentationLevel, Component * component) {
 
-	SymbolTableEntry * entry = g_hash_table_lookup(currentCompilerState()->symbolTable, component->id);
-	char * componentHtml;
+	CompilerState * c = backendCompilerState();
+	SymbolTableEntry * entry = g_hash_table_lookup(backendCompilerState()->symbolTable, component->id);
+	if (component->type == COMPONENT_COMPONENT) {
+		 entry->component = _generateComponentAsString(indentationLevel,component);
 
-    if (component->id) {
-        _output(indentationLevel, "<div id=\"%s\">\n", component->id);
-    } else {
-        _output(indentationLevel, "<div>\n");
-    }
-    if (component->type == COMPONENT_COMPONENT) {
-        _generateBody(1 + indentationLevel, component->body);
-    }
-    _output(indentationLevel, "%s", "</div>\n");
+	}else {
+		entry->component = "";
+	}
+	entry->type = COMPONENT_ID_INITIALIZED_AND_CREATED;
 }
 
 
@@ -412,17 +415,18 @@ static void _generateComponent(const unsigned int indentationLevel, Component * 
  * ESTA TE SPAWNEA UN COMPONENTE YA CREADO
  */
 static void _generateComponentId(const unsigned int indentationLevel, const char * componentId) {
-	if (!g_hash_table_contains(currentCompilerState()->symbolTable, componentId)) {
+	if (!g_hash_table_contains(backendCompilerState()->symbolTable, componentId)) {
 		logError(_logger, "Component with id '%s' is not defined.", componentId);
 		return;
 	}
-	if (componentId) {
-		_output(indentationLevel, "<div id=%s>\n",componentId );
-
-	} else {
-		_output(indentationLevel, "%s", "<div>\n");
+	SymbolTableEntry * entry = g_hash_table_lookup(backendCompilerState()->symbolTable, componentId);
+	if (entry->type == COMPONENT_ID_INITIALIZED_AND_CREATED) {
+		///TODO capaz habria que hacer una forma de que cada componente reutilizable tenga un ID distinto
+		///aunque ahora que lo pienso no se realmente para que serviria eso, capaz los hacemos que no tengan IDs y listo
+		///pasa que pensaba que vos le podrias hacer un href a un componente reutilizable pero ahora no podrias
+		// _output(indentationLevel, "<div id=%s>\n",componentId );
+		_output(indentationLevel,"<div>\n	%s </div>\n", entry->component);
 	}
-	_output(indentationLevel, "%s", "</div>\n");
 }
 
 static void _generateString(const unsigned int indentationLevel, const char * string) {
@@ -1355,6 +1359,7 @@ static void _output(const unsigned int indentationLevel, const char * const form
 
 void generate(CompilerState * compilerState) {
 	logDebugging(_logger, "Generating final output...");
+	_currentCompilerState = compilerState;
 	_generatePrologue();
 	_generateProgram(compilerState->abstractSyntaxtTree);
 	_generateEpilogue(compilerState->value);
