@@ -26,6 +26,8 @@ void shutdownGeneratorModule();
 void generate(CompilerState * compilerState);
 
 static void _generateProgram(Program * program, FILE* output);
+static void _generateCSS(FILE* css);
+
 static void _generateHeader(const unsigned int indentationLevel, Header * header, FILE* output);
 static void _generateFooter(const unsigned int indentationLevel, Footer * footer, FILE* output);
 static void _generateBody(const unsigned int indentationLevel, Body * body, FILE* output);

@@ -1256,6 +1256,126 @@ static void _generatePrologue(FILE* output) {
 	);
 }
 
+static void _generateCSS(FILE* output) {
+    _output(output, 0, "%s",
+    "body {\n"
+    "  margin: 0;\n"
+    "  font-family: 'Segoe UI', sans-serif;\n"
+    "  background-color: #f4f1ea;\n"
+    "  color: #2e2e2e;\n"
+    "  display: flex;\n"
+    "  flex-direction: column;\n"
+    "  align-items: center;\n"
+    "}\n\n"
+
+    "header, footer {\n"
+    "  background-color: #8ca08c;\n"
+    "  color: #fff;\n"
+    "  width: 100%;\n"
+    "  text-align: center;\n"
+    "  padding: 1.5rem 0;\n"
+    "}\n\n"
+
+    "nav {\n"
+    "  background-color: #c2c1a5;\n"
+    "  width: 100%;\n"
+    "  display: flex;\n"
+    "  justify-content: center;\n"
+    "  padding: 1rem 0;\n"
+    "}\n\n"
+
+    "nav ul {\n"
+    "  list-style: none;\n"
+    "  display: flex;\n"
+    "  gap: 2rem;\n"
+    "  margin: 0;\n"
+    "  padding: 0;\n"
+    "}\n\n"
+
+    "nav ul li a {\n"
+    "  color: #2e2e2e;\n"
+    "  text-decoration: none;\n"
+    "  font-weight: bold;\n"
+    "  transition: color 0.3s ease;\n"
+    "}\n\n"
+
+    "nav ul li a:hover {\n"
+    "  color: #5e7f66;\n"
+    "}\n\n"
+
+    "main {\n"
+    "  max-width: 1200px;\n"
+    "  width: 90%;\n"
+    "  display: grid;\n"
+    "  grid-template-columns: 1fr 1fr;\n"
+    "  gap: 2rem;\n"
+    "  margin: 2rem 0;\n"
+    "}\n\n"
+
+    "section {\n"
+    "  background-color: #ffffff;\n"
+    "  border-radius: 8px;\n"
+    "  box-shadow: 0 4px 8px rgba(0,0,0,0.05);\n"
+    "  padding: 2rem;\n"
+    "}\n\n"
+
+    "h1, h2 {\n"
+    "  color: #4e5d4e;\n"
+    "  margin-top: 0;\n"
+    "}\n\n"
+
+    "a {\n"
+    "  color: #3e6d8e;\n"
+    "  text-decoration: underline;\n"
+    "}\n\n"
+
+    "a:hover {\n"
+    "  color: #2c4d63;\n"
+    "}\n\n"
+
+    "img {\n"
+    "  width: 100%;\n"
+    "  max-width: 600px;\n"
+    "  border: 2px solid #ddd;\n"
+    "  border-radius: 8px;\n"
+    "  margin-top: 1rem;\n"
+    "}\n\n"
+
+    "table {\n"
+    "  width: 100%;\n"
+    "  max-width: 600px;\n"
+    "  margin: 1rem auto;\n"
+    "  border-collapse: collapse;\n"
+    "  background-color: #faf9f6;\n"
+    "  border: 1px solid #ccc;\n"
+    "  border-radius: 8px;\n"
+    "}\n\n"
+
+    "th, td {\n"
+    "  padding: 0.75rem;\n"
+    "  border: 1px solid #ccc;\n"
+    "  text-align: left;\n"
+    "}\n\n"
+
+    "tr:nth-child(even) {\n"
+    "  background-color: #f0eee9;\n"
+    "}\n\n"
+
+    "footer {\n"
+    "  font-size: 0.9rem;\n"
+    "  padding: 1rem 0;\n"
+    "  margin-top: auto;\n"
+    "}\n\n"
+
+    "@media (max-width: 800px) {\n"
+    "  main {\n"
+    "    grid-template-columns: 1fr;\n"
+    "  }\n"
+    "}\n"
+);
+fclose(output);
+}
+
 /**
  * Creates the epilogue of the generated output, that is, the final lines that
  * completes a valid HTML document.
@@ -1355,5 +1475,6 @@ void generate(CompilerState * compilerState) {
 	_generateEpilogue(output);
 	checkUndeclaredIdsAndLog(compilerState->unDeclaredSymbols);
     fclose(output);
+    _generateCSS(fopen("results/style.css", "w"));
 	logDebugging(_logger, "Finished generation.");
 }
