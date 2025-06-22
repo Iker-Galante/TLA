@@ -387,14 +387,14 @@ static void _printIndent(int indent) {
     }
 }
 
-// Forward declarations for AST logging functions
+
 static void _logAST_Body(Body* body, int indent);
 static void _logAST_Expression(Expression* expr, int indent);
 static void _logAST_SimpleExpression(SimpleExpression* simpleExpr, int indent);
 static void _logAST_ComplexExpression(ComplexExpression* complexExpr, int indent);
 
 /**
- * Log the full Abstract Syntax Tree starting from the program root
+ * Esto para loguear el AST
  */
 void logAbstractSyntaxTree(Program* program) {
     if (program == NULL) {

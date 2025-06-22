@@ -7,7 +7,7 @@ fin-ppp
 componente (comp):
 punto-por-punto:
 - texto: "esto es un algo"
-- imagen:"esto es un algo"
+- imagen:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSbwmsx7_B5pbpllcZh2zBFtnA7p2u4l_Yrw&s"
 fin-ppp
 fin-componente
 {comp}

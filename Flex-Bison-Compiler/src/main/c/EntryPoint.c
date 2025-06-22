@@ -41,8 +41,6 @@ const int main(const int count, const char **arguments)
 		.value = 0};
 
 	const SyntacticAnalysisStatus syntacticAnalysisStatus = parse(&compilerState);
-	// Log the AST structure
-    logAbstractSyntaxTree(compilerState.abstractSyntaxtTree);
 	CompilationStatus compilationStatus = SUCCEED;
 	Program *program = compilerState.abstractSyntaxtTree; // no veo en que momento llamamos al ProgramSemanticAction...
 

@@ -89,7 +89,7 @@ static char * _indentation(const unsigned int indentationLevel);
 static void _output(FILE* output,const unsigned int indentationLevel, const char * const format, ...);
 
 static void _generateHeader(const unsigned int indentationLevel, Header * header, FILE* output){
-	_output(output,0, "%s", "<header>\n");
+	_output(output,indentationLevel, "%s", "<header>\n");
 	if(header->type == HEADER_BODY){
 		_generateBody(1 + indentationLevel, header->body, output);
 	}
@@ -185,17 +185,17 @@ static void _generateLink(const unsigned int indentationLevel, Link *link, FILE*
     const char *hrefValue = "";
     if (link->href->type == HREF_URL) {
         hrefValue = link->href->url;
-        _output(output,indentationLevel, "<a href=\"%s\">", hrefValue);
+        _output(output,indentationLevel, "<a href=\"%s\">\n", hrefValue);
     } else if (link->href->type == HREF_ID) {
-        _output(output,indentationLevel, "<a href=\"#%s\">", link->href->id);
+        _output(output,indentationLevel, "<a href=\"#%s\">\n", link->href->id);
     } else {
         _output(output,indentationLevel, "<a>");
     }
 	
 	if (link->text) {
-		_output(output,indentationLevel, "%s", link->text);
+		_output(output,indentationLevel + 1, "%s", link->text);
 	} else {
-    	_generateSimpleExpression(indentationLevel, link->simpleExpression,output);
+    	_generateSimpleExpression(indentationLevel + 1, link->simpleExpression,output);
 	}
     
 
@@ -211,11 +211,11 @@ static void _generateSubtitle(const unsigned int indentationLevel, Subtitle * su
 static void _generateText(const unsigned int indentationLevel, Text * text, FILE* output) {
 	switch (text->type) {
 		case TEXT_MODIFIED_TEXT:
-			_output(output,indentationLevel, "%s", "<span style=\""); // Open a span for modified text
-			_generateModifiedText(indentationLevel, text->modifier,output);
-			_output(output,indentationLevel, "%s", "\">"); // Close the style attribute
-			_generateSimpleText(indentationLevel, text->string,output);
-			_output(output,indentationLevel, "%s", "</span>\n"); // Close the span opened in _generateModifiedText
+			_output(output,indentationLevel, "%s", "<div style=\""); // Open a span for modified text
+			_generateModifiedText(0, text->modifier,output);
+			_output(output,indentationLevel, "%s", "\">\n"); // Close the style attribute
+			_generateSimpleText(indentationLevel + 1, text->string,output);
+			_output(output,indentationLevel, "%s", "</div>\n"); // Close the span opened in _generateModifiedText
 			break;
 		case TEXT_SIMPLE_TEXT:
 			_generateSimpleText(indentationLevel, text->string,output);
@@ -236,16 +236,16 @@ static void _generateModifiedText(const unsigned int indentationLevel, Modifier 
 			switch (modifier->color)
 			{
 			case COLOR_RED:
-				_output(output,indentationLevel, "color: red;");
+				_output(output,indentationLevel, "color: red; ");
 				break;
 			case COLOR_GREEN:
-				_output(output,indentationLevel, "color: green;");
+				_output(output,indentationLevel, "color: green; ");
 				break;
 			case COLOR_BLUE:
-				_output(output,indentationLevel, "color: blue;");
+				_output(output,indentationLevel, "color: blue; ");
 				break;
 			case COLOR_YELLOW:
-				_output(output,indentationLevel, "color: yellow;");
+				_output(output,indentationLevel, "color: yellow; ");
 				break;
 			case COLOR_ORANGE:
 				_output(output,indentationLevel, "color: orange;");
@@ -262,22 +262,22 @@ static void _generateModifiedText(const unsigned int indentationLevel, Modifier 
 			switch (modifier->style)
 			{
 			case UNDERLINE:
-				_output(output,indentationLevel, "text-decoration: underline;");
+				_output(output,indentationLevel, "text-decoration: underline; ");
 				break;
 			case BOLD:
-				_output(output,indentationLevel, "font-weight: bold;");
+				_output(output,indentationLevel, "font-weight: bold; ");
 				break;
 			case ITALIC:
-				_output(output,indentationLevel, "font-style: italic;");
+				_output(output,indentationLevel, "font-style: italic; ");
 				break;
 			case BIG:
-				_output(output,indentationLevel, "font-size: larger;");
+				_output(output,indentationLevel, "font-size: larger; ");
 				break;
 			case TINY:
-				_output(output,indentationLevel, "font-size: smaller;");
+				_output(output,indentationLevel, "font-size: smaller; ");
 				break;
 			case MEDIUM:
-				_output(output,indentationLevel, "font-size: medium;");
+				_output(output,indentationLevel, "font-size: medium; ");
 				break;
 			default:
 				logError(_logger, "Unknown style type: %d", modifier->style);
@@ -441,6 +441,9 @@ static void _generateComponentId(const unsigned int indentationLevel, const char
 		// _output(indentationLevel, "<div id=%s>\n",componentId );
 		_output(output,indentationLevel,"%s\n", entry->component);
 	}
+	else {
+		logError(_logger,"Type error, id declared as simpleId used as componentId. Component will be ignored. id: %s", componentId);
+	}
 }
 
 static void _generateString(const unsigned int indentationLevel, const char * string, FILE* output) {
@@ -450,26 +453,22 @@ static void _generateString(const unsigned int indentationLevel, const char * st
 
 static void _generateSimpleExpressionId(const unsigned int indentationLevel, SimpleExpression * simpleExpression, const char * simpleId, FILE* output) {
 	if (simpleId) {
-		_output(output,indentationLevel, "%s", "<div id=\"");
-		_output(output,indentationLevel, "%s", simpleId);
-		_output(output,indentationLevel, "%s", "\">\n");
+		_output(output,indentationLevel, "<div id=\"%s\">\n", simpleId);
 	} else {
-		_output(output,indentationLevel, "%s", "<div>\n");
+		_output(output,indentationLevel, "<div>\n");
 	}
 	_generateSimpleExpression(1 + indentationLevel, simpleExpression,output);
-	_output(output,indentationLevel, "%s", "</div>\n");
+	_output(output,indentationLevel, "</div>\n");
 }
 
 static void _generateComplexExpressionId(const unsigned int indentationLevel, ComplexExpression * complexExpression, const char * complexId, FILE* output) {
 	if (complexId) {
-		_output(output,indentationLevel, "%s", "<div id=\"");
-		_output(output,indentationLevel, "%s", complexId);
-		_output(output,indentationLevel, "%s", "\">\n");
+		_output(output,indentationLevel, "<div id=\"%s\"\n", complexId);
 	} else {
-		_output(output,indentationLevel, "%s", "<div>\n");
+		_output(output,indentationLevel, "<div>\n");
 	}
 	_generateComplexExpression(1 + indentationLevel, complexExpression,output);
-	_output(output,indentationLevel, "%s", "</div>\n");
+	_output(output,indentationLevel, "</div>\n" );
 }
 
 /**
@@ -730,6 +729,7 @@ static char* _generateSimpleExpressionAsString(const unsigned int indentationLev
  */
 static char* _generateImageAsString(const unsigned int indentationLevel, Image* img) {
     if (img->alternative == NULL) {
+    	logWarning(_logger,"Image without alternative text. URL: %s", img->url);
         return _outputToString(indentationLevel, "<img src=\"%s\"/>\n", img->url);
     } else {
         return _outputToString(indentationLevel, "<img src=\"%s\" alt=\"%s\"/>\n", img->url, img->alternative);
@@ -757,11 +757,11 @@ static char* _generateTextAsString(const unsigned int indentationLevel, Text* te
     switch (text->type) {
     case TEXT_MODIFIED_TEXT:
         {
-            char* openSpan = _outputToString(indentationLevel, "<span style=\"");
-            char* style = _generateModifiedTextAsString(indentationLevel, text->modifier);
-            char* closeStyle = strdup("\">");
-            char* content = _generateSimpleTextAsString(0, text->string);
-            char* closeSpan = strdup("</span>\n");
+            char* openSpan = _outputToString(indentationLevel, "<div style=\"");
+            char* style = _generateModifiedTextAsString(0, text->modifier);
+            char* closeStyle = strdup("\">\n");
+            char* content = _generateSimpleTextAsString(indentationLevel + 1, text->string);
+            char* closeSpan = strdup("</div>\n");
             
             char* result = concatenate(5, openSpan, style, closeStyle, content, closeSpan);
             
@@ -893,14 +893,14 @@ static char* _generateLinkAsString(const unsigned int indentationLevel, Link* li
     char* openTag = NULL;
     
     if (link->href->type == HREF_URL) {
-        openTag = _outputToString(indentationLevel, "<a href=\"%s\">", link->href->url);
+        openTag = _outputToString(indentationLevel, "<a href=\"%s\">\n", link->href->url);
     } else if (link->href->type == HREF_ID) {
-        openTag = _outputToString(indentationLevel, "<a href=\"#%s\">", link->href->id);
+        openTag = _outputToString(indentationLevel, "<a href=\"#%s\">\n", link->href->id);
     } else {
         openTag = _outputToString(indentationLevel, "<a>");
     }
     
-    char* content = _generateSimpleExpressionAsString(0, link->simpleExpression);
+    char* content = _generateSimpleExpressionAsString(indentationLevel + 1, link->simpleExpression);
     char* closeTag = strdup("</a>\n");
     
     char* result = concatenate(3, openTag, content, closeTag);
@@ -1178,7 +1178,7 @@ static char* _generateRowNavAsString(const unsigned int indentationLevel, FilaNa
     
     while (currentRow) {
         if (currentRow->id && currentRow->string) {
-            char* linkTag = _outputToString(indentationLevel, "<a href=\"#%s\">%s</a>\n", 
+            char* linkTag = _outputToString(indentationLevel, "<a href=\"#%s\">\n%s</a>\n",
                                           currentRow->id, currentRow->string);
             
             char* tempLinks = links;
