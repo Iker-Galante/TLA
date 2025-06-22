@@ -383,14 +383,14 @@ static void _generateRowNav(const unsigned int indentationLevel, FilaNav * navRo
 
 
 static void _generateRowPPP(const unsigned int indentationLevel, FilaPPP * pppRow, FILE* output) {
-	_output(output,indentationLevel, "<li>");
+	_output(output,indentationLevel, "<li>\n");
 	if (pppRow->type == FILAPPP_EXPRESSION_FILAPPP) {
-		_generateExpression(0, pppRow->expressionFila,output);
-		_output(output,1, "%s", "</li>\n");
+		_generateExpression(indentationLevel+1, pppRow->expressionFila,output);
+		_output(output,indentationLevel, "%s", "</li>\n");
 		_generateRowPPP(indentationLevel , pppRow->filaPPP,output);
 	} else if (pppRow->type == FILAPPP_EXPRESSION) {
-		_generateExpression(0, pppRow->expression,output);
-		_output(output,1, "%s", "</li>\n");
+		_generateExpression(indentationLevel+1, pppRow->expression,output);
+		_output(output,indentationLevel, "%s", "</li>\n");
 	}
 }
 
@@ -407,7 +407,7 @@ static void _generateColumn(const unsigned int indentationLevel, ColumnaTabla * 
 	}
 }
 
-//TODO DUDAS DE COMO HACER ESTE. LATER TALK WITH MANCIO
+
 /*
  * ESTA TE CREA UN NUEVO COMPONENTE
  */
@@ -425,7 +425,6 @@ static void _generateComponent(const unsigned int indentationLevel, Component * 
 }
 
 
-//TODO como "spawneo" al componente (?)
 /*
  * ESTA TE SPAWNEA UN COMPONENTE YA CREADO
  */
@@ -954,7 +953,7 @@ static char* _generateComponentAsString(const unsigned int indentationLevel, Com
         content = _generateBodyAsString(1 + indentationLevel, component->body);
     }
     
-    char* closeTag = _outputToString(indentationLevel, "</div>\n");
+    char* closeTag = _outputToString(indentationLevel, "</div>");
     
     char* result = concatenate(3, openTag, content, closeTag);
     
@@ -1210,9 +1209,9 @@ static char* _generateRowPPPAsString(const unsigned int indentationLevel, FilaPP
     char* result = NULL;
     
     if (pppRow->type == FILAPPP_EXPRESSION_FILAPPP) {
-        char* openTag = _outputToString(indentationLevel, "<li>");
-        char* content = _generateExpressionAsString(0, pppRow->expressionFila); 
-        char* closeTag = strdup("</li>\n");
+        char* openTag = _outputToString(indentationLevel, "<li>\n");
+        char* content = _generateExpressionAsString(indentationLevel +1, pppRow->expressionFila);
+        char* closeTag = _outputToString(indentationLevel, "</li>\n");
         char* nextRows = _generateRowPPPAsString(indentationLevel, pppRow->filaPPP);
         
         result = concatenate(4, openTag, content, closeTag, nextRows);
@@ -1223,10 +1222,9 @@ static char* _generateRowPPPAsString(const unsigned int indentationLevel, FilaPP
         free(nextRows);
     } 
     else if (pppRow->type == FILAPPP_EXPRESSION) {
-        char* openTag = _outputToString(indentationLevel, "<li>");
-        char* content = _generateExpressionAsString(0, pppRow->expression);
-        char* closeTag = strdup("</li>\n");
-        
+        char* openTag = _outputToString(indentationLevel, "<li>\n");
+        char* content = _generateExpressionAsString(indentationLevel+1, pppRow->expression);
+        char* closeTag = _outputToString(indentationLevel, "</li>\n");
         result = concatenate(3, openTag, content, closeTag);
         
         free(openTag);

@@ -1,4 +1,8 @@
 principio
+punto-por-punto:
+- texto: "esto es un algo"
+- imagen:"esto es un algo"
+fin-ppp
 (queso) texto: "esto es un texto con id"
 componente (comp):
 punto-por-punto:
