@@ -3,7 +3,7 @@
 /* MODULE INTERNAL STATE */
 
 const char _indentationCharacter = ' ';
-const char _indentationSize = 4;
+const char _indentationSize = 2;
 static Logger *_logger = NULL;
 
 void initializeGeneratorModule()

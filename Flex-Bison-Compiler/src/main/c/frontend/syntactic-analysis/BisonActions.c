@@ -122,7 +122,7 @@ Body *BodySemanticAction(Expression *expression, Body *body, BodyType type)
         logError(_logger, "Unknown body type: %d", type);
         break;
     }
-
+    newBody->type = type;
     return newBody;
 }
 
