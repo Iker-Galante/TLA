@@ -19,7 +19,7 @@ script/ubuntu/install.sh
 ```
 script/windows/install.sh
 ```
-###En caso de correr en docker:
+### En caso de correr en docker:
 ```
 Seguir las instrucciones del README dentro del Flex-Bison-Compiler
 ```
