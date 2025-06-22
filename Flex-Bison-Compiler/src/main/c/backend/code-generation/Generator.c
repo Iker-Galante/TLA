@@ -169,7 +169,11 @@ static void _generateLink(const unsigned int indentationLevel, Link *link) {
         _output(indentationLevel, "<a>");
     }
 	
-    _generateSimpleExpression(indentationLevel, link->simpleExpression);
+	if (link->text) {
+		_output(indentationLevel, "%s", link->text);
+	} else {
+    	_generateSimpleExpression(indentationLevel, link->simpleExpression);
+	}
     
 
     _output(indentationLevel, "</a>\n");
@@ -179,6 +183,7 @@ static void _generateSubtitle(const unsigned int indentationLevel, Subtitle * su
 	_output(indentationLevel, "<h2>%s</h2>\n", subtitle->string);
 }
 
+//TODO ESTOS INLINE PONELES CSS
 
 static void _generateText(const unsigned int indentationLevel, Text * text) {
 	switch (text->type) {
@@ -198,6 +203,7 @@ static void _generateText(const unsigned int indentationLevel, Text * text) {
 	}
 }
 
+//TODO: FIJATE SI PODES OBVIAR EL NULL
 static void _generateModifiedText(const unsigned int indentationLevel, Modifier * modifier) {
 	if (modifier == NULL) {
 		return;
@@ -297,6 +303,7 @@ static void _generateSection(const unsigned int indentationLevel, Seccion * sect
 }
 
 
+//TODO: RECORDA METERLE EL BORDER A LA TABLA!
 static void _generateTable(const unsigned int indentationLevel, Table * table) {
 	_output(indentationLevel, "%s", "<table>\n");
 	if (table->type == TABLA_FILA_TABLA) {
@@ -326,10 +333,15 @@ static void _generatePPP(const unsigned int indentationLevel, PuntoPorPunto * pp
 
 static void _generateRow(const unsigned int indentationLevel, FilaTabla * tableRow) {
 	_output(indentationLevel, "%s", "<tr>\n");
-	if (tableRow->type == TABLA_FILA_TABLA) {
-		_generateColumn(indentationLevel, tableRow->columnaTabla);
+	if (tableRow->type == FILA_FILA_TABLA) {
+		_generateColumn(1 + indentationLevel, tableRow->columnaTablaConFila);
+		_output(indentationLevel, "%s", "</tr>\n");
+		_generateRow(indentationLevel, tableRow->filaTabla);
 	}
+	else if (tableRow->type == FILA_COL) {
+		_generateColumn(1 + indentationLevel, tableRow->columnaTabla);
 	_output(indentationLevel, "%s", "</tr>\n");
+}
 }
 
 
@@ -362,13 +374,14 @@ static void _generateRowPPP(const unsigned int indentationLevel, FilaPPP * pppRo
 
 
 static void _generateColumn(const unsigned int indentationLevel, ColumnaTabla * columnaTabla) {
-	_output(indentationLevel, "%s", "<td>\n");
 	if (columnaTabla->type == COLUMNA_COL) {
+		_output(indentationLevel, "%s", "<td>\n");
 		_generateSimpleExpression(1 + indentationLevel, columnaTabla->expression);
+		_output(indentationLevel, "%s", "</td>\n");
+		_generateColumn(indentationLevel, columnaTabla->columnaTabla);
 	} else if (columnaTabla->type == COLUMNA_FIN_FILA) {
 		// No action needed for end of row
 	}
-	_output(indentationLevel, "%s", "</td>\n");
 }
 
 //TODO DUDAS DE COMO HACER ESTE. LATER TALK WITH MANCIO

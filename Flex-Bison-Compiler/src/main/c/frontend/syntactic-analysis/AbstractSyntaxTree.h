@@ -348,6 +348,7 @@ struct Subtitle {
 struct Link {
 		Href * href; //Variable
 		SimpleExpression * simpleExpression;
+		char * text; //Variable
 };
 
 struct Href{

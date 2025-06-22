@@ -285,12 +285,13 @@ Subtitle *SubtitleSemanticAction(char *string)
     return subtitle;
 }
 
-Link *LinkSemanticAction(Href *href, SimpleExpression *simpleExpression)
+Link *LinkSemanticAction(Href *href, SimpleExpression *simpleExpression, char * text)
 {
     _logSyntacticAnalyzerAction(__FUNCTION__);
     Link *link = calloc(1, sizeof(Link));
     link->href = href;
     link->simpleExpression = simpleExpression;
+    link->text = text; // Variable
     return link;
 }
 
@@ -380,6 +381,7 @@ FilaNav *FilaNavSemanticAction(char *id, char *navName, FilaNav *filaNav, FilaNa
 
 FilaTabla *FilaTablaSemanticAction(ColumnaTabla *columnaTabla, FilaTabla *filaTabla, FilaTablaType type)
 {
+
     _logSyntacticAnalyzerAction(__FUNCTION__);
     FilaTabla *newFilaTabla = calloc(1, sizeof(FilaTabla));
     switch (type)
