@@ -4,6 +4,7 @@
 #include "Type.h"
 #include <stdlib.h>
 #include <string.h>
+#include <glib.h>
 
 /**
  * Analog to "getStringOrDefault", but returning true if the string is exactly
@@ -20,4 +21,7 @@ const boolean getBooleanOrDefault(const char * name, const boolean defaultValue)
  */
 const char * getStringOrDefault(const char * name, const char * defaultValue);
 
+
+
+void free_symbol_entry(gpointer data);
 #endif

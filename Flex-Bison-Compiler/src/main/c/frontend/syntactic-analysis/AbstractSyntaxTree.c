@@ -302,7 +302,6 @@ void releaseText(Text * text){
 		else if(text->type == TEXT_MODIFIED_TEXT){
 			releaseModifiers(text->modifier);
 		}
-		printf("RELEASING TEXT STRING");
 		free(text->string);
 		free(text);
 	}
@@ -328,7 +327,7 @@ void releaseTitle(Title * title) {
 
 void releaseSubtitle(Subtitle * subtitle) {
     logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
-	printf("RELEASING SUBTITLE STRING");
+
 	if (subtitle != NULL) {
 		free(subtitle->string);
 		subtitle->string = NULL;
@@ -341,6 +340,9 @@ void releaseLink(Link * link) {
     if (link != NULL) {
         releaseHref(link->href);
         releaseSimpleExpression(link->simpleExpression);
+    	if (link->text != NULL) {
+    		free(link->text);
+    	}
         free(link);
     }
 }
@@ -367,11 +369,177 @@ void releaseTabla(Table * tabla) {
 void releaseFilaNav(FilaNav * filaNav) {
     logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
     if (filaNav != NULL) {
-        if (filaNav->type == NAVEGADOR_FILA_NAVEGADOR) {
+        if (filaNav->type == FILANAV_FILA_NAVEGADOR) {
             releaseFilaNav(filaNav->filaNav);
         }
         free(filaNav->id);
         free(filaNav->string);
         free(filaNav);
+    }
+}
+
+
+
+/*   PARA LOGUEAR NADA MAS */
+
+// Helper function for indentation
+static void _printIndent(int indent) {
+    for (int i = 0; i < indent; i++) {
+        printf("  ");
+    }
+}
+
+
+static void _logAST_Body(Body* body, int indent);
+static void _logAST_Expression(Expression* expr, int indent);
+static void _logAST_SimpleExpression(SimpleExpression* simpleExpr, int indent);
+static void _logAST_ComplexExpression(ComplexExpression* complexExpr, int indent);
+
+/**
+ * Esto para loguear el AST
+ */
+void logAbstractSyntaxTree(Program* program) {
+    if (program == NULL) {
+        printf("AST is NULL\n");
+        return;
+    }
+    
+    printf("==== AST BEGIN ====\n");
+    printf("Program (type=%d)\n", program->type);
+    
+    switch (program->type) {
+        case PROGRAM_HEADER_FOOTER_BODY:
+            printf("  [Header + Body + Footer]\n");
+            _logAST_Body(program->bodyFull, 2);
+            break;
+        case PROGRAM_FOOTER_BODY:
+            printf("  [Body + Footer]\n");
+            _logAST_Body(program->bodyFB, 2);
+            break;
+        case PROGRAM_HEADER_BODY:
+            printf("  [Header + Body]\n");
+            _logAST_Body(program->bodyHB, 2);
+            break;
+        case PROGRAM_BODY:
+            printf("  [Body only]\n");
+            _logAST_Body(program->body, 2);
+            break;
+        default:
+            printf("  [Other program structure]\n");
+    }
+    printf("==== AST END ====\n");
+}
+
+static void _logAST_Body(Body* body, int indent) {
+    if (body == NULL) {
+        _printIndent(indent);
+        printf("Body: NULL\n");
+        return;
+    }
+    
+    _printIndent(indent);
+    printf("Body (type=%d)\n", body->type);
+    
+    switch (body->type) {
+        case BODY_EXPRESSION_BODY:
+            _printIndent(indent);
+            printf("Has EXPRESSION + BODY\n");
+            _logAST_Expression(body->expressionB, indent + 1);
+            _logAST_Body(body->bodyB, indent + 1);
+            break;
+        case BODY_EXPRESSION:
+            _printIndent(indent);
+            printf("Has EXPRESSION only\n");
+            _logAST_Expression(body->expression, indent + 1);
+            break;
+        default:
+            _printIndent(indent + 1);
+            printf("Empty body\n");
+    }
+}
+
+static void _logAST_Expression(Expression* expr, int indent) {
+    if (expr == NULL) {
+        _printIndent(indent);
+        printf("Expression: NULL\n");
+        return;
+    }
+    
+    _printIndent(indent);
+    printf("Expression (type=%d): ", expr->type);
+    
+    switch (expr->type) {
+        case EXPRESSION_SIMPLE_EXPRESSION:
+            printf("SimpleExpression\n");
+            _logAST_SimpleExpression(expr->simpleExpression, indent + 1);
+            break;
+        case EXPRESSION_COMPLEX_EXPRESSION:
+            printf("ComplexExpression\n");
+            _logAST_ComplexExpression(expr->complexExpression, indent + 1);
+            break;
+        case EXPRESSION_STRING:
+            printf("String: \"%s\"\n", expr->string);
+            break;
+        case EXPRESSION_ID:
+            printf("Component ID: \"%s\"\n", expr->componentId);
+            break;
+        default:
+            printf("Other expression type\n");
+    }
+}
+
+static void _logAST_SimpleExpression(SimpleExpression* simpleExpr, int indent) {
+    if (simpleExpr == NULL) {
+        _printIndent(indent);
+        printf("SimpleExpression: NULL\n");
+        return;
+    }
+    
+    _printIndent(indent);
+    printf("SimpleExpression (type=%d): ", simpleExpr->type);
+    
+    switch (simpleExpr->type) {
+        case SEXPRESSION_TEXT:
+            printf("Text: \"%s\"\n", simpleExpr->text->string);
+            break;
+        case SEXPRESSION_TITLE:
+            printf("Title: \"%s\"\n", simpleExpr->title->string);
+            break;
+        case SEXPRESSION_SUBTITLE:
+            printf("Subtitle: \"%s\"\n", simpleExpr->subtitle->string);
+            break;
+        case SEXPRESSION_IMG:
+            printf("Image: \"%s\"\n", simpleExpr->img->url);
+            break;
+        default:
+            printf("Other simple expression type\n");
+    }
+}
+
+static void _logAST_ComplexExpression(ComplexExpression* complexExpr, int indent) {
+    if (complexExpr == NULL) {
+        _printIndent(indent);
+        printf("ComplexExpression: NULL\n");
+        return;
+    }
+    
+    _printIndent(indent);
+    printf("ComplexExpression (type=%d): ", complexExpr->type);
+    
+    switch (complexExpr->type) {
+        case CEXPRESSION_PUNTO_POR_PUNTO:
+            printf("Punto Por Punto\n");
+            break;
+        case CEXPRESSION_SECCION:
+            printf("Section\n");
+            break;
+        case CEXPRESSION_TABLA:
+            printf("Table\n");
+            break;
+        case CEXPRESSION_NAVEGADOR:
+            printf("Navigator\n");
+            break;
+        default:
+            printf("Other complex expression type\n");
     }
 }

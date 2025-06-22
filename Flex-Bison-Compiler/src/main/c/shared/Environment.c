@@ -1,4 +1,5 @@
 #include "Environment.h"
+#include <glib.h>
 
 /* PUBLIC FUNCTIONS */
 
@@ -23,4 +24,15 @@ const char * getStringOrDefault(const char * name, const char * defaultValue) {
 	else {
 		return value;
 	}
+}
+
+// Function to free your SymbolTableEntry struct
+void free_symbol_entry(gpointer data) {
+    if (data == NULL) return;
+    
+    SymbolTableEntry* entry = (SymbolTableEntry*)data;
+    if (entry->type != SIMPLE_ID && entry->component != NULL) {
+        free(entry->component);
+    }
+    free(entry);
 }

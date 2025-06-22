@@ -1,5 +1,7 @@
 #include "String.h"
 
+#include <stdio.h>
+
 /* PRIVATE FUNCTIONS */
 
 static const char * _controlCharacterToEscapedString(const char character);
@@ -101,3 +103,5 @@ char * indentation(const char character, const unsigned int level, const unsigne
 	}
 	return indentation;
 }
+
+

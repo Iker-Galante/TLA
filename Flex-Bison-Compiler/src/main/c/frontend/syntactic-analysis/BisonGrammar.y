@@ -1,7 +1,7 @@
 %{
 
 #include "BisonActions.h"
-
+#define NO_COLOR 0
 %}
 
 // You touch this, and you die.
@@ -50,7 +50,12 @@
  * @see https://www.gnu.org/software/bison/manual/html_node/Destructor-Decl.html
  */
 
-%destructor { releaseProgram($$); } <program>
+/*los destructors hay que usarlos por si el parseo falla
+el de program lo que hace es que se fija si el parseo anduvo bien o no
+xq si anduvo bien quiero que no me libere el AST xq lo necesito en el backend
+*/
+%destructor {  if ($$ != currentCompilerState()->abstractSyntaxtTree) 
+    releaseProgram($$);  } <program>
 %destructor { releaseHeader($$); } <header>
 %destructor { releaseFooter($$); } <footer>
 %destructor { releaseBody($$); } <body>
@@ -72,6 +77,7 @@
 %destructor { releaseHref($$); } <href>
 %destructor { releasePuntoPorPunto($$); } <puntoPorPunto>
 %destructor { releaseExpression($$); } <expression>
+
 
 /** Terminals. */
 %token <string> STRING
@@ -117,6 +123,9 @@
 
 // IMPORTANT: To use λ in the following grammar, use the %empty symbol.
 
+
+
+
 program:
     PRINCIPIO NEW_LINE header body footer FIN        { $$ = ProgramSemanticAction($4, $3, $5, PROGRAM_HEADER_FOOTER_BODY,currentCompilerState()); }
   | PRINCIPIO NEW_LINE body footer FIN               { $$ = ProgramSemanticAction($3, NULL, $4, PROGRAM_FOOTER_BODY,currentCompilerState()); }
@@ -145,6 +154,10 @@ body:
   | expression                                        { $$ = BodySemanticAction($1, NULL, BODY_EXPRESSION); }
   ;
 
+
+///TODO Para la tabla de simbolos, simpleExpression y compleExpression estan creando un ID nuevo
+/// {id} espera un ID de un COMPONENTE ESPECIFICAMENTE que ya haya sido creado
+///component tambien crea un id nuevo
 expression:
     PARENTESIS_IZQUIERDO ID PARENTESIS_DERECHO simple_expression           { $$ = ExpressionSemanticAction($2, NULL, NULL, $4, NULL, EXPRESSION_ID_SIMPLEEXPRESSION); }
   | PARENTESIS_IZQUIERDO ID PARENTESIS_DERECHO complex_expression          { $$ = ExpressionSemanticAction($2, NULL, $4, NULL, NULL, EXPRESSION_ID_COMPLEXEXPRESSION); }
@@ -164,25 +177,23 @@ simple_expression:
   ;
 
 modifiers:
-    modifiers COLOR                                   { $$ = ModifierSemanticAction($1, COLOR_RED, MODIFIER_COLOR_MOD); }
-  | modifiers SUBRAYADO                               { $$ = ModifierSemanticAction($1, COLOR_GREEN, MODIFIER_COLOR_MOD); }
-  | modifiers ITALICA                                 { $$ = ModifierSemanticAction($1, COLOR_BLUE, MODIFIER_COLOR_MOD); }
-  | modifiers NEGRITA                                 { $$ = ModifierSemanticAction($1, COLOR_YELLOW, MODIFIER_COLOR_MOD); }
-  | modifiers TAMANIO                                 { $$ = ModifierSemanticAction($1, COLOR_ORANGE, MODIFIER_COLOR_MOD); }
-  | modifiers GRANDE                                  { $$ = ModifierSemanticAction($1, COLOR_RED, MODIFIER_COLOR_MOD); }
-  | modifiers PEQUENIO                                { $$ = ModifierSemanticAction($1, COLOR_GREEN, MODIFIER_COLOR_MOD); }
-  | modifiers NORMAL                                  { $$ = ModifierSemanticAction($1, COLOR_BLUE, MODIFIER_COLOR_MOD); }
+    modifiers SUBRAYADO                               { $$ = ModifierSemanticAction($1, UNDERLINE, MODIFIER_MODIFIER); }
+  | modifiers ITALICA                                 { $$ = ModifierSemanticAction($1, ITALIC, MODIFIER_MODIFIER); }
+  | modifiers NEGRITA                                 { $$ = ModifierSemanticAction($1, BOLD, MODIFIER_MODIFIER); }
+  | modifiers GRANDE                                  { $$ = ModifierSemanticAction($1, BIG, MODIFIER_MODIFIER); }
+  | modifiers PEQUENIO                                { $$ = ModifierSemanticAction($1, TINY, MODIFIER_MODIFIER); }
+  | modifiers NORMAL                                  { $$ = ModifierSemanticAction($1, MEDIUM, MODIFIER_MODIFIER); }
   | modifiers ROJO                                    { $$ = ModifierSemanticAction($1, COLOR_RED, MODIFIER_COLOR_MOD); }
   | modifiers AZUL                                    { $$ = ModifierSemanticAction($1, COLOR_BLUE, MODIFIER_COLOR_MOD); }
   | modifiers VERDE                                   { $$ = ModifierSemanticAction($1, COLOR_GREEN, MODIFIER_COLOR_MOD); }
   | modifiers AMARILLO                                { $$ = ModifierSemanticAction($1, COLOR_YELLOW, MODIFIER_COLOR_MOD); }
   | modifiers NARANJA                                 { $$ = ModifierSemanticAction($1, COLOR_ORANGE, MODIFIER_COLOR_MOD); }
-  | SUBRAYADO                                         { $$ = ModifierSemanticAction(NULL, COLOR_GREEN, MODIFIER_COLOR_MOD); }
-  | ITALICA                                           { $$ = ModifierSemanticAction(NULL, COLOR_BLUE, MODIFIER_COLOR_MOD); }
-  | NEGRITA                                           { $$ = ModifierSemanticAction(NULL, COLOR_YELLOW, MODIFIER_COLOR_MOD); }
-  | GRANDE                                            { $$ = ModifierSemanticAction(NULL, COLOR_RED, MODIFIER_COLOR_MOD); }
-  | PEQUENIO                                          { $$ = ModifierSemanticAction(NULL, COLOR_GREEN, MODIFIER_COLOR_MOD); }
-  | NORMAL                                            { $$ = ModifierSemanticAction(NULL, COLOR_BLUE, MODIFIER_COLOR_MOD); }
+  | SUBRAYADO                                         { $$ = ModifierSemanticAction(NULL, UNDERLINE, MODIFIER_MODIFIER); }
+  | ITALICA                                           { $$ = ModifierSemanticAction(NULL, ITALIC, MODIFIER_MODIFIER); }
+  | NEGRITA                                           { $$ = ModifierSemanticAction(NULL, BOLD, MODIFIER_MODIFIER); }
+  | GRANDE                                            { $$ = ModifierSemanticAction(NULL, BIG, MODIFIER_MODIFIER); }
+  | PEQUENIO                                          { $$ = ModifierSemanticAction(NULL, TINY, MODIFIER_MODIFIER); }
+  | NORMAL                                            { $$ = ModifierSemanticAction(NULL, MEDIUM, MODIFIER_MODIFIER); }
   | ROJO                                              { $$ = ModifierSemanticAction(NULL, COLOR_RED, MODIFIER_COLOR_MOD); }
   | AZUL                                              { $$ = ModifierSemanticAction(NULL, COLOR_BLUE, MODIFIER_COLOR_MOD); }
   | VERDE                                             { $$ = ModifierSemanticAction(NULL, COLOR_GREEN, MODIFIER_COLOR_MOD); }
@@ -232,7 +243,8 @@ text:
        | TEXTO modifiers DOS_PUNTOS STRING NEW_LINE                   { $$ = TextSemanticAction($4, $2, TEXT_MODIFIED_TEXT); }
 
 image:
-       IMAGEN DOS_PUNTOS STRING NEW_LINE                              { $$ = ImgSemanticAction($3,NULL); };
+       IMAGEN DOS_PUNTOS STRING STRING NEW_LINE                    { $$ = ImgSemanticAction($3,$4); };
+       | IMAGEN DOS_PUNTOS STRING NEW_LINE                            { $$ = ImgSemanticAction($3, NULL); }
 
 title:
        TITULO DOS_PUNTOS STRING NEW_LINE                              { $$ = TitleSemanticAction($3); }
@@ -241,8 +253,8 @@ subtitle:
        SUBTITULO DOS_PUNTOS STRING NEW_LINE                           { $$ = SubtitleSemanticAction($3); }
 
 link:
-       ENLACE DOS_PUNTOS PARENTESIS_IZQUIERDO href PARENTESIS_DERECHO simple_expression  { $$ = LinkSemanticAction($4, $6); }
-
+       ENLACE DOS_PUNTOS PARENTESIS_IZQUIERDO href PARENTESIS_DERECHO simple_expression  { $$ = LinkSemanticAction($4, $6, NULL); }
+      | ENLACE DOS_PUNTOS PARENTESIS_IZQUIERDO href PARENTESIS_DERECHO STRING NEW_LINE { $$ = LinkSemanticAction($4, NULL, $6); }
 navigator:
     NAVEGADOR DOS_PUNTOS NEW_LINE row_nav FIN_NAVEGADOR NEW_LINE      { $$ = NavegadorSemanticAction($4, NAVEGADOR_FILA_NAVEGADOR); }
   | NAVEGADOR DOS_PUNTOS NEW_LINE FIN_NAVEGADOR NEW_LINE              { $$ = NavegadorSemanticAction(NULL, NAVEGADOR_EMPTY); }

@@ -19,11 +19,11 @@ if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
 	#xq capaz hace que me pise las lineas donde pongo los breakpoints
 	#es solo para debuguear, al entregar habria que descomentar
 	# Options for GCC.
-	#add_compile_options(-fsanitize=address)
+	add_compile_options(-fsanitize=address)
 	 #add_compile_options(-O3)
 	add_compile_options(-static-libgcc)
 	add_compile_options(-std=gnu99)
-	#add_link_options(-fsanitize=address)
+	add_link_options(-fsanitize=address)
 
 	# Compiles the scanner with Flex.
 	add_custom_command(
@@ -55,6 +55,14 @@ else ()
 
 endif ()
 
+#libreria GLib
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GLIB REQUIRED glib-2.0)
+
+include_directories(${GLIB_INCLUDE_DIRS})
+link_directories(${GLIB_LIBRARY_DIRS})
+add_definitions(${GLIB_CFLAGS_OTHER})
+
 # Defines the entry-point of the application, and the source-codes (*.c extension).
 # The header files (*.h extension), are automatically included from the source-codes.
 add_executable(Compiler
@@ -71,9 +79,10 @@ add_executable(Compiler
 	src/main/c/shared/Environment.c
 	src/main/c/shared/Logger.c
 	src/main/c/shared/String.c
+	src/main/c/backend/code-generation/Generator.c
 	# Add more *.c files if needed (otherwise, they won't be compiled).
 	# ...
 )
 
 # Link final project and libraries.
-target_link_libraries(Compiler)
+target_link_libraries(Compiler ${GLIB_LIBRARIES})

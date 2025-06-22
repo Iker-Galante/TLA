@@ -33,7 +33,7 @@ Modifier * ModifierSemanticAction(Modifier * modifier, ColorType color, Modifier
 Image * ImgSemanticAction(char * url, char * alternative);
 Title * TitleSemanticAction(char * string);
 Subtitle * SubtitleSemanticAction(char * string);
-Link * LinkSemanticAction(Href * href, SimpleExpression * simpleExpression);
+Link * LinkSemanticAction(Href * href, SimpleExpression * simpleExpression, char * text);
 Href * HrefSemanticAction(char * url, char * id, HrefType type);
 Seccion * SeccionSemanticAction(Body * body, SeccionType type);
 Table * TablaSemanticAction(FilaTabla * filaTabla, TableType type);
