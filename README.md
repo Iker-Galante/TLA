@@ -11,11 +11,16 @@ Trabajo practico TLA
   - Los comenatarios solo funcionan en lineas nuevas
 
 ## Correr el script:
-### En caso de Ubunutu:
+### En caso de correr en Ubunutu:
 ```
 script/ubuntu/install.sh
 ```
-### En caso de Windows:
+### En caso de correr en Windows:
 ```
 script/windows/install.sh
 ```
+###En caso de correr en docker:
+```
+Seguir las instrucciones del README dentro del Flex-Bison-Compiler
+```
+
