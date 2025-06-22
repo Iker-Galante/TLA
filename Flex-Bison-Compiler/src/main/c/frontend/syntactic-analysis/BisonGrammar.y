@@ -236,7 +236,8 @@ text:
        | TEXTO modifiers DOS_PUNTOS STRING NEW_LINE                   { $$ = TextSemanticAction($4, $2, TEXT_MODIFIED_TEXT); }
 
 image:
-       IMAGEN DOS_PUNTOS STRING NEW_LINE                              { $$ = ImgSemanticAction($3,NULL); };
+       IMAGEN DOS_PUNTOS STRING STRING NEW_LINE                    { $$ = ImgSemanticAction($3,$4); };
+       | IMAGEN DOS_PUNTOS STRING NEW_LINE                            { $$ = ImgSemanticAction($3, NULL); }
 
 title:
        TITULO DOS_PUNTOS STRING NEW_LINE                              { $$ = TitleSemanticAction($3); }

@@ -3,7 +3,7 @@ titulo: "Ejemplo"
 subtitulo: "Estoesunejemplo"
 texto: "Esteesunejemplod  ecomo   funcionan   uestrolenguaje"
 texto: "Podemosagregardistintoselementos"
-imagen: "httpsejemplocomimagenjpg"
+imagen: "https://ejemploaaa.com/imagen.jpg" "FOTO"
 punto-por-punto:
 - "Esto es une lementode una lista"
 - "Yestees   otroelemento"
