@@ -6,7 +6,7 @@
 
 @echo [93mBuilding the compiler...[0m
 @echo:
-
+mkdir results
 rmdir /Q /S %BASE_PATH%\build >nul 2>&1
 del %BASE_PATH%\src\main\c\frontend\lexical-analysis\FlexScanner.c >nul 2>&1
 del %BASE_PATH%\src\main\c\frontend\syntactic-analysis\BisonParser.c >nul 2>&1

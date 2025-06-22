@@ -6,6 +6,11 @@
 
 @set INPUT=%1
 @shift /1
+if "%OUTPUT_DIR%"=="" (
+    set "OUTPUT_DIR=results"
+)
+
+set "OUTPUT_DIR=%OUTPUT_DIR%"
 @type %INPUT% | %BASE_PATH%\build\Debug\Compiler.exe %1 %2 %3 %4 %5 %6 %7 %8 %9
 
 @ENDLOCAL
