@@ -9,6 +9,7 @@ typedef enum {
 typedef enum {
 	COMPONENT_ID = 0,
 	SIMPLE_ID = 1,
+	COMPONENT_ID_INITIALIZED_AND_CREATED = 2,
 } idType;
 
 typedef struct {
